@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:today="using:HeySip.App.Features.Today"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             xmlns:shared="using:HeySip.App.Shared"
+             x:Class="HeySip.App.Features.Today.TodayView"
+             x:DataType="today:TodayViewModel">
+    <comp:PageLayout Title="{Binding Greeting}">
+        <comp:Card>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="28">
+                <controls:DripControl Width="150" Height="210" Pose="{Binding Pose}" Character="{Binding Character}" Outfit="{Binding Outfit}" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="12">
+                    <TextBlock Text="Today" Classes="eyebrow" />
+                    <TextBlock Text="{Binding Summary}" FontSize="40" FontWeight="SemiBold" />
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="14" CornerRadius="7" />
+                    <TextBlock Text="{Binding Caption}" Foreground="{DynamicResource HbTextSecondaryBrush}" />
+                    <TextBlock Text="{Binding NextText}" Classes="muted" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                        <Button Classes="accent" Content="{Binding GlassLabel}" Command="{Binding LogGlassCommand}" />
+                        <Button Classes="subtle" Content="Change schedule" Command="{Binding ChangeScheduleCommand}"
+                                IsVisible="{Binding ShowScheduleLink}"
+                                ToolTip.Tip="Open Settings at the active hours" />
+                        <Button Classes="subtle" Content="See stats" Command="{Binding SeeStatsCommand}"
+                                ToolTip.Tip="Open Stats (Ctrl+2)" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </comp:Card>
+
+        <comp:Card Heading="Log a different amount">
+            <ItemsControl ItemsSource="{Binding QuickAmounts}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="today:QuickAmountViewModel">
+                        <Button Content="{Binding Label}" Command="{Binding AddCommand}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <NumericUpDown Value="{Binding CustomAmount}" Minimum="10" Maximum="2000" Increment="50"
+                               FormatString="0" Width="150" />
+                <TextBlock Text="ml" VerticalAlignment="Center" Classes="muted" />
+                <Button Content="Add" Command="{Binding LogCustomCommand}" />
+                <Button Content="Undo last" Command="{Binding UndoCommand}" IsEnabled="{Binding HasEntries}" Margin="12,0,0,0" />
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="Quiet time">
+            <StackPanel Spacing="10" IsVisible="{Binding IsPaused}">
+                <TextBlock Text="{Binding NextText}" Classes="muted" TextWrapping="Wrap" />
+                <Button Classes="accent" Content="Resume reminders" Command="{Binding ResumeRemindersCommand}" HorizontalAlignment="Left" />
+            </StackPanel>
+            <StackPanel Spacing="10" IsVisible="{Binding !IsPaused}">
+                <TextBlock Text="Need some peace? Pause reminders for a while, or until a time." Classes="muted" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="1 hour" Command="{Binding PauseHourCommand}" />
+                    <Button Content="Until tomorrow" Command="{Binding QuietUntilTomorrowCommand}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TimePicker SelectedTime="{Binding QuietTime}" MinuteIncrement="5" AutomationProperties.Name="Quiet until" />
+                    <Button Content="Quiet until this time" Command="{Binding QuietUntilTimeCommand}" VerticalAlignment="Bottom" />
+                </StackPanel>
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="Today's log" Spacing="10">
+            <TextBlock Text="Nothing logged yet. Have a sip!" Classes="muted" IsVisible="{Binding !HasEntries}" />
+            <ItemsControl ItemsSource="{Binding Entries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="shared:EntryViewModel">
+                        <comp:EntryRow />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </comp:Card>
+    </comp:PageLayout>
+</UserControl>

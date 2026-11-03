@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="using:HeySip.App.Shell"
+             x:Class="HeySip.App.Shell.NoticeBar"
+             x:DataType="shell:NoticeBannerViewModel">
+    <!-- A message from the project ("HeySip 0.2.0 is available"). DataContext is the notice banner view model. -->
+    <Border Classes="toast" IsVisible="{Binding IsVisible}" MaxWidth="640">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="{Binding Text}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="440" />
+            <Button Classes="accent" Content="{Binding LinkText}" Command="{Binding OpenCommand}" IsVisible="{Binding HasLink}"
+                    AutomationProperties.Name="Open the link in this message" />
+            <Button Classes="subtle" Command="{Binding DismissCommand}" IsVisible="{Binding CanDismiss}" ToolTip.Tip="Dismiss"
+                    AutomationProperties.Name="Dismiss this message">
+                <PathIcon Data="{StaticResource IconClose}" Width="9" Height="9" />
+            </Button>
+        </StackPanel>
+    </Border>
+</UserControl>

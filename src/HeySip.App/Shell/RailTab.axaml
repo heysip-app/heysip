@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="using:HeySip.App.Shell"
+             x:Class="HeySip.App.Shell.RailTab"
+             x:DataType="shell:TabViewModel">
+    <!-- An opened day, shown in the left rail as its day-of-month. Hover for a close button; the tooltip has the full name. -->
+    <Grid Classes="railTab" Width="48" Height="42">
+        <Button Classes="rail" Classes.selected="{Binding IsSelected}" Command="{Binding SelectCommand}"
+                ToolTip.Tip="{Binding Title}" AutomationProperties.Name="{Binding Title}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Glyph}" Classes="mono" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding Caption}" FontSize="9" HorizontalAlignment="Center" Opacity="0.7" />
+            </StackPanel>
+        </Button>
+        <Button Classes="railClose" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,2,0"
+                Command="{Binding CloseCommand}" ToolTip.Tip="Close (Ctrl+W)" AutomationProperties.Name="Close tab">
+            <PathIcon Data="{StaticResource IconClose}" Width="7" Height="7" />
+        </Button>
+    </Grid>
+</UserControl>

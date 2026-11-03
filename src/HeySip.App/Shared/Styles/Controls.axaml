@@ -1,0 +1,303 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Typography -->
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.eyebrow">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="0.6" />
+        <Setter Property="Foreground" Value="{DynamicResource HbAccentBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource HbTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.mono">
+        <Setter Property="FontFamily" Value="{DynamicResource HbMonoFont}" />
+    </Style>
+    <Style Selector="TextBlock.stat">
+        <Setter Property="FontFamily" Value="{DynamicResource HbMonoFont}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Surfaces: pages sit on the window colour; cards are the only raised layer -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource HbPanelBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HbBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource HbCardRadius}" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <Style Selector="ProgressBar.met">
+        <Setter Property="Foreground" Value="{DynamicResource HbSuccessBrush}" />
+    </Style>
+
+    <Style Selector="Border.bar">
+        <Setter Property="Background" Value="{DynamicResource HbBarBrush}" />
+    </Style>
+    <Style Selector="Border.bar.met">
+        <Setter Property="Background" Value="{DynamicResource HbSuccessBrush}" />
+    </Style>
+
+    <!-- Activity rail: Rider-style rounded icon buttons; the current page gets a soft rounded highlight -->
+    <Style Selector="Button.rail">
+        <Setter Property="Width" Value="38" />
+        <Setter Property="Height" Value="38" />
+        <Setter Property="Margin" Value="5,2" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextMutedBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.rail PathIcon">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+    </Style>
+    <Style Selector="Button.rail /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.rail:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+    <!-- A panel toggle that is switched on: brighter icon only (the highlight marks the current page). -->
+    <Style Selector="Button.rail.on">
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+    <Style Selector="Button.rail.selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbPressedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbAccentBrush}" />
+    </Style>
+    <Style Selector="Button.rail.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbPressedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbAccentBrush}" />
+    </Style>
+
+    <!-- Day tabs in the rail: a small close button appears in the corner on hover. -->
+    <Style Selector="Button.railClose">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextSecondaryBrush}" />
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Grid.railTab:pointerover Button.railClose">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="Button.railClose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbPressedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+
+    <!-- Tree rows in the log side panel -->
+    <Style Selector="Button.node">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="8,5" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <Style Selector="Button.node:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+    </Style>
+    <Style Selector="Button.node.icon">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextMutedBrush}" />
+    </Style>
+    <Style Selector="Button.node.icon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+
+    <!-- Command palette -->
+    <Style Selector="Border.palette">
+        <Setter Property="Background" Value="{DynamicResource HbPanelBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HbBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource HbPanelRadius}" />
+        <Setter Property="BoxShadow" Value="0 12 40 0 #66000000" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <!-- The palette eases in (fade and a small rise) each time it is shown. -->
+    <Style Selector="UserControl.paletteHost[IsVisible=True] Border.palette">
+        <Style.Animations>
+            <Animation Duration="0:0:0.24" Easing="CubicEaseOut" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="TranslateTransform.Y" Value="-8" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1" />
+                    <Setter Property="TranslateTransform.Y" Value="0" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <Style Selector="Button.paletteRow">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <Style Selector="Button.paletteRow /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.paletteRow:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+    </Style>
+    <Style Selector="Button.paletteRow.selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbAccentSoftBrush}" />
+    </Style>
+    <Style Selector="Button.paletteRow.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbAccentSoftBrush}" />
+    </Style>
+
+    <!-- Status bar -->
+    <Style Selector="Button.status">
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="{DynamicResource HbStatusFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextSecondaryBrush}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.status /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.18" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.status:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+    <Style Selector="Button.status.warn">
+        <Setter Property="Foreground" Value="{DynamicResource HbWarningBrush}" />
+    </Style>
+    <Style Selector="Button.status.good">
+        <Setter Property="Foreground" Value="{DynamicResource HbSuccessBrush}" />
+    </Style>
+    <Style Selector="Button.status PathIcon">
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Height" Value="12" />
+    </Style>
+
+    <!-- A short message with an action, floating over the page (the "Removed ... Undo" bar) -->
+    <Style Selector="Border.toast">
+        <Setter Property="Background" Value="{DynamicResource HbSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HbBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource HbCardRadius}" />
+        <Setter Property="Padding" Value="16,8,8,8" />
+        <Setter Property="BoxShadow" Value="0 6 24 0 #55000000" />
+    </Style>
+
+    <!-- A button with no chrome of its own, for making a drawn element (such as a chart bar) clickable. -->
+    <Style Selector="Button.plain">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="CornerRadius" Value="6,6,0,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Bottom" />
+    </Style>
+    <Style Selector="Button.plain:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+    </Style>
+
+    <!-- Buttons: colour changes on hover, press and release ease over a moment instead of snapping. -->
+    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter, ToggleButton /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut" />
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.24" Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button">
+        <Setter Property="CornerRadius" Value="{DynamicResource HbControlRadius}" />
+    </Style>
+    <Style Selector="Button.chip">
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="12,4" />
+    </Style>
+    <Style Selector="Button.chip.selected">
+        <Setter Property="Background" Value="{DynamicResource HbAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbOnAccentBrush}" />
+    </Style>
+    <Style Selector="Button.chip.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbOnAccentBrush}" />
+    </Style>
+    <Style Selector="Button.subtle">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+    </Style>
+    <Style Selector="Button.subtle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbHoverBrush}" />
+    </Style>
+    <Style Selector="Button.subtle:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource HbPressedBrush}" />
+    </Style>
+    <Style Selector="Button.danger">
+        <Setter Property="Foreground" Value="{DynamicResource HbDangerBrush}" />
+    </Style>
+    <Style Selector="Button.pick">
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="CornerRadius" Value="{DynamicResource HbCardRadius}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HbAccentClearBrush}" />
+    </Style>
+    <Style Selector="Button.pick.selected">
+        <Setter Property="BorderBrush" Value="{DynamicResource HbAccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource HbAccentSoftBrush}" />
+    </Style>
+    <Style Selector="Button.pick.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="BorderBrush" Value="{DynamicResource HbAccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource HbAccentSoftBrush}" />
+    </Style>
+</Styles>

@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shared="using:HeySip.App.Shared"
+             x:Class="HeySip.App.Shared.Components.EntryRow"
+             x:DataType="shared:EntryViewModel">
+    <!-- One logged drink: time, amount and a way to remove it. -->
+    <Grid ColumnDefinitions="80,*,Auto" Margin="0,3">
+        <TextBlock Text="{Binding Time}" Classes="mono muted" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding Amount}" Classes="mono" VerticalAlignment="Center" />
+        <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}" Classes="subtle" />
+    </Grid>
+</UserControl>

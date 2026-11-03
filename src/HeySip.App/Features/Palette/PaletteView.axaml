@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             Classes="paletteHost"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:palette="using:HeySip.App.Features.Palette"
+             x:Class="HeySip.App.Features.Palette.PaletteView"
+             x:DataType="palette:CommandPaletteViewModel">
+    <!-- Clicking the dimmed backdrop closes the palette (see code-behind). -->
+    <Grid x:Name="Backdrop" Background="{DynamicResource HbOverlayBrush}">
+        <Border x:Name="Card" Classes="palette" Width="600" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,64,0,0">
+            <DockPanel>
+                <TextBox x:Name="Input" DockPanel.Dock="Top" Text="{Binding Query}" Margin="10"
+                         PlaceholderText="Type a command or a setting…" AutomationProperties.Name="Command palette" />
+                <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource HbBorderBrush}" />
+                <TextBlock Text="No matching commands" Classes="muted" Margin="16,14" IsVisible="{Binding HasNoResults}" />
+                <ScrollViewer x:Name="ResultsScroll" MaxHeight="380">
+                    <ItemsControl x:Name="ResultsList" ItemsSource="{Binding Results}" Margin="6">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="palette:PaletteItemViewModel">
+                                <Button Classes="paletteRow" Classes.selected="{Binding IsSelected}" Command="{Binding RunCommand}">
+                                    <Grid ColumnDefinitions="96,*,Auto">
+                                        <TextBlock Text="{Binding Category}" Classes="muted" FontSize="11" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Shortcut}" Classes="mono muted" FontSize="11"
+                                                   VerticalAlignment="Center" IsVisible="{Binding HasShortcut}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

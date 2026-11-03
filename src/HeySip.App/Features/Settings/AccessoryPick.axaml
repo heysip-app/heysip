@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:settings="using:HeySip.App.Features.Settings"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
+             x:Class="HeySip.App.Features.Settings.AccessoryPick"
+             x:DataType="settings:AccessoryOptionViewModel">
+    <!-- An accessory you can choose, drawn on your character, highlighted when worn. "None" shows the character bare. -->
+    <Button Command="{Binding SelectCommand}" Classes="pick" Classes.selected="{Binding IsSelected}"
+            ToolTip.Tip="{Binding Name}" AutomationProperties.Name="{Binding Name}">
+        <StackPanel Spacing="4">
+            <controls:DripControl Width="58" Height="81" Character="{Binding Character}" Outfit="{Binding Worn}" IsAnimated="False" />
+            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="12" />
+        </StackPanel>
+    </Button>
+</UserControl>

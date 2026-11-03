@@ -1,0 +1,121 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="using:HeySip.App.Shell"
+        xmlns:today="using:HeySip.App.Features.Today"
+        xmlns:stats="using:HeySip.App.Features.Stats"
+        xmlns:settings="using:HeySip.App.Features.Settings"
+        xmlns:day="using:HeySip.App.Features.Day"
+        xmlns:history="using:HeySip.App.Features.History"
+        xmlns:palette="using:HeySip.App.Features.Palette"
+        xmlns:onboarding="using:HeySip.App.Features.Onboarding"
+        xmlns:install="using:HeySip.App.Features.Install"
+        xmlns:browse="using:HeySip.App.Features.Browse"
+        x:Class="HeySip.App.Shell.MainWindow"
+        x:DataType="shell:ShellViewModel"
+        Title="HeySip"
+        Icon="avares://HeySip/Assets/heysip.ico"
+        Width="1180" Height="780" MinWidth="700" MinHeight="440"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource HbWindowBrush}">
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+D1" Command="{Binding ShowTodayCommand}" />
+        <KeyBinding Gesture="Ctrl+D2" Command="{Binding ShowStatsCommand}" />
+        <KeyBinding Gesture="Ctrl+D3" Command="{Binding ShowHistoryCommand}" />
+        <KeyBinding Gesture="Ctrl+D4" Command="{Binding ShowSettingsCommand}" />
+        <KeyBinding Gesture="Ctrl+D5" Command="{Binding ShowBrowseCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+P" Command="{Binding OpenPaletteCommand}" />
+        <KeyBinding Gesture="F1" Command="{Binding OpenPaletteCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding DismissCommand}" />
+        <KeyBinding Gesture="Ctrl+W" Command="{Binding CloseCurrentTabCommand}" />
+        <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTabCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTabCommand}" />
+    </Window.KeyBindings>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="today:TodayViewModel">
+            <today:TodayView />
+        </DataTemplate>
+        <DataTemplate DataType="stats:StatsViewModel">
+            <stats:StatsView />
+        </DataTemplate>
+        <DataTemplate DataType="settings:SettingsViewModel">
+            <settings:SettingsView />
+        </DataTemplate>
+        <DataTemplate DataType="history:HistoryViewModel">
+            <history:HistoryView />
+        </DataTemplate>
+        <DataTemplate DataType="browse:BrowseViewModel">
+            <browse:BrowseView />
+        </DataTemplate>
+        <DataTemplate DataType="day:DayViewModel">
+            <day:DayView />
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <Panel>
+        <Grid RowDefinitions="*,Auto">
+            <Grid ColumnDefinitions="48,*">
+                <!-- Activity rail -->
+                <Border Background="{DynamicResource HbRailBrush}">
+                    <DockPanel>
+                        <shell:RailButton DockPanel.Dock="Bottom" Icon="{StaticResource IconSliders}" IsCurrent="{Binding IsSettings}"
+                                          Command="{Binding ShowSettingsCommand}"
+                                          ToolTip.Tip="Settings (Ctrl+4)" AutomationProperties.Name="Settings" />
+                        <shell:RailButton DockPanel.Dock="Bottom" Icon="{StaticResource IconGrid}" IsCurrent="{Binding IsBrowse}"
+                                          Command="{Binding ShowBrowseCommand}"
+                                          ToolTip.Tip="Characters (Ctrl+5)" AutomationProperties.Name="Characters" />
+                        <StackPanel DockPanel.Dock="Top">
+                            <shell:RailButton Icon="{StaticResource IconDrop}" IsCurrent="{Binding IsToday}"
+                                              Command="{Binding ShowTodayCommand}"
+                                              ToolTip.Tip="Today (Ctrl+1)" AutomationProperties.Name="Today" />
+                            <shell:RailButton Icon="{StaticResource IconChart}" IsCurrent="{Binding IsStats}"
+                                              Command="{Binding ShowStatsCommand}"
+                                              ToolTip.Tip="Stats (Ctrl+2)" AutomationProperties.Name="Stats" />
+                            <shell:RailButton Icon="{StaticResource IconList}" IsCurrent="{Binding IsHistory}"
+                                              Command="{Binding ShowHistoryCommand}"
+                                              ToolTip.Tip="History (Ctrl+3)" AutomationProperties.Name="History" />
+                            <Border Height="1" Margin="12,6" Background="{DynamicResource HbBorderBrush}"
+                                    IsVisible="{Binding HasDayTabs}" />
+                        </StackPanel>
+                        <!-- Opened days. This scrolls, so even a long list never pushes the fixed buttons out of reach. -->
+                        <ScrollViewer x:Name="DayTabsScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding DayTabs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="shell:TabViewModel">
+                                        <shell:RailTab />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+
+                <!-- The selected page, straight on the window colour -->
+                <Border Grid.Column="1" Margin="0,4,4,0">
+                    <DockPanel>
+                        <!-- A message from the project sits above the page and pushes it down, so it never covers a title. -->
+                        <shell:NoticeBar DockPanel.Dock="Top" DataContext="{Binding NoticeBanner}" HorizontalAlignment="Left"
+                                         Margin="20,0,0,4" />
+                        <TransitioningContentControl x:Name="PageHost" Focusable="True" Content="{Binding Current}">
+                            <TransitioningContentControl.PageTransition>
+                                <CrossFade Duration="0:0:0.21" />
+                            </TransitioningContentControl.PageTransition>
+                        </TransitioningContentControl>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <shell:StatusBar Grid.Row="1" DataContext="{Binding StatusBar}" />
+        </Grid>
+
+        <shell:RemovalBar DataContext="{Binding RemovalBanner}" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                          Margin="0,0,0,44" />
+
+        <palette:PaletteView DataContext="{Binding Palette}" IsVisible="{Binding IsOpen}" />
+
+        <onboarding:OnboardingView DataContext="{Binding Onboarding}" IsVisible="{Binding IsVisible}" />
+
+        <install:InstallPreviewView DataContext="{Binding InstallPreview}" IsVisible="{Binding IsVisible}" />
+    </Panel>
+</Window>

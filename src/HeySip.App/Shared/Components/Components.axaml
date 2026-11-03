@@ -1,0 +1,63 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:comp="using:HeySip.App.Shared.Components">
+    <!-- Templates for the shared components. Colours and shapes still come from the Tidepool tokens and style classes. -->
+
+    <Style Selector="comp|Card">
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel x:CompileBindings="False" Spacing="{Binding Spacing, RelativeSource={RelativeSource AncestorType=comp:Card}}" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Classes="card" Padding="{TemplateBinding Padding}">
+                    <StackPanel Spacing="{TemplateBinding Spacing}">
+                        <TextBlock Classes="h2" Text="{TemplateBinding Heading}" TextWrapping="Wrap"
+                                   IsVisible="{TemplateBinding Heading, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="comp|Field">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="label" Text="{TemplateBinding Label}" />
+                    <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="comp|PageLayout">
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Spacing="20" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ScrollViewer x:Name="PART_Scroll">
+                    <StackPanel Margin="32" Spacing="20" MaxWidth="900" HorizontalAlignment="Stretch">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="h1" Text="{TemplateBinding Title}" />
+                            <ContentPresenter Grid.Column="1" Content="{TemplateBinding Actions}" VerticalAlignment="Center" />
+                        </Grid>
+                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- A row of side-by-side fields. -->
+    <Style Selector="StackPanel.fields">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="24" />
+    </Style>
+</Styles>

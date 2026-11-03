@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:history="using:HeySip.App.Features.History"
+             xmlns:shared="using:HeySip.App.Shared"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             x:Class="HeySip.App.Features.History.HistoryDayCard"
+             x:DataType="history:HistoryDayViewModel">
+    <!-- One day of the history: a header with its total, then its drinks. -->
+    <comp:Card Spacing="6">
+        <Grid ColumnDefinitions="*,Auto,22,Auto" ColumnSpacing="12">
+            <TextBlock Text="{Binding Label}" Classes="h2" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding TotalText}" Classes="mono muted" VerticalAlignment="Center" />
+            <PathIcon Grid.Column="2" Data="{StaticResource IconCheck}" Width="12" Height="12" IsVisible="{Binding GoalMet}"
+                      Foreground="{DynamicResource HbSuccessBrush}" ToolTip.Tip="Goal met" />
+            <Button Grid.Column="3" Classes="subtle" Content="Open" Command="{Binding OpenCommand}"
+                    ToolTip.Tip="Open this day in a tab, to add a forgotten drink" />
+        </Grid>
+        <ProgressBar Value="{Binding Percent}" Minimum="0" Maximum="100" Height="4" MinHeight="0" CornerRadius="2"
+                     Classes.met="{Binding GoalMet}" />
+        <ItemsControl ItemsSource="{Binding Entries}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="shared:EntryViewModel">
+                    <comp:EntryRow />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </comp:Card>
+</UserControl>

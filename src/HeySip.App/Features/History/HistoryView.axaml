@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:history="using:HeySip.App.Features.History"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             x:Class="HeySip.App.Features.History.HistoryView"
+             x:DataType="history:HistoryViewModel">
+    <comp:PageLayout x:Name="Page" Title="History">
+        <comp:Card IsVisible="{Binding IsEmpty}">
+            <TextBlock Text="Nothing logged yet." Classes="h2" />
+            <TextBlock Text="Every drink you log will be listed here, a day at a time." Classes="muted" />
+            <Button Classes="accent" Content="Log a drink" Command="{Binding LogDrinkCommand}" HorizontalAlignment="Left"
+                    ToolTip.Tip="Go to Today (Ctrl+1)" />
+        </comp:Card>
+
+        <ItemsControl ItemsSource="{Binding Days}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="12" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="history:HistoryDayViewModel">
+                    <history:HistoryDayCard />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button Content="Load older days" Command="{Binding LoadMoreCommand}" IsVisible="{Binding HasMore}"
+                HorizontalAlignment="Center" />
+        <TextBlock Text="That's everything." Classes="muted" HorizontalAlignment="Center"
+                   IsVisible="{Binding !HasMore}" />
+    </comp:PageLayout>
+</UserControl>

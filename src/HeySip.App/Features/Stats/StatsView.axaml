@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:stats="using:HeySip.App.Features.Stats"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             x:Class="HeySip.App.Features.Stats.StatsView"
+             x:DataType="stats:StatsViewModel">
+    <comp:PageLayout Title="Your hydration">
+        <comp:PageLayout.Actions>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="7 days" Command="{Binding ShowWeekCommand}" Classes.selected="{Binding IsWeek}" Classes="chip" />
+                <Button Content="30 days" Command="{Binding ShowMonthCommand}" Classes.selected="{Binding IsMonth}" Classes="chip" />
+            </StackPanel>
+        </comp:PageLayout.Actions>
+
+        <comp:Card IsVisible="{Binding IsEmpty}">
+            <TextBlock Text="Nothing logged in this range yet." Classes="h2" />
+            <TextBlock Text="Log a drink and your streaks and averages will show up here." Classes="muted" />
+            <Button Classes="accent" Content="Log a drink" Command="{Binding LogDrinkCommand}" HorizontalAlignment="Left"
+                    ToolTip.Tip="Go to Today (Ctrl+1)" />
+        </comp:Card>
+
+        <UniformGrid Columns="4" ColumnSpacing="12">
+            <comp:StatTile Label="Current streak" Value="{Binding Streak}" />
+            <comp:StatTile Label="Best streak" Value="{Binding BestStreak}" />
+            <comp:StatTile Label="Daily average" Value="{Binding Average}" />
+            <comp:StatTile Label="Goal met" Value="{Binding GoalDays}" />
+        </UniformGrid>
+
+        <comp:Card>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Daily intake" Classes="h2" />
+                <TextBlock Grid.Column="1" Text="{Binding Total}" Classes="muted" />
+            </Grid>
+            <Grid Height="{Binding PlotHeight}">
+                <ItemsControl ItemsSource="{Binding Bars}" VerticalAlignment="Bottom">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="stats:BarViewModel">
+                            <Button Classes="plain" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="3,0"
+                                    Command="{Binding OpenCommand}" ToolTip.Tip="{Binding Tooltip}"
+                                    AutomationProperties.Name="{Binding Tooltip}">
+                                <Border Height="{Binding Height}" CornerRadius="6,6,0,0"
+                                        Classes="bar" Classes.met="{Binding GoalMet}" />
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Border Height="1" VerticalAlignment="Bottom" Margin="{Binding GoalLineMargin}"
+                        Background="{DynamicResource HbSuccessBrush}" Opacity="0.7" IsHitTestVisible="False" />
+            </Grid>
+            <ItemsControl ItemsSource="{Binding Bars}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="stats:BarViewModel">
+                        <TextBlock Text="{Binding Label}" Classes="muted" HorizontalAlignment="Center" FontSize="11" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Text="{Binding GoalLineLabel}" Classes="muted" FontSize="12"
+                       Foreground="{DynamicResource HbSuccessBrush}" />
+        </comp:Card>
+
+        <comp:Card Heading="Recent days" Spacing="2">
+            <ItemsControl ItemsSource="{Binding RecentDays}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="stats:RecentDayViewModel">
+                        <stats:RecentDayRow />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </comp:Card>
+    </comp:PageLayout>
+</UserControl>

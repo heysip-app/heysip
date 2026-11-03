@@ -1,0 +1,183 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:browse="using:HeySip.App.Features.Browse"
+             xmlns:install="using:HeySip.App.Features.Install"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             x:Class="HeySip.App.Features.Browse.BrowseView"
+             x:DataType="browse:BrowseViewModel">
+    <UserControl.Resources>
+        <DataTemplate x:Key="TileTemplate" x:DataType="install:PreviewTileViewModel">
+            <StackPanel Spacing="4" Margin="0,0,14,0">
+                <controls:DripControl Width="96" Height="134" Pose="{Binding Pose}" Pack="{Binding Pack}"
+                                      Character="{Binding Character}" Outfit="{Binding Outfit}" IsAnimated="False" />
+                <TextBlock Text="{Binding Caption}" Classes="muted" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="96" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <!-- Find characters and accessories: a grid of cards, and a page for the one you open. -->
+    <comp:PageLayout Title="Characters">
+        <!-- The grid -->
+        <StackPanel Spacing="14" IsVisible="{Binding IsList}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="pick" Classes.selected="{Binding IsCharactersTab}" Content="Characters" Command="{Binding ShowCharactersCommand}" />
+                <Button Classes="pick" Classes.selected="{Binding IsAccessoriesTab}" Content="Accessories" Command="{Binding ShowAccessoriesCommand}" />
+            </StackPanel>
+
+            <TextBlock Text="Loading..." Classes="muted" IsVisible="{Binding IsLoading}" />
+            <TextBlock Text="{Binding Notice}" Classes="muted" TextWrapping="Wrap"
+                       IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <comp:Card IsVisible="{Binding HasError}">
+                <TextBlock Text="{Binding ErrorText}" TextWrapping="Wrap" />
+                <Button Content="Try again" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" />
+            </comp:Card>
+
+            <comp:Card IsVisible="{Binding IsTabEmpty}">
+                <TextBlock Text="Nothing here yet." Classes="h2" />
+                <TextBlock Text="New characters and accessories will show up here." Classes="muted" />
+            </comp:Card>
+
+            <!-- Installed, then Not installed. Within a section, a heading only where several options share one slot. -->
+            <ItemsControl ItemsSource="{Binding Sections}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="browse:BrowseSection">
+                        <StackPanel Spacing="8" Margin="0,0,0,10">
+                            <TextBlock Text="{Binding Title}" Classes="h2" />
+                            <ItemsControl ItemsSource="{Binding Groups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="browse:BrowseGroup">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding Title}" Classes="eyebrow" IsVisible="{Binding HasTitle}" />
+                                            <ItemsControl ItemsSource="{Binding Cards}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="browse:StoreCardViewModel">
+                                                        <comp:Card Width="176" Margin="0,0,12,12" Padding="12" Spacing="8">
+                                                            <Button Classes="pick" Command="{Binding OpenCommand}" HorizontalContentAlignment="Center"
+                                                                    AutomationProperties.Name="{Binding Name, StringFormat='Open {0}'}">
+                                                                <StackPanel Spacing="4">
+                                                                    <Grid Width="96" Height="134" HorizontalAlignment="Center">
+                                                                        <controls:DripControl Pose="Idle" Pack="{Binding CharacterPack}" Character="{Binding DrawnCharacter}"
+                                                                                              Outfit="{Binding Outfit}" IsAnimated="False" IsVisible="{Binding HasPreview}" />
+                                                                        <TextBlock Text="..." Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                                   IsVisible="{Binding !HasPreview}" />
+                                                                    </Grid>
+                                                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Text="{Binding Byline}" Classes="muted" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Classes="muted" FontSize="12" HorizontalAlignment="Center">
+                                                                        <Run Text="{Binding KindText}" /><Run Text=" · " /><Run Text="{Binding StateText}" />
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                            </Button>
+                                                            <Button Classes="accent" Content="{Binding ActionLabel}" Command="{Binding ActCommand}" IsEnabled="{Binding CanAct}"
+                                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="12"
+                                                                       IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                        </comp:Card>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <!-- One item -->
+        <StackPanel Spacing="14" IsVisible="{Binding IsDetail}">
+            <Button Content="Back to all" Command="{Binding BackCommand}" Classes="subtle" HorizontalAlignment="Left" />
+            <ContentControl Content="{Binding Selected}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="browse:StoreCardViewModel">
+                        <comp:Card Padding="26" Spacing="16">
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="eyebrow">
+                                    <Run Text="{Binding KindText}" /><Run Text=" · " /><Run Text="{Binding StateText}" />
+                                </TextBlock>
+                                <TextBlock Text="{Binding Name}" Classes="h2" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding Byline}" Classes="muted" />
+                                <TextBlock Text="{Binding StatusText}" Classes="muted"
+                                           IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding Tiles}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <StaticResource ResourceKey="TileTemplate" />
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- A character's own accessories, each worn by it, and what else it works with. -->
+                            <StackPanel Spacing="6" IsVisible="{Binding HasBundled}">
+                                <TextBlock Text="Comes with" Classes="eyebrow" />
+                                <ItemsControl ItemsSource="{Binding BundledTiles}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <StaticResource ResourceKey="TileTemplate" />
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- Other accessories, tried on this character. Tap one to open it: wear it, get it, or buy it. -->
+                            <StackPanel Spacing="6" IsVisible="{Binding HasExtras}">
+                                <TextBlock Text="More accessories" Classes="eyebrow" />
+                                <ItemsControl ItemsSource="{Binding Extras}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="browse:ExtraAccessory">
+                                            <Button Classes="pick" Command="{Binding Card.OpenCommand}" Margin="0,0,8,8"
+                                                    AutomationProperties.Name="{Binding Card.Name, StringFormat='Open {0}'}">
+                                                <StackPanel Spacing="2">
+                                                    <controls:DripControl Width="72" Height="100" Pose="{Binding Tile.Pose}" Pack="{Binding Tile.Pack}"
+                                                                          Character="{Binding Tile.Character}" Outfit="{Binding Tile.Outfit}" IsAnimated="False" />
+                                                    <TextBlock Text="{Binding Card.Name}" FontSize="12" HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" MaxWidth="84" />
+                                                    <TextBlock Text="{Binding Card.StateText}" Classes="muted" FontSize="11" HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" MaxWidth="84" />
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <TextBlock Text="{Binding MoreText}" Classes="muted" TextWrapping="Wrap"
+                                       IsVisible="{Binding MoreText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                       IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Button Classes="accent" Content="{Binding ActionLabel}" Command="{Binding ActCommand}" IsEnabled="{Binding CanAct}" />
+                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                           IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding LockNote}" Classes="muted" TextWrapping="Wrap" IsVisible="{Binding IsLocked}" />
+                        </comp:Card>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </StackPanel>
+    </comp:PageLayout>
+</UserControl>

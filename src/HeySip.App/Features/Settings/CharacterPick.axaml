@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:settings="using:HeySip.App.Features.Settings"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
+             x:Class="HeySip.App.Features.Settings.CharacterPick"
+             x:Name="Root"
+             x:DataType="settings:CharacterOptionViewModel">
+    <!-- A character you can choose: its picture and name, highlighted when selected. Used in Settings and the welcome flow. -->
+    <Button Command="{Binding SelectCommand}" Classes="pick" Classes.selected="{Binding IsSelected}">
+        <StackPanel Spacing="6">
+            <controls:DripControl Width="{Binding #Root.PreviewWidth}" Height="{Binding #Root.PreviewHeight}"
+                                  Character="{Binding Id}" IsAnimated="False" />
+            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Button>
+</UserControl>

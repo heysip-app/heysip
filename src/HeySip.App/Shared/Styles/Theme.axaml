@@ -1,0 +1,110 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Tidepool: Rider-style neutral grays with a quiet teal accent, an icon rail and a status bar.
+        Layers, back to front: Window (the frame and the page) -> Card (raised content). Surface is the lift used inside a card.
+        Features reference these tokens, never raw colors.
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="HbWindowBrush" Color="#1E1F22" />
+            <SolidColorBrush x:Key="HbRailBrush" Color="#1E1F22" />
+            <SolidColorBrush x:Key="HbPanelBrush" Color="#2B2D30" />
+            <SolidColorBrush x:Key="HbSurfaceBrush" Color="#323438" />
+            <SolidColorBrush x:Key="HbStatusBarBrush" Color="#1E1F22" />
+            <SolidColorBrush x:Key="HbBorderBrush" Color="#393B40" />
+            <SolidColorBrush x:Key="HbHoverBrush" Color="#12FFFFFF" />
+            <SolidColorBrush x:Key="HbClearBrush" Color="#00FFFFFF" />
+            <SolidColorBrush x:Key="HbAccentClearBrush" Color="#004DB6AC" />
+            <SolidColorBrush x:Key="HbPressedBrush" Color="#1CFFFFFF" />
+            <SolidColorBrush x:Key="HbTextBrush" Color="#DFE1E5" />
+            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="#AEB1B8" />
+            <SolidColorBrush x:Key="HbTextMutedBrush" Color="#7F838A" />
+            <SolidColorBrush x:Key="HbAccentBrush" Color="#4DB6AC" />
+            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="#2A4DB6AC" />
+            <SolidColorBrush x:Key="HbOnAccentBrush" Color="#10211F" />
+            <SolidColorBrush x:Key="HbSuccessBrush" Color="#7DC383" />
+            <SolidColorBrush x:Key="HbWarningBrush" Color="#E5B85C" />
+            <SolidColorBrush x:Key="HbDangerBrush" Color="#E5766F" />
+            <SolidColorBrush x:Key="HbBarBrush" Color="#3E9A91" />
+            <SolidColorBrush x:Key="HbOverlayBrush" Color="#000000" Opacity="0.55" />
+
+            <!-- Fluent's own control brushes, in the same neutral grays. -->
+            <SolidColorBrush x:Key="TextControlBorderBrush" Color="#4E5157" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#6F737A" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#4E5157" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#6F737A" />
+            <SolidColorBrush x:Key="ButtonBackground" Color="#393B40" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#43454A" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#4E5157" />
+            <SolidColorBrush x:Key="ButtonBorderBrush" Color="#4E5157" />
+            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#5E6167" />
+            <SolidColorBrush x:Key="ProgressBarBackground" Color="#43454A" />
+            <SolidColorBrush x:Key="TextControlBackground" Color="#1E1F22" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#1E1F22" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackground" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="#1E1F22" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#6F737A" />
+            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#2B2D30" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="HbWindowBrush" Color="#EBECF0" />
+            <SolidColorBrush x:Key="HbRailBrush" Color="#EBECF0" />
+            <SolidColorBrush x:Key="HbPanelBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="HbSurfaceBrush" Color="#F5F6F8" />
+            <SolidColorBrush x:Key="HbStatusBarBrush" Color="#EBECF0" />
+            <SolidColorBrush x:Key="HbBorderBrush" Color="#DFE1E5" />
+            <SolidColorBrush x:Key="HbHoverBrush" Color="#0F000000" />
+            <SolidColorBrush x:Key="HbClearBrush" Color="#00000000" />
+            <SolidColorBrush x:Key="HbAccentClearBrush" Color="#001F8A80" />
+            <SolidColorBrush x:Key="HbPressedBrush" Color="#1A000000" />
+            <SolidColorBrush x:Key="HbTextBrush" Color="#1E1F22" />
+            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="#555A63" />
+            <SolidColorBrush x:Key="HbTextMutedBrush" Color="#7A7E87" />
+            <SolidColorBrush x:Key="HbAccentBrush" Color="#1F8A80" />
+            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="#241F8A80" />
+            <SolidColorBrush x:Key="HbOnAccentBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="HbSuccessBrush" Color="#2F8A3F" />
+            <SolidColorBrush x:Key="HbWarningBrush" Color="#9A6A00" />
+            <SolidColorBrush x:Key="HbDangerBrush" Color="#C0392B" />
+            <SolidColorBrush x:Key="HbBarBrush" Color="#6CC3B8" />
+            <SolidColorBrush x:Key="HbOverlayBrush" Color="#000000" Opacity="0.35" />
+
+            <SolidColorBrush x:Key="TextControlBorderBrush" Color="#C9CCD3" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#A8ACB4" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#C9CCD3" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#A8ACB4" />
+            <SolidColorBrush x:Key="ButtonBackground" Color="#EEEFF2" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#E4E6EA" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#D9DCE1" />
+            <SolidColorBrush x:Key="ButtonBorderBrush" Color="#DFE1E5" />
+            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#C9CCD3" />
+            <SolidColorBrush x:Key="ProgressBarBackground" Color="#E1E3E8" />
+            <SolidColorBrush x:Key="TextControlBackground" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackground" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#A8ACB4" />
+            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#FFFFFF" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- Shape and type tokens, shared by both themes. -->
+    <CornerRadius x:Key="HbPanelRadius">12</CornerRadius>
+    <CornerRadius x:Key="HbCardRadius">10</CornerRadius>
+    <CornerRadius x:Key="HbControlRadius">8</CornerRadius>
+    <x:Double x:Key="HbBodyFontSize">13</x:Double>
+    <x:Double x:Key="HbStatusFontSize">12</x:Double>
+    <FontFamily x:Key="HbMonoFont">Cascadia Mono, Cascadia Code, Consolas, Menlo, monospace</FontFamily>
+</ResourceDictionary>

@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:day="using:HeySip.App.Features.Day"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             xmlns:shared="using:HeySip.App.Shared"
+             x:Class="HeySip.App.Features.Day.DayView"
+             x:DataType="day:DayViewModel">
+    <comp:PageLayout Title="{Binding Heading}">
+        <comp:PageLayout.Actions>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="History" Command="{Binding BackToHistoryCommand}" Classes="subtle"
+                        ToolTip.Tip="Back to History (Ctrl+3)" AutomationProperties.Name="Back to History" />
+                <Button Content="&#8249;" Command="{Binding PreviousDayCommand}" Classes="chip"
+                        ToolTip.Tip="Previous day" AutomationProperties.Name="Previous day" />
+                <Button Content="&#8250;" Command="{Binding NextDayCommand}" Classes="chip" IsEnabled="{Binding HasNextDay}"
+                        ToolTip.Tip="Next day" AutomationProperties.Name="Next day" />
+            </StackPanel>
+        </comp:PageLayout.Actions>
+
+        <comp:Card Spacing="10">
+            <TextBlock Text="Total" Classes="eyebrow" />
+            <TextBlock Text="{Binding Summary}" FontSize="34" FontWeight="SemiBold" Classes="mono" />
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="12" CornerRadius="6" />
+            <TextBlock Text="{Binding Caption}" Classes="muted" />
+        </comp:Card>
+
+        <comp:Card Heading="Drinks" Spacing="10">
+            <TextBlock Text="Nothing logged on this day." Classes="muted" IsVisible="{Binding !HasEntries}" />
+            <ItemsControl ItemsSource="{Binding Entries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="shared:EntryViewModel">
+                        <comp:EntryRow />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </comp:Card>
+
+        <comp:Card Heading="Forgot to log a drink?">
+            <TextBlock Text="Add it here at the time you actually drank it." Classes="muted" />
+            <StackPanel Classes="fields" Spacing="16">
+                <comp:Field Label="Amount (ml)">
+                    <NumericUpDown Value="{Binding AddAmount}" Minimum="10" Maximum="2000" Increment="50" FormatString="0" Width="150" />
+                </comp:Field>
+                <comp:Field Label="Time">
+                    <TimePicker SelectedTime="{Binding AddTime}" MinuteIncrement="5" />
+                </comp:Field>
+                <Button Classes="accent" Content="Add drink" Command="{Binding AddDrinkCommand}" VerticalAlignment="Bottom" />
+            </StackPanel>
+            <TextBlock Text="{Binding Message}" Classes="muted" TextWrapping="Wrap"
+                       IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </comp:Card>
+    </comp:PageLayout>
+</UserControl>

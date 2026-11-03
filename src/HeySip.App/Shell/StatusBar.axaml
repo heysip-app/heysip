@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="using:HeySip.App.Shell"
+             x:Class="HeySip.App.Shell.StatusBar"
+             x:DataType="shell:StatusBarViewModel">
+    <!-- Today's progress, streak, next nudge, and quick actions along the bottom. DataContext is the status bar view model. -->
+    <Border Background="{DynamicResource HbStatusBarBrush}" BorderBrush="{DynamicResource HbBorderBrush}" BorderThickness="0,1,0,0">
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto,Auto">
+            <Button Classes="status" Classes.good="{Binding GoalReached}" Command="{Binding ShowTodayCommand}"
+                    ToolTip.Tip="Today's progress" AutomationProperties.Name="Today's progress">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource IconDrop}" />
+                    <TextBlock Text="{Binding ProgressText}" Classes="mono" VerticalAlignment="Center" />
+                    <ProgressBar Value="{Binding ProgressPercent}" Minimum="0" Maximum="100" Width="56" Height="4"
+                                 MinHeight="0" CornerRadius="2" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Classes="status" Command="{Binding ShowStatsCommand}" IsVisible="{Binding HasStreak}"
+                    ToolTip.Tip="Your streak of days that met the goal" AutomationProperties.Name="Streak">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource IconFlame}" />
+                    <TextBlock Text="{Binding StreakText}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Classes="status" Command="{Binding ShowStatsCommand}" IsVisible="{Binding !HasStreak}"
+                    ToolTip.Tip="Stats (Ctrl+2)" AutomationProperties.Name="Stats">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource IconChart}" />
+                    <TextBlock Text="Stats" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Classes="status" Command="{Binding ShowHistoryCommand}"
+                    ToolTip.Tip="History (Ctrl+3)" AutomationProperties.Name="History">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource IconList}" />
+                    <TextBlock Text="History" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="3" Classes="status" Classes.warn="{Binding IsPaused}" Command="{Binding ShowTodayCommand}"
+                    ToolTip.Tip="When the next reminder will appear" AutomationProperties.Name="Next reminder">
+                <TextBlock Text="{Binding NextText}" VerticalAlignment="Center" />
+            </Button>
+            <Button Grid.Column="5" Classes="status" Command="{Binding ShowPaletteCommand}"
+                    ToolTip.Tip="Command palette (Ctrl+Shift+P)" AutomationProperties.Name="Command palette">
+                <TextBlock Text="Commands" VerticalAlignment="Center" />
+            </Button>
+            <Button Grid.Column="6" Classes="status" Command="{Binding TogglePauseCommand}"
+                    ToolTip.Tip="{Binding PauseTip}" AutomationProperties.Name="Pause or resume reminders">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource IconPause}" IsVisible="{Binding !IsPaused}" />
+                    <PathIcon Data="{StaticResource IconPlay}" IsVisible="{Binding IsPaused}" />
+                    <TextBlock Text="{Binding PauseLabel}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <TextBlock Grid.Column="7" Text="{Binding VersionText}" Classes="mono" FontSize="11" Margin="8,0,12,0"
+                       VerticalAlignment="Center" Foreground="{DynamicResource HbTextMutedBrush}" />
+        </Grid>
+    </Border>
+</UserControl>

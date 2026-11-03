@@ -1,0 +1,253 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:settings="using:HeySip.App.Features.Settings"
+             xmlns:comp="using:HeySip.App.Shared.Components"
+             x:Class="HeySip.App.Features.Settings.SettingsView"
+             x:DataType="settings:SettingsViewModel">
+    <comp:PageLayout Title="Settings">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBox x:Name="SearchBox" Text="{Binding SearchText}" PlaceholderText="Search settings (try “interval”, “theme” or “mascot”)"
+                     AutomationProperties.Name="Search settings" />
+            <Button Grid.Column="1" Content="Clear" Command="{Binding ClearSearchCommand}"
+                    IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </Grid>
+
+        <comp:Card Spacing="6" IsVisible="{Binding NoResults}">
+            <TextBlock Text="{Binding SearchText, StringFormat='No settings match “{0}”.'}" Classes="h2" TextWrapping="Wrap" />
+            <TextBlock Text="Try a shorter word, or clear the search to see everything." Classes="muted" />
+        </comp:Card>
+
+        <comp:Card Heading="About you" Spacing="14" IsVisible="{Binding ShowAboutCard}">
+            <comp:Field Label="Your name" IsVisible="{Binding ShowName}">
+                <TextBox Text="{Binding Name}" PlaceholderText="Optional. Used in greetings." MaxLength="24" Width="280" HorizontalAlignment="Left" />
+            </comp:Field>
+            <StackPanel Classes="fields" IsVisible="{Binding ShowAmountsRow}">
+                <comp:Field Label="Daily goal (ml)" IsVisible="{Binding ShowGoal}">
+                    <NumericUpDown Value="{Binding DailyGoal}" Minimum="250" Maximum="10000" Increment="250" FormatString="0" Width="160" />
+                </comp:Field>
+                <comp:Field Label="One glass (ml)" IsVisible="{Binding ShowGlass}">
+                    <NumericUpDown Value="{Binding GlassSize}" Minimum="50" Maximum="2000" Increment="50" FormatString="0" Width="160" />
+                </comp:Field>
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="Reminders" Spacing="14" IsVisible="{Binding ShowRemindersCard}">
+            <StackPanel Classes="fields" IsVisible="{Binding ShowTimingRow}">
+                <comp:Field Label="Remind me every (min)" IsVisible="{Binding ShowInterval}">
+                    <NumericUpDown Value="{Binding IntervalMinutes}" Minimum="1" Maximum="720" Increment="5" FormatString="0" Width="160" />
+                </comp:Field>
+                <comp:Field Label="Snooze for (min)" IsVisible="{Binding ShowSnooze}">
+                    <NumericUpDown Value="{Binding SnoozeMinutes}" Minimum="1" Maximum="120" Increment="5" FormatString="0" Width="160" />
+                </comp:Field>
+            </StackPanel>
+            <comp:Field Label="Quick schedules" IsVisible="{Binding ShowPresets}">
+                <ItemsControl ItemsSource="{Binding Presets}" Margin="0,2,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="settings:PresetOptionViewModel">
+                            <Button Classes="chip" Classes.selected="{Binding IsSelected}" Content="{Binding Name}"
+                                    Command="{Binding SelectCommand}" ToolTip.Tip="{Binding Description}" Margin="0,0,6,6" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </comp:Field>
+            <StackPanel Classes="fields" IsVisible="{Binding ShowHours}">
+                <comp:Field Label="Active from">
+                    <TimePicker SelectedTime="{Binding ActiveStart}" MinuteIncrement="5" />
+                </comp:Field>
+                <comp:Field Label="Until">
+                    <TimePicker SelectedTime="{Binding ActiveEnd}" MinuteIncrement="5" />
+                </comp:Field>
+            </StackPanel>
+            <comp:Field Label="On these days" IsVisible="{Binding ShowDays}">
+                <ItemsControl ItemsSource="{Binding Days}" Margin="0,2,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="settings:DayToggleViewModel">
+                            <ToggleButton Content="{Binding Label}" IsChecked="{Binding IsOn}" MinWidth="52" HorizontalContentAlignment="Center" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </comp:Field>
+            <comp:Field Label="Weekend days" IsVisible="{Binding ShowDays}">
+                <StackPanel Spacing="6">
+                    <ItemsControl ItemsSource="{Binding WeekendDays}" Margin="0,2,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="settings:DayToggleViewModel">
+                                <ToggleButton Content="{Binding Label}" IsChecked="{Binding IsOn}" MinWidth="52" HorizontalContentAlignment="Center"
+                                              AutomationProperties.Name="{Binding Label, StringFormat='{}{0} is a weekend day'}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Any days, even just one or none. The Office and Weekends off schedules leave these out." Classes="muted" TextWrapping="Wrap" />
+                </StackPanel>
+            </comp:Field>
+            <comp:Field Label="Time zone" IsVisible="{Binding ShowZone}">
+                <ComboBox ItemsSource="{Binding Zones}" SelectedItem="{Binding Zone}" Width="420">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="settings:ZoneOption">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </comp:Field>
+            <ToggleSwitch IsChecked="{Binding Escalate}" IsVisible="{Binding ShowEscalate}"
+                          OnContent="Ignored reminders come back sooner and more insistently"
+                          OffContent="Don't escalate ignored reminders" />
+            <ToggleSwitch IsChecked="{Binding RemindLessAfterGoal}" IsVisible="{Binding ShowAfterGoal}"
+                          OnContent="Remind me less often once I've reached my goal"
+                          OffContent="Keep reminding me at the same pace after my goal" />
+            <ToggleSwitch IsChecked="{Binding PauseWhenAway}" IsVisible="{Binding ShowAway}"
+                          OnContent="Hold reminders while I'm away, presenting or full-screen"
+                          OffContent="Always remind, even when I'm away" />
+            <Button Content="Show a test reminder" Command="{Binding TestReminderCommand}" HorizontalAlignment="Left"
+                    IsVisible="{Binding ShowTest}" />
+        </comp:Card>
+
+        <comp:Card Heading="Companion" Spacing="14" IsVisible="{Binding ShowCompanionCard}">
+            <ItemsControl ItemsSource="{Binding Characters}" IsVisible="{Binding ShowCharacter}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="settings:CharacterOptionViewModel">
+                        <settings:CharacterPick Margin="0,0,12,12" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Text="{Binding CharacterNote}" Classes="muted" TextWrapping="Wrap"
+                       IsVisible="{Binding CharacterNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <StackPanel Spacing="8" IsVisible="{Binding ShowCharacter}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Classes="accent" Content="Browse more characters" Command="{Binding BrowseCharactersCommand}"
+                            ToolTip.Tip="Characters and accessories you can add (Ctrl+5)" />
+                    <Button Content="Install from a file..." Command="{Binding InstallPackCommand}"
+                            ToolTip.Tip="Open a .heysippack file; you can also drop one on this window" />
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding Installed}" IsVisible="{Binding HasInstalled}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="settings:InstalledPackViewModel">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Margin="0,2">
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Kind}" Classes="muted" VerticalAlignment="Center" />
+                                <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}" Classes="subtle"
+                                        AutomationProperties.Name="{Binding Name, StringFormat='Remove {0}'}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <TextBlock Text="{Binding InstalledMessage}" Classes="muted" TextWrapping="Wrap"
+                       IsVisible="{Binding InstalledMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <StackPanel Spacing="6" IsVisible="{Binding ShowOnline}">
+                <ToggleSwitch IsChecked="{Binding OnlineOn}"
+                              OnContent="Check online for updates, notices and new characters"
+                              OffContent="Don't go online (only what comes with HeySip)" />
+                <TextBlock Text="{Binding OnlineNote}" Classes="muted" TextWrapping="Wrap" />
+            </StackPanel>
+            <!-- What the character wears. When it comes with accessories they are listed first, under their own heading. -->
+            <ItemsControl ItemsSource="{Binding OutfitSections}" IsVisible="{Binding ShowOutfit}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="settings:OutfitSection">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="{Binding Title}" Classes="eyebrow" IsVisible="{Binding HasTitle}" />
+                            <ItemsControl ItemsSource="{Binding Slots}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="settings:OutfitSlotViewModel">
+                                        <comp:Field Label="{Binding Title}">
+                                            <ItemsControl ItemsSource="{Binding Options}" Margin="0,2,0,0">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="settings:AccessoryOptionViewModel">
+                                                        <settings:AccessoryPick Margin="0,0,10,10" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </comp:Field>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="Get more accessories" Command="{Binding BrowseAccessoriesCommand}" HorizontalAlignment="Left"
+                    IsVisible="{Binding ShowOutfit}" ToolTip.Tip="Find more accessories to wear" />
+            <StackPanel Spacing="10" IsVisible="{Binding ShowSounds}">
+                <ToggleSwitch IsChecked="{Binding SoundsOn}"
+                              OnContent="Play a chime for reminders and a gulp when I drink"
+                              OffContent="Sounds are off" />
+                <comp:Field Label="Volume" IsEnabled="{Binding SoundsOn}">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Slider Minimum="0" Maximum="100" Value="{Binding SoundVolume}" Width="240" AutomationProperties.Name="Volume" />
+                        <TextBlock Text="{Binding SoundVolume, StringFormat='{}{0:0}%'}" VerticalAlignment="Center" Classes="muted" Width="44" />
+                        <Button Content="Play a test sound" Command="{Binding TestSoundCommand}" />
+                    </StackPanel>
+                </comp:Field>
+                <TextBlock Text="Pausing reminders or choosing quiet time keeps every sound silent too." Classes="muted" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Classes="fields" IsVisible="{Binding ShowStyleRow}">
+                <comp:Field Label="How should I talk?" IsVisible="{Binding ShowMessages}">
+                    <ComboBox ItemsSource="{Binding MessageStyles}" SelectedItem="{Binding Messages}" Width="200" />
+                </comp:Field>
+                <comp:Field Label="Show on monitor" IsVisible="{Binding ShowMonitor}">
+                    <NumericUpDown Value="{Binding Monitor}" Minimum="1" Maximum="8" Increment="1" FormatString="0" Width="160" />
+                </comp:Field>
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="App" Spacing="14" IsVisible="{Binding ShowAppCard}">
+            <comp:Field Label="Theme" IsVisible="{Binding ShowTheme}">
+                <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" Width="200" />
+            </comp:Field>
+            <ToggleSwitch IsChecked="{Binding CloseToTray}" IsVisible="{Binding ShowTray}"
+                          OnContent="Closing the window keeps me in the tray"
+                          OffContent="Closing the window quits" />
+            <StackPanel Spacing="8" IsVisible="{Binding ShowStartup}">
+                <ToggleSwitch IsChecked="{Binding StartWithOs}" OnContent="Start when I sign in" OffContent="Don't start when I sign in" />
+                <TextBlock Text="{Binding StartupMessage}" Classes="muted" TextWrapping="Wrap"
+                           IsVisible="{Binding StartupMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="About and help" Spacing="10" IsVisible="{Binding ShowHelpCard}">
+            <TextBlock Text="{Binding VersionText}" Classes="muted" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Copy diagnostics" Command="{Binding CopyDiagnosticsCommand}" />
+                <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" />
+            </StackPanel>
+            <TextBlock Text="{Binding DiagnosticsStatus}" Classes="muted" TextWrapping="Wrap"
+                       IsVisible="{Binding DiagnosticsStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </comp:Card>
+
+        <comp:Card Heading="Your data" Spacing="10" IsVisible="{Binding ShowDataCard}">
+            <TextBlock Text="Everything stays on this computer. Nothing is sent anywhere." Classes="muted" />
+            <Button Content="Delete my drink history…" Command="{Binding AskToClearCommand}"
+                    IsVisible="{Binding !IsConfirmingClear}" HorizontalAlignment="Left" />
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsConfirmingClear}">
+                <TextBlock Text="Delete all logged drinks for good?" VerticalAlignment="Center" />
+                <Button Content="Yes, delete" Command="{Binding ConfirmClearCommand}" Classes="danger" />
+                <Button Content="Cancel" Command="{Binding CancelClearCommand}" />
+            </StackPanel>
+        </comp:Card>
+    </comp:PageLayout>
+</UserControl>

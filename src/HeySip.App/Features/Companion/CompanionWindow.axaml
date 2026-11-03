@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:companion="using:HeySip.App.Features.Companion"
+        xmlns:controls="using:HeySip.App.Shared.Controls"
+        x:Class="HeySip.App.Features.Companion.CompanionWindow"
+        x:DataType="companion:CompanionViewModel"
+        Title="HeySip"
+        Width="380" Height="440"
+        CanResize="False"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        WindowDecorations="None"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent">
+
+    <Window.Styles>
+        <Style Selector="Panel.pet">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="translateX(0px)" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:1.15" Easing="CubicEaseOut" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.4" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="controls|DripControl.faceRight">
+            <Setter Property="RenderTransform" Value="scaleX(-1)" />
+        </Style>
+        <Style Selector="Panel.pet.offstage">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="translateX(260px)" />
+        </Style>
+    </Window.Styles>
+
+    <Panel>
+        <Border x:Name="Bubble" IsVisible="{Binding IsBubbleVisible}"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,14,240" MaxWidth="320" Cursor="Hand"
+                Padding="16,14" CornerRadius="18"
+                Background="{DynamicResource HbSurfaceBrush}"
+                BorderBrush="{DynamicResource HbAccentBrush}" BorderThickness="2"
+                BoxShadow="0 6 18 0 #33000000">
+            <StackPanel Spacing="12">
+                <TextBlock Text="{Binding BubbleText}" TextWrapping="Wrap" FontSize="15" FontWeight="Medium"
+                           Foreground="{DynamicResource HbTextBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding AreButtonsVisible}">
+                    <Button Classes="accent" Content="Yes, I drank! 💧" Command="{Binding DrinkCommand}" />
+                    <Button Content="Snooze" Command="{Binding SnoozeCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Panel x:Name="Pet" Background="Transparent" Classes="pet" Classes.offstage="{Binding IsOffstage}"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,6"
+               Width="160" Height="224" Cursor="Hand" ToolTip.Tip="Open HeySip">
+            <controls:DripControl Pose="{Binding Pose}" Character="{Binding Character}" Outfit="{Binding Outfit}" IsWalking="{Binding IsWalking}"
+                                  Classes.faceRight="{Binding IsFacingRight}" RenderTransformOrigin="50%,50%" />
+        </Panel>
+
+        <controls:ConfettiControl x:Name="Confetti" />
+    </Panel>
+</Window>
