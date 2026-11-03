@@ -1,0 +1,54 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip-studio.cactus-sombrero",
+  "name": "Sombrero",
+  "version": "1.0.0",
+  "author": "HeySip Studio",
+  "license": "All rights reserved",
+  "description": "A wide straw sombrero with a red band. Comes with the Cactus.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "hat",
+  "palette": {
+    "straw": "#FCD34D",
+    "strawDark": "#B45309",
+    "band": "#EF4444"
+  },
+  "parts": [
+    {
+      "ellipse": [0, 8, 24, 5.5],
+      "fill": {
+        "gradient": ["#FDE68A", "$straw"]
+      },
+      "stroke": {
+        "color": "$strawDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-10,7 C-10,-7 -6,-13 0,-13 C6,-13 10,-7 10,7 Z",
+      "fill": {
+        "gradient": ["#FDE68A", "$straw"]
+      },
+      "stroke": {
+        "color": "$strawDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-10,3 Q0,6.5 10,3",
+      "stroke": {
+        "color": "$band",
+        "width": 2.6,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}

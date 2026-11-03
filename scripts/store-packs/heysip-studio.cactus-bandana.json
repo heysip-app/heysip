@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip-studio.cactus-bandana",
+  "name": "Bandana",
+  "version": "1.0.0",
+  "author": "HeySip Studio",
+  "license": "All rights reserved",
+  "description": "A red polka-dot bandana. Comes with the Cactus.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "neck",
+  "palette": {
+    "red": "#EF4444",
+    "redDark": "#991B1B",
+    "dot": "#FFFFFFE6"
+  },
+  "parts": [
+    {
+      "path": "M-18,-3 Q0,6 18,-3 L0,19 Z",
+      "fill": {
+        "gradient": ["#F87171", "$red"]
+      },
+      "stroke": {
+        "color": "$redDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [-7, 3, 1.5, 1.5],
+      "fill": "$dot"
+    },
+    {
+      "ellipse": [7, 3, 1.5, 1.5],
+      "fill": "$dot"
+    },
+    {
+      "ellipse": [0, 11, 1.5, 1.5],
+      "fill": "$dot"
+    }
+  ]
+}

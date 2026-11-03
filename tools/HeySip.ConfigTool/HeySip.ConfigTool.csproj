@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>HeySip.ConfigTool</RootNamespace>
+    <AssemblyName>heysip-config</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HeySip.Core\HeySip.Core.csproj" />
+  </ItemGroup>
+</Project>

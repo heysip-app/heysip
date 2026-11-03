@@ -1,0 +1,49 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip-studio.cactus-heart-glasses",
+  "name": "Heart glasses",
+  "version": "1.0.0",
+  "author": "HeySip Studio",
+  "license": "All rights reserved",
+  "description": "Heart-shaped sunglasses with pink lenses. Comes with the Cactus.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "eyes",
+  "palette": {
+    "frame": "#BE123C",
+    "lens": "#FB718599"
+  },
+  "parts": [
+    {
+      "path": "M-11,6 C-20,0 -17,-7 -11,-3 C-5,-7 -2,0 -11,6 Z",
+      "fill": "$lens",
+      "stroke": {
+        "color": "$frame",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M11,6 C2,0 5,-7 11,-3 C17,-7 20,0 11,6 Z",
+      "fill": "$lens",
+      "stroke": {
+        "color": "$frame",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-3,-2 Q0,-4.4 3,-2",
+      "stroke": {
+        "color": "$frame",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}
