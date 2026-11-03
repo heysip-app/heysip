@@ -1,0 +1,39 @@
+name: Release
+
+# Pushing a version tag such as v1.0.0 tests the code, builds the Windows release zip, and attaches it
+# (with its SHA256 checksum) to a GitHub Release.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # needed to create the release and upload the files
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test HeySip.slnx -c Release
+
+      - name: Package
+        shell: pwsh
+        run: ./scripts/release.ps1 -Version '${{ github.ref_name }}'
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/release/*.zip
+            artifacts/release/SHA256SUMS.txt
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
