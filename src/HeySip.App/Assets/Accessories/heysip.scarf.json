@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.scarf",
+  "name": "Scarf",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A warm striped scarf.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "neck",
+  "palette": {
+    "red": "#EF4444",
+    "redDark": "#991B1B"
+  },
+  "parts": [
+    {
+      "path": "M6,6 L15,5 L18,26 L9,28 Z",
+      "fill": "$red",
+      "stroke": {
+        "color": "$redDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M7.5,14 L16.4,13",
+      "stroke": {
+        "color": "#FFFFFFCC",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M8.5,21 L17.3,20",
+      "stroke": {
+        "color": "#FFFFFFCC",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-18,-3 Q0,8 18,-3 L18,6 Q0,17 -18,6 Z",
+      "fill": {
+        "gradient": [
+          "#F87171",
+          "$red"
+        ]
+      },
+      "stroke": {
+        "color": "$redDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-9.5,2.4 L-9.5,11.4",
+      "stroke": {
+        "color": "#FFFFFFCC",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.9
+    },
+    {
+      "path": "M0,4.6 L0,13.8",
+      "stroke": {
+        "color": "#FFFFFFCC",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.9
+    },
+    {
+      "ellipse": [
+        9,
+        8,
+        5,
+        5.6
+      ],
+      "fill": "$red",
+      "stroke": {
+        "color": "$redDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}

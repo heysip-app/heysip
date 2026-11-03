@@ -1,0 +1,119 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.flower",
+  "name": "Flower",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A little pink flower.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "held",
+  "palette": {
+    "stem": "#16A34A",
+    "petal": "#F9A8D4",
+    "petalDark": "#DB2777",
+    "heart": "#FACC15"
+  },
+  "parts": [
+    {
+      "path": "M0,0 L0,-15",
+      "stroke": {
+        "color": "$stem",
+        "width": 2.2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M0,-6 Q7,-9 8,-3 Q2,-2 0,-6 Z",
+      "fill": "$stem"
+    },
+    {
+      "ellipse": [
+        0,
+        -23,
+        3.6,
+        3.6
+      ],
+      "fill": "$petal",
+      "stroke": {
+        "color": "$petalDark",
+        "width": 1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        5.4,
+        -19.4,
+        3.6,
+        3.6
+      ],
+      "fill": "$petal",
+      "stroke": {
+        "color": "$petalDark",
+        "width": 1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        3.4,
+        -13.6,
+        3.6,
+        3.6
+      ],
+      "fill": "$petal",
+      "stroke": {
+        "color": "$petalDark",
+        "width": 1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        -3.4,
+        -13.6,
+        3.6,
+        3.6
+      ],
+      "fill": "$petal",
+      "stroke": {
+        "color": "$petalDark",
+        "width": 1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        -5.4,
+        -19.4,
+        3.6,
+        3.6
+      ],
+      "fill": "$petal",
+      "stroke": {
+        "color": "$petalDark",
+        "width": 1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        0,
+        -18,
+        2.8,
+        2.8
+      ],
+      "fill": "$heart"
+    }
+  ]
+}

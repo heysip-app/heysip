@@ -1,0 +1,95 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.sunglasses",
+  "name": "Sunglasses",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "Cool shades.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "eyes",
+  "palette": {
+    "frame": "#0F172A",
+    "lens": "#1E293B"
+  },
+  "parts": [
+    {
+      "path": "M-20,-5 L-3,-5 L-4.5,4.5 Q-7,9.5 -11.5,9.5 Q-17,9.5 -19,4 Z",
+      "fill": {
+        "gradient": [
+          "#475569",
+          "$lens"
+        ]
+      },
+      "stroke": {
+        "color": "$frame",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M20,-5 L3,-5 L4.5,4.5 Q7,9.5 11.5,9.5 Q17,9.5 19,4 Z",
+      "fill": {
+        "gradient": [
+          "#475569",
+          "$lens"
+        ]
+      },
+      "stroke": {
+        "color": "$frame",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-3,-3.4 L3,-3.4",
+      "stroke": {
+        "color": "$frame",
+        "width": 2.2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-20,-4.4 L-24.5,-6",
+      "stroke": {
+        "color": "$frame",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M20,-4.4 L24.5,-6",
+      "stroke": {
+        "color": "$frame",
+        "width": 2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-16.5,-2 L-13.5,-2.4",
+      "stroke": {
+        "color": "#FFFFFFB3",
+        "width": 1.5,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M6.5,-2 L9.5,-2.4",
+      "stroke": {
+        "color": "#FFFFFFB3",
+        "width": 1.5,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}

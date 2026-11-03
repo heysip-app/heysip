@@ -1,0 +1,136 @@
+{
+  "formatVersion": 1,
+  "kind": "character",
+  "id": "heysip.sunny",
+  "name": "Sunny",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A sunny yellow droplet.",
+  "distribution": {
+    "tier": "free"
+  },
+  "palette": {
+    "light": "#FFEDAA",
+    "deep": "#F5A623",
+    "outline": "#B97708"
+  },
+  "motion": {
+    "bob": 1.5,
+    "bobSpeed": 2.2,
+    "squash": 0.012,
+    "blinkEveryMs": 4200,
+    "blinkMs": 130
+  },
+  "anchors": {
+    "eyeLeft": [
+      39,
+      86
+    ],
+    "eyeRight": [
+      61,
+      86
+    ],
+    "mouth": [
+      50,
+      98
+    ],
+    "cheekLeft": [
+      29,
+      98
+    ],
+    "cheekRight": [
+      71,
+      98
+    ],
+    "shoulderLeft": [
+      16,
+      92
+    ],
+    "shoulderRight": [
+      84,
+      92
+    ],
+    "headTop": [
+      50,
+      6
+    ],
+    "eyeLine": [
+      50,
+      86
+    ],
+    "neck": [
+      50,
+      64
+    ],
+    "handHold": [
+      72,
+      108
+    ]
+  },
+  "body": [
+    {
+      "path": "M50,6 C50,6 14,54 14,88 A36,36 0 0 0 86,88 C86,54 50,6 50,6 Z",
+      "fill": {
+        "gradient": [
+          "$light",
+          "$deep"
+        ]
+      },
+      "stroke": {
+        "color": "$outline",
+        "width": 2.5
+      }
+    },
+    {
+      "path": "M28,76 C28,68 32,61 37,56",
+      "stroke": {
+        "color": "#FFFFFF8C",
+        "width": 4
+      }
+    },
+    {
+      "ellipse": [
+        26,
+        86,
+        2.2,
+        2.2
+      ],
+      "fill": "#FFFFFF8C"
+    }
+  ],
+  "feet": [
+    {
+      "ellipse": [
+        38,
+        125,
+        9,
+        5
+      ],
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2
+      }
+    },
+    {
+      "ellipse": [
+        62,
+        125,
+        9,
+        5
+      ],
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2
+      }
+    }
+  ],
+  "arms": {
+    "fill": "$deep",
+    "outline": "$outline",
+    "width": 5,
+    "outlineWidth": 8
+  }
+}

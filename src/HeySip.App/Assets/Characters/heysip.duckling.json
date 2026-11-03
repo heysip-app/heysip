@@ -1,0 +1,327 @@
+{
+  "formatVersion": 1,
+  "kind": "character",
+  "id": "heysip.duckling",
+  "name": "Duckling",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A fluffy yellow duckling who loves a splash.",
+  "distribution": {
+    "tier": "free"
+  },
+  "palette": {
+    "light": "#FFF6BF",
+    "deep": "#FBC81F",
+    "outline": "#B7791F",
+    "beak": "#FB923C",
+    "beakDark": "#C2410C"
+  },
+  "motion": {
+    "bob": 2.2,
+    "bobSpeed": 2.6,
+    "squash": 0.02,
+    "blinkEveryMs": 4600,
+    "blinkMs": 130
+  },
+  "anchors": {
+    "eyeLeft": [
+      36,
+      62
+    ],
+    "eyeRight": [
+      64,
+      62
+    ],
+    "mouth": [
+      50,
+      78
+    ],
+    "cheekLeft": [
+      24,
+      77
+    ],
+    "cheekRight": [
+      76,
+      77
+    ],
+    "shoulderLeft": [
+      13,
+      92
+    ],
+    "shoulderRight": [
+      87,
+      92
+    ],
+    "headTop": [
+      50,
+      34
+    ],
+    "eyeLine": [
+      50,
+      62
+    ],
+    "neck": [
+      50,
+      90
+    ],
+    "handHold": [
+      76,
+      106
+    ]
+  },
+  "body": [
+    {
+      "path": "M50,34 C77,34 91,56 91,82 C91,108 75,124 50,124 C25,124 9,108 9,82 C9,56 23,34 50,34 Z",
+      "fill": {
+        "gradient": [
+          "$light",
+          "$deep"
+        ]
+      },
+      "stroke": {
+        "color": "$outline",
+        "width": 2.5,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M50,36 C43,28 45,19 53,16 C53,23 55,29 50,36 Z",
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M88,98 Q98,96 97,86 Q92,90 88,90 Z",
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M24,66 C23,58 27,51 33,47",
+      "stroke": {
+        "color": "#FFFFFF8C",
+        "width": 3.6,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        20,
+        78,
+        2,
+        2
+      ],
+      "fill": "#FFFFFF8C"
+    }
+  ],
+  "feet": [
+    {
+      "ellipse": [
+        36,
+        124,
+        11,
+        5
+      ],
+      "fill": "$beak",
+      "stroke": {
+        "color": "$beakDark",
+        "width": 2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        64,
+        124,
+        11,
+        5
+      ],
+      "fill": "$beak",
+      "stroke": {
+        "color": "$beakDark",
+        "width": 2,
+        "cap": "round"
+      }
+    }
+  ],
+  "arms": {
+    "fill": "$deep",
+    "outline": "$outline",
+    "width": 7,
+    "outlineWidth": 10.5
+  },
+  "face": {
+    "mouths": {
+      "smile": [
+        {
+          "ellipse": [
+            0,
+            0,
+            10,
+            5.5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        },
+        {
+          "path": "M-7,0.5 Q0,3.5 7,0.5",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.4,
+            "cap": "round"
+          }
+        }
+      ],
+      "grin": [
+        {
+          "ellipse": [
+            0,
+            4,
+            7,
+            5
+          ],
+          "fill": "#7C2D12"
+        },
+        {
+          "ellipse": [
+            0,
+            6.5,
+            3.5,
+            1.8
+          ],
+          "fill": "#FB7185"
+        },
+        {
+          "ellipse": [
+            0,
+            -1,
+            10.5,
+            5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        }
+      ],
+      "small": [
+        {
+          "ellipse": [
+            0,
+            0,
+            7,
+            4
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        }
+      ],
+      "worried": [
+        {
+          "ellipse": [
+            0,
+            1,
+            9,
+            5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        },
+        {
+          "path": "M-6,3.5 Q0,0.5 6,3.5",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.4,
+            "cap": "round"
+          }
+        }
+      ],
+      "sleepy": [
+        {
+          "ellipse": [
+            0,
+            0,
+            8,
+            4.5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        },
+        {
+          "path": "M-5,0.5 Q0,2.5 5,0.5",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.3,
+            "cap": "round"
+          }
+        }
+      ],
+      "o": [
+        {
+          "ellipse": [
+            0,
+            1,
+            6.5,
+            6.5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        },
+        {
+          "ellipse": [
+            0,
+            1.5,
+            3.2,
+            3.6
+          ],
+          "fill": "#7C2D12"
+        }
+      ],
+      "sip": [
+        {
+          "ellipse": [
+            4,
+            0,
+            8.5,
+            4.5
+          ],
+          "fill": "$beak",
+          "stroke": {
+            "color": "$beakDark",
+            "width": 1.6,
+            "cap": "round"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.crown",
+  "name": "Crown",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A little golden crown.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "hat",
+  "palette": {
+    "gold": "#FACC15",
+    "goldDark": "#A16207",
+    "ruby": "#F43F5E",
+    "sapphire": "#38BDF8"
+  },
+  "parts": [
+    {
+      "path": "M-15,10 L-15,-6 L-7.5,2 L0,-13 L7.5,2 L15,-6 L15,10 Z",
+      "fill": {
+        "gradient": [
+          "#FDE68A",
+          "$gold"
+        ]
+      },
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.9,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-15,5.5 L15,5.5",
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.4,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.7
+    },
+    {
+      "ellipse": [
+        -15,
+        -7,
+        2.4,
+        2.4
+      ],
+      "fill": "$ruby",
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        0,
+        -14,
+        2.8,
+        2.8
+      ],
+      "fill": "$sapphire",
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        15,
+        -7,
+        2.4,
+        2.4
+      ],
+      "fill": "$ruby",
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        0,
+        1.6,
+        2,
+        2
+      ],
+      "fill": "$ruby"
+    }
+  ]
+}

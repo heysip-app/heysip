@@ -1,0 +1,205 @@
+{
+  "formatVersion": 1,
+  "items": [
+    {
+      "id": "heysip.axolotl",
+      "kind": "character",
+      "name": "Axolotl",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A smiling axolotl with feathery gills. Water is its whole life.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.blossom",
+      "kind": "character",
+      "name": "Blossom",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A pink blossom droplet.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.drip",
+      "kind": "character",
+      "name": "Drip",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "The original droplet.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.duckling",
+      "kind": "character",
+      "name": "Duckling",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A fluffy yellow duckling who loves a splash.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.minty",
+      "kind": "character",
+      "name": "Minty",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A fresh green droplet.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.sunny",
+      "kind": "character",
+      "name": "Sunny",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A sunny yellow droplet.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.balloon",
+      "kind": "accessory",
+      "name": "Balloon",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A red balloon on a string.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.beanie",
+      "kind": "accessory",
+      "name": "Beanie",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A cosy knitted beanie with a pompom.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.bow-tie",
+      "kind": "accessory",
+      "name": "Bow tie",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A dapper bow tie.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.crown",
+      "kind": "accessory",
+      "name": "Crown",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A little golden crown.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.flower",
+      "kind": "accessory",
+      "name": "Flower",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A little pink flower.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.party-hat",
+      "kind": "accessory",
+      "name": "Party hat",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A cone party hat with a golden pompom.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.round-glasses",
+      "kind": "accessory",
+      "name": "Round glasses",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "Round wire glasses.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.scarf",
+      "kind": "accessory",
+      "name": "Scarf",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "A warm striped scarf.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip.sunglasses",
+      "kind": "accessory",
+      "name": "Sunglasses",
+      "author": "HeySip",
+      "version": "1.0.0",
+      "description": "Cool shades.",
+      "priceCents": 0
+    },
+    {
+      "id": "heysip-studio.cactus",
+      "kind": "character",
+      "name": "Cactus",
+      "author": "HeySip Studio",
+      "version": "1.0.0",
+      "description": "A little cactus in a pot, with a flower on top. It needs far less water than you do.",
+      "priceCents": 0,
+      "pack": "packs/heysip-studio.cactus-1.0.0.heysippack",
+      "sha256": "b73dfd3d34036dcd165cb522cdd7d078705ec3df41cb4442b186742331f19bb1",
+      "size": 1239,
+      "accessories": [
+        "heysip-studio.cactus-sombrero",
+        "heysip-studio.cactus-bandana",
+        "heysip-studio.cactus-heart-glasses"
+      ]
+    },
+    {
+      "id": "heysip-studio.whale",
+      "kind": "character",
+      "name": "Whale",
+      "author": "HeySip Studio",
+      "version": "1.0.0",
+      "description": "A small round whale who has never once been thirsty, and wants you to feel the same.",
+      "priceCents": 0,
+      "pack": "packs/heysip-studio.whale-1.0.0.heysippack",
+      "sha256": "d613e6c3ca3ef9fdaa27e84a74aedaa57f13b2bceac3578867f090d7c6180573",
+      "size": 1123
+    },
+    {
+      "id": "heysip-studio.cactus-sombrero",
+      "kind": "accessory",
+      "name": "Sombrero",
+      "author": "HeySip Studio",
+      "version": "1.0.0",
+      "description": "A wide straw sombrero with a red band. Comes with the Cactus.",
+      "priceCents": 0,
+      "pack": "packs/heysip-studio.cactus-sombrero-1.0.0.heysippack",
+      "sha256": "fc1b5a6bcb68eee9f0539742e62dca508b7e26ad844a54e7fc1b19d20523e2d1",
+      "size": 548
+    },
+    {
+      "id": "heysip-studio.cactus-bandana",
+      "kind": "accessory",
+      "name": "Bandana",
+      "author": "HeySip Studio",
+      "version": "1.0.0",
+      "description": "A red polka-dot bandana. Comes with the Cactus.",
+      "priceCents": 0,
+      "pack": "packs/heysip-studio.cactus-bandana-1.0.0.heysippack",
+      "sha256": "dc055e745f03de179b66c07ddb13569f021eb1ad01462f92ae47336b87e85e29",
+      "size": 521
+    },
+    {
+      "id": "heysip-studio.cactus-heart-glasses",
+      "kind": "accessory",
+      "name": "Heart glasses",
+      "author": "HeySip Studio",
+      "version": "1.0.0",
+      "description": "Heart-shaped sunglasses with pink lenses. Comes with the Cactus.",
+      "priceCents": 0,
+      "pack": "packs/heysip-studio.cactus-heart-glasses-1.0.0.heysippack",
+      "sha256": "da27faba32b28ec3bc8477476107fbb0b1f530aaf90a4003a42c5267b6b012f8",
+      "size": 505
+    }
+  ]
+}

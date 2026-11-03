@@ -1,0 +1,67 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.bow-tie",
+  "name": "Bow tie",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A dapper bow tie.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "neck",
+  "palette": {
+    "bow": "#6366F1",
+    "bowDark": "#3730A3"
+  },
+  "parts": [
+    {
+      "path": "M0,5 L-13,-3 L-13,13 Z",
+      "fill": "$bow",
+      "stroke": {
+        "color": "$bowDark",
+        "width": 1.7,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M0,5 L13,-3 L13,13 Z",
+      "fill": "$bow",
+      "stroke": {
+        "color": "$bowDark",
+        "width": 1.7,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        -8,
+        5,
+        1.2,
+        1.2
+      ],
+      "fill": "#FFFFFFD9"
+    },
+    {
+      "ellipse": [
+        8,
+        5,
+        1.2,
+        1.2
+      ],
+      "fill": "#FFFFFFD9"
+    },
+    {
+      "ellipse": [
+        0,
+        5,
+        3.4,
+        4.2
+      ],
+      "fill": "$bowDark"
+    }
+  ]
+}

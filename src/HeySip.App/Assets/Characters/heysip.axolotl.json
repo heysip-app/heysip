@@ -1,0 +1,458 @@
+{
+  "formatVersion": 1,
+  "kind": "character",
+  "id": "heysip.axolotl",
+  "name": "Axolotl",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A smiling axolotl with feathery gills. Water is its whole life.",
+  "distribution": {
+    "tier": "free"
+  },
+  "palette": {
+    "light": "#FFE4F1",
+    "deep": "#F7A8CF",
+    "outline": "#B8527F",
+    "gill": "#F43F8E"
+  },
+  "motion": {
+    "bob": 1.8,
+    "bobSpeed": 2.0,
+    "squash": 0.016,
+    "blinkEveryMs": 3800,
+    "blinkMs": 140
+  },
+  "anchors": {
+    "eyeLeft": [
+      34,
+      62
+    ],
+    "eyeRight": [
+      66,
+      62
+    ],
+    "mouth": [
+      50,
+      77
+    ],
+    "cheekLeft": [
+      22,
+      75
+    ],
+    "cheekRight": [
+      78,
+      75
+    ],
+    "shoulderLeft": [
+      13,
+      90
+    ],
+    "shoulderRight": [
+      87,
+      90
+    ],
+    "headTop": [
+      50,
+      24
+    ],
+    "eyeLine": [
+      50,
+      62
+    ],
+    "neck": [
+      50,
+      92
+    ],
+    "handHold": [
+      74,
+      106
+    ]
+  },
+  "body": [
+    {
+      "path": "M22,40 Q12,33 11,20",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M22,40 Q12,33 11,20",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        11,
+        19,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M17,51 Q9,48 8.5,38",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M17,51 Q9,48 8.5,38",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        8.5,
+        37,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M15,62 Q9,63 8,54",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M15,62 Q9,63 8,54",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        8,
+        53,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M78,40 Q88,33 89,20",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M78,40 Q88,33 89,20",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        89,
+        19,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M83,51 Q91,48 91.5,38",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M83,51 Q91,48 91.5,38",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        91.5,
+        37,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M85,62 Q91,63 92,54",
+      "stroke": {
+        "color": "$outline",
+        "width": 8,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M85,62 Q91,63 92,54",
+      "stroke": {
+        "color": "$gill",
+        "width": 5.2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        92,
+        53,
+        4.4,
+        4.4
+      ],
+      "fill": "$gill",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.6,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M76,104 C92,99 99,112 93,123 C88,129 80,126 74,118 Z",
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2.4,
+        "cap": "round"
+      }
+    },
+    {
+      "path": "M84,110 Q92,114 90,121",
+      "stroke": {
+        "color": "$outline",
+        "width": 1.4,
+        "cap": "round"
+      },
+      "opacity": 0.5
+    },
+    {
+      "path": "M50,24 C78,24 91,44 91,70 C91,101 77,123 50,123 C23,123 9,101 9,70 C9,44 22,24 50,24 Z",
+      "fill": {
+        "gradient": [
+          "$light",
+          "$deep"
+        ]
+      },
+      "stroke": {
+        "color": "$outline",
+        "width": 2.5,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        50,
+        100,
+        22,
+        18
+      ],
+      "fill": "#FFFFFF59"
+    },
+    {
+      "ellipse": [
+        43,
+        40,
+        1.6,
+        1.6
+      ],
+      "fill": "$outline",
+      "opacity": 0.35
+    },
+    {
+      "ellipse": [
+        57,
+        38,
+        1.4,
+        1.4
+      ],
+      "fill": "$outline",
+      "opacity": 0.35
+    },
+    {
+      "ellipse": [
+        50,
+        44,
+        1.2,
+        1.2
+      ],
+      "fill": "$outline",
+      "opacity": 0.35
+    },
+    {
+      "path": "M23,52 C22,45 26,39 31,35",
+      "stroke": {
+        "color": "#FFFFFF8C",
+        "width": 3.6,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        20,
+        62,
+        2,
+        2
+      ],
+      "fill": "#FFFFFF8C"
+    }
+  ],
+  "feet": [
+    {
+      "ellipse": [
+        36,
+        122,
+        9,
+        5
+      ],
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2,
+        "cap": "round"
+      }
+    },
+    {
+      "ellipse": [
+        64,
+        122,
+        9,
+        5
+      ],
+      "fill": "$deep",
+      "stroke": {
+        "color": "$outline",
+        "width": 2,
+        "cap": "round"
+      }
+    }
+  ],
+  "arms": {
+    "fill": "$deep",
+    "outline": "$outline",
+    "width": 6,
+    "outlineWidth": 9.5
+  },
+  "face": {
+    "eyes": {
+      "open": [
+        {
+          "ellipse": [
+            0,
+            0,
+            5.6,
+            6.6
+          ],
+          "fill": "#0F172A"
+        },
+        {
+          "ellipse": [
+            1.9,
+            -2.6,
+            2.1,
+            2.1
+          ],
+          "fill": "#FFFFFF"
+        },
+        {
+          "ellipse": [
+            -1.7,
+            2.2,
+            1.0,
+            1.0
+          ],
+          "fill": "#FFFFFFB3"
+        }
+      ],
+      "happy": [
+        {
+          "path": "M-5.5,2 Q0,-6 5.5,2",
+          "stroke": {
+            "color": "#0F172A",
+            "width": 2.8,
+            "cap": "round"
+          }
+        }
+      ]
+    },
+    "mouths": {
+      "smile": [
+        {
+          "path": "M-12,-1 Q-6,8 0,1 Q6,8 12,-1",
+          "stroke": {
+            "color": "#0F172A",
+            "width": 2.8,
+            "cap": "round"
+          }
+        }
+      ],
+      "grin": [
+        {
+          "path": "M-13,-2 Q0,20 13,-2 Z",
+          "fill": "#0F172A"
+        },
+        {
+          "ellipse": [
+            0,
+            10,
+            6,
+            3.4
+          ],
+          "fill": "#FB7185"
+        }
+      ],
+      "small": [
+        {
+          "path": "M-5,1 Q-2.5,4 0,1 Q2.5,4 5,1",
+          "stroke": {
+            "color": "#0F172A",
+            "width": 2.2,
+            "cap": "round"
+          }
+        }
+      ]
+    }
+  }
+}

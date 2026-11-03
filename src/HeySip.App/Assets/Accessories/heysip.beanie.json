@@ -1,0 +1,111 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.beanie",
+  "name": "Beanie",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A cosy knitted beanie with a pompom.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "hat",
+  "palette": {
+    "blue": "#60A5FA",
+    "blueDark": "#1D4ED8",
+    "cuff": "#3B82F6"
+  },
+  "parts": [
+    {
+      "path": "M-15,9 C-15,-7 -8,-15 0,-15 C8,-15 15,-7 15,9 Z",
+      "fill": {
+        "gradient": [
+          "#93C5FD",
+          "$blue"
+        ]
+      },
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-17,5 L17,5 Q19,5 19,8 L19,12 Q19,14 17,14 L-17,14 Q-19,14 -19,12 L-19,8 Q-19,5 -17,5 Z",
+      "fill": "$cuff",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-11,6 L-11,13",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.55
+    },
+    {
+      "path": "M-5,6 L-5,13",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.55
+    },
+    {
+      "path": "M1,6 L1,13",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.55
+    },
+    {
+      "path": "M7,6 L7,13",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.55
+    },
+    {
+      "path": "M13,6 L13,13",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.1,
+        "cap": "round",
+        "join": "round"
+      },
+      "opacity": 0.55
+    },
+    {
+      "ellipse": [
+        0,
+        -17,
+        5.4,
+        5.4
+      ],
+      "fill": "#FFFFFF",
+      "stroke": {
+        "color": "$blueDark",
+        "width": 1.5,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}

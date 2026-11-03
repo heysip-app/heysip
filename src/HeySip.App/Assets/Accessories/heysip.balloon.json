@@ -1,0 +1,68 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.balloon",
+  "name": "Balloon",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A red balloon on a string.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "held",
+  "palette": {
+    "balloon": "#F43F5E",
+    "balloonDark": "#9F1239"
+  },
+  "parts": [
+    {
+      "path": "M0,0 Q-4,-9 0,-22",
+      "stroke": {
+        "color": "#94A3B8",
+        "width": 1.3,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        0,
+        -34,
+        9.5,
+        11.5
+      ],
+      "fill": {
+        "gradient": [
+          "#FB7185",
+          "$balloon"
+        ]
+      },
+      "stroke": {
+        "color": "$balloonDark",
+        "width": 1.5,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M0,-22.4 L-2.6,-19 L2.6,-19 Z",
+      "fill": "$balloon",
+      "stroke": {
+        "color": "$balloonDark",
+        "width": 1.2,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        -3.6,
+        -38,
+        2.4,
+        3.6
+      ],
+      "fill": "#FFFFFF8C"
+    }
+  ]
+}

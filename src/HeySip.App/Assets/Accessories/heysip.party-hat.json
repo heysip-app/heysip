@@ -1,0 +1,97 @@
+{
+  "formatVersion": 1,
+  "kind": "accessory",
+  "id": "heysip.party-hat",
+  "name": "Party hat",
+  "version": "1.0.0",
+  "author": "HeySip",
+  "license": "Built in",
+  "description": "A cone party hat with a golden pompom.",
+  "distribution": {
+    "tier": "free"
+  },
+  "slot": "hat",
+  "palette": {
+    "pink": "#F472B6",
+    "pinkDark": "#BE185D",
+    "gold": "#FACC15",
+    "goldDark": "#B7791F"
+  },
+  "parts": [
+    {
+      "path": "M-13,10 L0,-24 L13,10 Z",
+      "fill": {
+        "gradient": [
+          "#F9A8D4",
+          "$pink"
+        ]
+      },
+      "stroke": {
+        "color": "$pinkDark",
+        "width": 1.8,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "path": "M-8,0 L6,-8",
+      "stroke": {
+        "color": "#FFFFFFB3",
+        "width": 2.4,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        -2,
+        5,
+        1.6,
+        1.6
+      ],
+      "fill": "#FFFFFFD9"
+    },
+    {
+      "ellipse": [
+        5,
+        3,
+        1.6,
+        1.6
+      ],
+      "fill": "#FFFFFFD9"
+    },
+    {
+      "ellipse": [
+        1,
+        -12,
+        1.5,
+        1.5
+      ],
+      "fill": "#FFFFFFD9"
+    },
+    {
+      "path": "M-13.5,10 Q0,15 13.5,10",
+      "stroke": {
+        "color": "$gold",
+        "width": 3,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "ellipse": [
+        0,
+        -25,
+        4.6,
+        4.6
+      ],
+      "fill": "$gold",
+      "stroke": {
+        "color": "$goldDark",
+        "width": 1.6,
+        "cap": "round",
+        "join": "round"
+      }
+    }
+  ]
+}
