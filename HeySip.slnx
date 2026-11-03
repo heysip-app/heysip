@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HeySip.Core/HeySip.Core.csproj" />
+    <Project Path="src/HeySip.App/HeySip.App.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/HeySip.ConfigTool/HeySip.ConfigTool.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HeySip.Tests/HeySip.Tests.csproj" />
+  </Folder>
+</Solution>
