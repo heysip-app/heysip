@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using HeySip.Core.Features.Companion.Packs;
 using HeySip.Core.Features.Companion.Store;
 using HeySip.Core.Features.Control;
 
@@ -11,6 +12,7 @@ namespace HeySip.ConfigTool;
 ///   sign    --key NAME.private.pem --file FILE [--kind control|catalog]
 ///             control (the default): writes control.sig next to the file;  catalog: writes the same name ending in .sig (catalog.json -> catalog.sig)
 ///   verify  --file FILE --keys PUBLICKEY[,PUBLICKEY] [--kind control|catalog]   checks the file against its signature and the app's reader
+///   check-pack --file FILE.heysippack    runs a pack through the same checks the app applies before installing it
 /// </summary>
 internal static class Program
 {
@@ -30,6 +32,7 @@ internal static class Program
                 "keygen" => KeyGen(Need(options, "out"), options.GetValueOrDefault("names", "main,backup").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)),
                 "sign" => Sign(Need(options, "key"), Need(options, "file"), kind),
                 "verify" => Verify(Need(options, "file"), Need(options, "keys").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries), kind),
+                "check-pack" => CheckPack(Need(options, "file")),
                 _ => Usage(),
             };
         }
@@ -86,6 +89,21 @@ internal static class Program
         Console.WriteLine(signed ? "Signature: OK" : "Signature: DOES NOT MATCH any of the keys");
         Console.WriteLine(valid ? $"File: OK ({Describe(data, kind)})" : $"File: NOT a valid {kind} file ({problem})");
         return signed && valid ? 0 : 2;
+    }
+
+    /// <summary>Runs a .heysippack through the same checks the app applies before it offers to install one, and prints what it found.</summary>
+    private static int CheckPack(string file)
+    {
+        using var stream = File.OpenRead(file);
+        var loaded = PackLoader.FromZip(stream, new PackLoadOptions(new Version(1, 0)));
+        if (loaded.Pack is not { } pack)
+        {
+            Console.WriteLine($"NOT a valid pack: {loaded.Error}");
+            return 2;
+        }
+
+        Console.WriteLine($"Pack: OK ({pack.Header.Kind} {pack.Header.Id} {pack.Header.Version}, \"{pack.Header.Name}\")");
+        return 0;
     }
 
     private static bool IsValid(byte[] data, string kind, out string problem)
