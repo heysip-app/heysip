@@ -207,6 +207,9 @@ public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
     private readonly IShellLauncher _launcher;
     private readonly DiagnosticLog _log;
     private readonly List<StoreCardViewModel> _all = [];
+
+    /// <summary>The ids of cards that exist only because the pack is installed and the list doesn't mention it.</summary>
+    private readonly HashSet<string> _unlisted = new(StringComparer.Ordinal);
     private readonly Action _stopListening;
     private CancellationTokenSource? _loading;
 
@@ -344,7 +347,12 @@ public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
             Notice = result.Notice ?? "";
             var openedId = Selected?.Entry.Id;
             _all.Clear();
-            _all.AddRange(result.Entries.Select(entry => new StoreCardViewModel(entry, Open, Act, _payments.Enabled)));
+
+            // What is installed stays here whether or not the list still mentions it (the server may have dropped it, or it came from a file).
+            var unlisted = InstalledButNotListed(result.Entries.Select(entry => entry.Id).ToHashSet(StringComparer.Ordinal));
+            _unlisted.Clear();
+            _unlisted.UnionWith(unlisted.Select(entry => entry.Id));
+            _all.AddRange(result.Entries.Concat(unlisted).Select(entry => new StoreCardViewModel(entry, Open, Act, _payments.Enabled)));
             Selected = _all.FirstOrDefault(card => card.Entry.Id == openedId);
             RefreshStatus();
             ApplyOrder();
@@ -368,6 +376,26 @@ public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
     public void RefreshStatus()
     {
         var current = _settings.Current;
+
+        // A card that only exists because the pack is installed goes when the pack is removed; nothing else is left to show for it.
+        var removed = _all.Where(card => _unlisted.Contains(card.Entry.Id) && !IsInstalled(card.Entry)).ToList();
+        if (removed.Count > 0)
+        {
+            foreach (var card in removed)
+            {
+                _all.Remove(card);
+                Cards.Remove(card);
+                _unlisted.Remove(card.Entry.Id);
+            }
+
+            if (Selected is { } open && removed.Contains(open))
+            {
+                Selected = null;
+            }
+
+            OnPropertyChanged(nameof(IsEmpty));
+        }
+
         foreach (var card in _all)
         {
             var entry = card.Entry;
@@ -392,6 +420,33 @@ public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
 
         // Installing or removing something moves its card between the two sections.
         BuildSections();
+    }
+
+    private static bool IsInstalled(StoreEntry entry) =>
+        entry.Kind == PackKind.Character
+            ? CharacterCatalog.All.Any(item => item.Id == entry.Id)
+            : CharacterCatalog.FindAccessory(entry.Id) is not null;
+
+    /// <summary>
+    /// Installed packs the list doesn't mention, as entries built from the packs themselves: free, with no file to download. They show as
+    /// installed and can be used, and they're never touched by the list; only the user's Remove in Settings takes them away.
+    /// </summary>
+    private static List<StoreEntry> InstalledButNotListed(HashSet<string> listed)
+    {
+        var entries = new List<StoreEntry>();
+        foreach (var character in CharacterCatalog.All.Where(item => !item.BuiltIn && !listed.Contains(item.Id)))
+        {
+            var header = character.Pack.Header;
+            entries.Add(new StoreEntry(character.Id, PackKind.Character, character.Name, header.Author, header.Version, header.Description, 0, null, null, 0, null, character.Accessories));
+        }
+
+        foreach (var accessory in CharacterCatalog.Accessories.Where(item => !item.BuiltIn && !listed.Contains(item.Id)))
+        {
+            var header = accessory.Pack.Header;
+            entries.Add(new StoreEntry(accessory.Id, PackKind.Accessory, accessory.Name, header.Author, header.Version, header.Description, 0, null, null, 0, null));
+        }
+
+        return entries;
     }
 
     private void ApplyOrder()

@@ -182,6 +182,122 @@ public sealed class BrowseTests : IDisposable
         Assert.Equal(["tester.zed", "tester.able", "heysip.minty"], ui.Shell.Browse.Cards.Select(card => card.Entry.Id));
     }
 
+    // ---- when the online list goes away for good
+
+    /// <summary>The app as it really is: the online list on top of the built-in one, and the built-in one when the online one is gone.</summary>
+    private UiHarness HarnessWithOnlineList()
+    {
+        var ui = UiHarness.Create(services =>
+        {
+            services.AddSingleton<IStoreSource>(new LayeredStoreSource(_source, new BundledStoreSource()));
+            services.AddSingleton<IShellLauncher>(_launcher);
+        });
+        ui.Get<SettingsService>().Update(s => s with { Onboarded = true });
+        CharacterCatalog.Configure(ui.Data.Location.CharactersDirectory);
+        return ui;
+    }
+
+    [AvaloniaFact]
+    public async Task A_new_user_after_the_online_list_is_gone_gets_the_built_in_list_and_nothing_from_the_server()
+    {
+        Offer(Character(id: "tester.blob", name: "Blob"));
+        using var ui = HarnessWithOnlineList();
+        _source.ListError = "The server is gone";
+
+        await OpenBrowse(ui);
+
+        Assert.True(string.IsNullOrEmpty(ui.Shell.Browse.ErrorText), ui.Shell.Browse.ErrorText);
+        Assert.Contains("couldn't be reached", ui.Shell.Browse.Notice);
+        Assert.Equal(20, ui.Shell.Browse.Cards.Count); // exactly what comes with the app
+        Assert.DoesNotContain(ui.Shell.Browse.Cards, card => card.Entry.Id.StartsWith("tester.", StringComparison.Ordinal));
+        Assert.False(CharacterCatalog.Contains("tester.blob"));
+    }
+
+    [AvaloniaFact]
+    public async Task What_someone_installed_stays_when_the_online_list_goes_away_and_only_they_can_remove_it()
+    {
+        Offer(Character(id: "tester.blob", name: "Blob"));
+        Offer(Hat());
+        using var ui = HarnessWithOnlineList();
+        await OpenBrowse(ui);
+        foreach (var id in new[] { "tester.blob", "tester.top-hat" })
+        {
+            Card(ui, id).ActCommand.Execute(null);
+            await Task.Yield();
+            Assert.True(ui.Shell.InstallPreview.IsPreview, Card(ui, id).Message);
+            ui.Shell.InstallPreview.InstallCommand.Execute(null);
+            ui.Shell.InstallPreview.CloseCommand.Execute(null);
+        }
+
+        ui.Get<SettingsService>().Update(s => (s with { Character = "tester.blob" }).WithAccessory(AccessorySlot.Hat, "tester.top-hat"));
+
+        // The server goes away for good, and the app is opened again.
+        _source.Entries.Clear();
+        _source.Packs.Clear();
+        _source.ListError = "The server is gone";
+        await OpenBrowse(ui);
+        CharacterCatalog.Configure(ui.Data.Location.CharactersDirectory); // what starting the app again does
+
+        Assert.True(Directory.Exists(Path.Combine(ui.Data.Location.CharactersDirectory, "tester.blob")));
+        Assert.True(CharacterCatalog.Contains("tester.blob"));
+        Assert.NotNull(CharacterCatalog.FindAccessory("tester.top-hat"));
+        var settings = ui.Get<SettingsService>().Current;
+        Assert.Equal("tester.blob", settings.Character);
+        Assert.Equal("tester.top-hat", settings.Outfit[OutfitSlots.KeyOf(AccessorySlot.Hat)]);
+
+        // The Characters page still shows them, as installed, even though the list doesn't mention them any more.
+        var browse = ui.Shell.Browse;
+        var blob = Card(ui, "tester.blob");
+        Assert.Equal(StoreStatus.Installed, blob.Status);
+        Assert.True(blob.IsInUse);
+        Assert.Equal("Owned", blob.StateText);
+        Assert.Equal("By Tester", blob.Byline);
+        Assert.NotNull(blob.Pack); // drawn from the installed pack, so no download is needed for its picture
+        Assert.Contains(blob, browse.Sections.Single(section => section.Title == "Installed").Groups.SelectMany(group => group.Cards));
+        Assert.DoesNotContain(browse.Sections, section => section.Title == "Not installed" && section.Groups.SelectMany(group => group.Cards).Contains(blob));
+        browse.ShowAccessoriesCommand.Execute(null);
+        var hat = Card(ui, "tester.top-hat");
+        Assert.Equal(StoreStatus.Installed, hat.Status);
+        Assert.True(hat.IsInUse); // it is being worn
+        Assert.Contains(hat, browse.Sections.Single(section => section.Title == "Installed").Groups.SelectMany(group => group.Cards));
+        Assert.Equal(20, browse.Cards.Count - 2); // everything from the built-in list is still there too
+
+        // Still listed in Settings, where the user can remove it; nothing removed it for them.
+        Assert.Contains(ui.Shell.Settings.Installed, pack => pack.Id == "tester.blob");
+        Assert.Contains(ui.Shell.Settings.Installed, pack => pack.Id == "tester.top-hat");
+        ui.Shell.Settings.Installed.Single(pack => pack.Id == "tester.blob").RemoveCommand.Execute(null);
+        Assert.False(CharacterCatalog.Contains("tester.blob"));
+        Assert.True(CharacterCatalog.Contains("heysip.drip")); // the built-in ones can't go
+
+        // Once the user removes it, its card goes too: there is nothing left to show.
+        Assert.DoesNotContain(browse.Cards, card => card.Entry.Id == "tester.blob");
+        Assert.Contains(browse.Cards, card => card.Entry.Id == "tester.top-hat");
+    }
+
+    [AvaloniaFact]
+    public async Task An_installed_item_the_list_never_had_shows_as_installed_too_for_example_one_opened_from_a_file()
+    {
+        using var ui = HarnessWithOnlineList();
+        var packs = ui.Data.Location.CharactersDirectory;
+        Directory.CreateDirectory(packs);
+        using (var stream = new MemoryStream(Zip(Character(id: "tester.fromfile", name: "From a file"))))
+        {
+            var installed = PackInstaller.Install(PackLoader.FromZip(stream, new PackLoadOptions(new Version(1, 0))), packs);
+            Assert.True(installed.Ok, installed.Error);
+        }
+
+        CharacterCatalog.Configure(packs);
+
+        await OpenBrowse(ui);
+
+        var card = Card(ui, "tester.fromfile");
+        Assert.Equal(StoreStatus.Installed, card.Status);
+        Assert.Equal("Use it", card.ActionLabel);
+        card.ActCommand.Execute(null);
+        Assert.Equal("tester.fromfile", ui.Get<SettingsService>().Current.Character);
+        Assert.Equal("In use", card.ActionLabel);
+    }
+
     [AvaloniaFact]
     public async Task Every_item_on_offer_in_the_built_in_list_downloads_and_passes_every_check()
     {
