@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:day="using:HeySip.App.Features.Day"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
              xmlns:comp="using:HeySip.App.Shared.Components"
              xmlns:shared="using:HeySip.App.Shared"
              x:Class="HeySip.App.Features.Day.DayView"
@@ -42,7 +43,7 @@
                     <NumericUpDown Value="{Binding AddAmount}" Minimum="{Binding DrinkBounds.Minimum}" Maximum="{Binding DrinkBounds.Maximum}" Increment="{Binding DrinkBounds.Increment}" FormatString="0" Width="{DynamicResource HbSize150}" />
                 </comp:Field>
                 <comp:Field Label="Time">
-                    <TimePicker SelectedTime="{Binding AddTime}" MinuteIncrement="{DynamicResource HbMinuteIncrement}" />
+                    <controls:TimeBox SelectedTime="{Binding AddTime}" StepMinutes="{DynamicResource HbMinuteIncrement}" Width="{DynamicResource HbSize160}" AutomationProperties.Name="Time of the drink" />
                 </comp:Field>
                 <Button Classes="accent" Content="Add drink" Command="{Binding AddDrinkCommand}" VerticalAlignment="Bottom" />
             </StackPanel>
