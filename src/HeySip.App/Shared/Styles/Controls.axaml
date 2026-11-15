@@ -286,6 +286,28 @@
     <Style Selector="Button.danger">
         <Setter Property="Foreground" Value="{DynamicResource HbDangerBrush}" />
     </Style>
+
+    <!-- A quiet expander for rarely changed options: no box around the header, just a label and a chevron. -->
+    <Style Selector="Expander.quiet">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="{DynamicResource HbThickness0}" />
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource HbThickness0}" />
+    </Style>
+    <Style Selector="Expander.quiet /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource HbThickness0}" />
+        <Setter Property="Padding" Value="{DynamicResource HbThickness0_3}" />
+        <Setter Property="Foreground" Value="{DynamicResource HbTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="Expander.quiet /template/ ToggleButton#ExpanderHeader:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource HbTextBrush}" />
+    </Style>
+    <Style Selector="Expander.quiet /template/ Border#ExpanderContent">
+        <Setter Property="Background" Value="{DynamicResource HbClearBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource HbThickness0}" />
+        <Setter Property="Padding" Value="{DynamicResource HbThickness0_3}" />
+    </Style>
     <Style Selector="Button.pick">
         <Setter Property="Padding" Value="{DynamicResource HbThickness12}" />
         <Setter Property="CornerRadius" Value="{DynamicResource HbCardRadius}" />

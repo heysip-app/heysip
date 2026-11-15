@@ -46,6 +46,7 @@
 
     <!-- Margins, paddings and borders. -->
     <Thickness x:Key="HbCompanionBubbleMargin">0,0,14,240</Thickness>
+    <Thickness x:Key="HbThickness0">0</Thickness>
     <Thickness x:Key="HbThickness1">1</Thickness>
     <Thickness x:Key="HbThickness2">2</Thickness>
     <Thickness x:Key="HbThickness5">5</Thickness>

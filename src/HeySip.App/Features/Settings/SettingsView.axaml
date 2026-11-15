@@ -77,7 +77,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </comp:Field>
-            <Expander Header="Which days count as the weekend?" IsVisible="{Binding ShowDays}" HorizontalAlignment="Left">
+            <Expander Classes="quiet" Header="Which days count as the weekend?" IsExpanded="{Binding WeekendOpen}" IsVisible="{Binding ShowDays}">
                 <StackPanel Spacing="{DynamicResource HbSpace6}">
                     <ItemsControl ItemsSource="{Binding WeekendDays}" Margin="{DynamicResource HbThickness0_2_0_0}">
                         <ItemsControl.ItemsPanel>
