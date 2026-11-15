@@ -89,6 +89,24 @@ public sealed class SettingsSearchTests
     }
 
     [AvaloniaFact]
+    public void Folding_the_weekend_options_by_hand_sticks_while_the_user_keeps_typing()
+    {
+        using var ui = Harness();
+        var settings = ui.Shell.Settings;
+
+        settings.SearchText = "weekend";
+        Assert.True(settings.WeekendOpen);
+
+        settings.WeekendOpen = false;
+        settings.SearchText = "weekends";
+        Assert.False(settings.WeekendOpen);
+
+        settings.ClearSearchCommand.Execute(null);
+        settings.SearchText = "weekend";
+        Assert.True(settings.WeekendOpen);
+    }
+
+    [AvaloniaFact]
     public void A_search_shows_only_the_matching_setting_and_its_card()
     {
         using var ui = Harness();
