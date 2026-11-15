@@ -6,6 +6,9 @@ namespace HeySip.Tests.SharedKernel;
 /// <summary>People type times in many ways; each of them must come out as the time they meant, and nothing else should.</summary>
 public sealed class TimeInputTests
 {
+    private static readonly CultureInfo UnitedStates = CultureInfo.GetCultureInfo("en-US");
+    private static readonly CultureInfo Britain = CultureInfo.GetCultureInfo("en-GB");
+
     [Theory]
     [InlineData("9", 9, 0)]
     [InlineData("9:30", 9, 30)]
@@ -29,7 +32,7 @@ public sealed class TimeInputTests
     [InlineData("Midnight", 0, 0)]
     public void A_typed_time_is_read_as_meant(string text, int hour, int minute)
     {
-        Assert.True(TimeInput.TryParse(text, previous: null, out var time));
+        Assert.True(TimeInput.TryParse(text, previous: null, out var time, UnitedStates));
         Assert.Equal(new TimeOnly(hour, minute), time);
     }
 
@@ -49,7 +52,7 @@ public sealed class TimeInputTests
     [InlineData("2500")]
     public void Something_that_is_not_a_time_is_refused(string? text)
     {
-        Assert.False(TimeInput.TryParse(text, previous: null, out _));
+        Assert.False(TimeInput.TryParse(text, previous: null, out _, UnitedStates));
     }
 
     [Theory]
@@ -62,31 +65,48 @@ public sealed class TimeInputTests
     [InlineData("14", 14, 0)]      // the afternoon on a 24-hour clock stays as typed
     public void A_bare_hour_keeps_the_half_of_the_day_that_was_showing(string text, int hour, int minute)
     {
-        Assert.True(TimeInput.TryParse(text, new TimeOnly(22, 0), out var time));
+        Assert.True(TimeInput.TryParse(text, new TimeOnly(22, 0), out var time, UnitedStates));
         Assert.Equal(new TimeOnly(hour, minute), time);
     }
 
     [Fact]
     public void A_bare_hour_stays_in_the_morning_when_a_morning_time_was_showing()
     {
-        Assert.True(TimeInput.TryParse("9", new TimeOnly(10, 0), out var time));
+        Assert.True(TimeInput.TryParse("9", new TimeOnly(10, 0), out var time, UnitedStates));
         Assert.Equal(new TimeOnly(9, 0), time);
     }
 
     [Theory]
-    [InlineData("en-US")]
-    [InlineData("en-GB")]
-    [InlineData("de-DE")]
-    public void A_time_written_for_the_screen_can_be_typed_back_in(string cultureName)
+    [InlineData("9", 9, 0)]        // on a 24-hour clock a bare hour is just that hour, even with an evening time showing
+    [InlineData("10", 10, 0)]
+    [InlineData("9:45", 9, 45)]
+    [InlineData("21", 21, 0)]
+    [InlineData("9pm", 21, 0)]
+    public void On_a_24_hour_clock_a_bare_hour_does_not_jump_to_the_evening(string text, int hour, int minute)
     {
-        var culture = CultureInfo.GetCultureInfo(cultureName);
-        for (var minutes = 0; minutes < 24 * 60; minutes += 5)
-        {
-            var time = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(minutes));
-            var written = TimeInput.Format(time, culture);
+        Assert.True(TimeInput.TryParse(text, new TimeOnly(22, 0), out var time, Britain));
+        Assert.Equal(new TimeOnly(hour, minute), time);
+    }
 
-            Assert.True(TimeInput.TryParse(written, time, out var back), written);
-            Assert.Equal(time, back);
+    [Fact]
+    public void A_time_written_for_the_screen_can_be_typed_back_in_for_every_language()
+    {
+        var failures = new List<string>();
+        foreach (var culture in CultureInfo.GetCultures(CultureTypes.SpecificCultures))
+        {
+            for (var minutes = 0; minutes < 24 * 60; minutes += 5)
+            {
+                var time = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(minutes));
+                var written = TimeInput.Format(time, culture);
+
+                if (!TimeInput.TryParse(written, time, out var back, culture) || back != time)
+                {
+                    failures.Add($"{culture.Name} '{written}'");
+                    break;
+                }
+            }
         }
+
+        Assert.True(failures.Count == 0, "Cannot be typed back in: " + string.Join(", ", failures.Take(10)));
     }
 }
