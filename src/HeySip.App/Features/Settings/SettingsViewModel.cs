@@ -480,7 +480,17 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     public partial string SearchText { get; set; } = "";
 
-    partial void OnSearchTextChanged(string value) => RaiseVisibilityChanged();
+    /// <summary>Whether the "which days count as the weekend" options are unfolded. They stay folded until asked for.</summary>
+    [ObservableProperty]
+    public partial bool WeekendOpen { get; set; }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        RaiseVisibilityChanged();
+
+        // A search that lands on the days setting opens the weekend options, so the match is not hidden behind a fold.
+        WeekendOpen = !string.IsNullOrWhiteSpace(value) && ShowDays;
+    }
 
     [RelayCommand]
     private void ClearSearch() => SearchText = "";
