@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using HeySip.Core.SharedKernel;
 
 namespace HeySip.Core.Features.Companion.Packs;
 
@@ -15,6 +16,30 @@ internal sealed partial class PackParser
     private static readonly Box Absolute = new(PackLimits.MinX, PackLimits.MaxX, PackLimits.MinY, PackLimits.MaxY);
     private static readonly Box Relative = new(-PackLimits.MaxRelative, PackLimits.MaxRelative, -PackLimits.MaxRelative, PackLimits.MaxRelative);
 
+    /// <summary>A shape sets exactly one of path, ellipse and line.</summary>
+    private const int ExactlyOneShapeKind = 1;
+
+    // Where each number sits in the list a point, an ellipse and a line are written as.
+    private const int PointX = 0;
+    private const int PointY = 1;
+    private const int EllipseCenterX = 0;
+    private const int EllipseCenterY = 1;
+    private const int EllipseRadiusX = 2;
+    private const int EllipseRadiusY = 3;
+    private const int LineStartX = 0;
+    private const int LineStartY = 1;
+    private const int LineEndX = 2;
+    private const int LineEndY = 3;
+
+    // A colour is "#" and 6 hex digits (red, green, blue), or 8 with alpha last.
+    private const int HexPrefixLength = 1;
+    private const int HexDigitsPerPart = 2;
+    private const int HexWithAlphaLength = HexPrefixLength + (4 * HexDigitsPerPart);
+    private const int RedPart = 0;
+    private const int GreenPart = 1;
+    private const int BluePart = 2;
+    private const int AlphaPart = 3;
+
     private readonly PackLoadOptions _options;
     private readonly Dictionary<string, PackColor> _palette = new(StringComparer.Ordinal);
     private int _shapesLeft = PackLimits.MaxShapesTotal;
@@ -23,28 +48,18 @@ internal sealed partial class PackParser
 
     public static Pack Parse(ReadOnlyMemory<byte> json, PackLoadOptions options)
     {
-        var documentOptions = new JsonDocumentOptions
-        {
-            MaxDepth = PackLimits.MaxJsonDepth,
-            CommentHandling = JsonCommentHandling.Disallow,
-            AllowTrailingCommas = false,
-        };
+        var documentOptions = JsonInput.Strict(PackLimits.MaxJsonDepth);
 
         // Editors on Windows (Notepad, PowerShell) save UTF-8 with a three-byte "byte order mark" in front. It is not part of
         // the JSON, so it must not make a perfectly good pack invalid.
-        var span = json.Span;
-        if (span.Length >= 3 && span[0] == 0xEF && span[1] == 0xBB && span[2] == 0xBF)
-        {
-            json = json[3..];
-        }
-
-        using var document = JsonDocument.Parse(json, documentOptions);
+        using var document = JsonDocument.Parse(JsonInput.WithoutByteOrderMark(json), documentOptions);
         return new PackParser(options).ReadPack(document.RootElement);
     }
 
     [GeneratedRegex(@"^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$")]
     private static partial Regex HexColorPattern();
 
+    /// <summary>A letter, then up to <c>PackLimits.MaxPaletteNameLength - 1</c> letters or digits (a test keeps the two equal).</summary>
     [GeneratedRegex(@"^[a-z][A-Za-z0-9]{0,31}$")]
     private static partial Regex PaletteNamePattern();
 
@@ -67,7 +82,7 @@ internal sealed partial class PackParser
 
     private PackHeader ReadHeader(JsonElement root)
     {
-        if (!root.TryGetProperty("formatVersion", out var versionElement) || versionElement.ValueKind != JsonValueKind.Number || !versionElement.TryGetInt32(out var formatVersion))
+        if (!root.TryGetProperty(JsonInput.FormatVersionKey, out var versionElement) || versionElement.ValueKind != JsonValueKind.Number || !versionElement.TryGetInt32(out var formatVersion))
         {
             throw Fail("the pack has no format version");
         }
@@ -77,19 +92,19 @@ internal sealed partial class PackParser
             throw Fail("This pack needs a newer version of HeySip");
         }
 
-        if (formatVersion < 1)
+        if (formatVersion < PackLimits.FirstFormatVersion)
         {
             throw Fail("the pack has an invalid format version");
         }
 
-        var kind = Text(root, "kind", required: true, 16) switch
+        var kind = Text(root, PackKeys.Kind, required: true, PackLimits.MaxKindLength) switch
         {
-            "character" => PackKind.Character,
-            "accessory" => PackKind.Accessory,
+            PackKeys.KindCharacter => PackKind.Character,
+            PackKeys.KindAccessory => PackKind.Accessory,
             _ => throw Fail("the pack's kind must be \"character\" or \"accessory\""),
         };
 
-        var id = Text(root, "id", required: true, 64)!;
+        var id = Text(root, PackKeys.Id, required: true, PackLimits.MaxIdLength)!;
         if (!PackId.IsValid(id))
         {
             throw Fail("the pack's id must look like author.name, in lower case");
@@ -100,14 +115,14 @@ internal sealed partial class PackParser
             throw Fail("ids starting with \"heysip.\" are reserved");
         }
 
-        var name = Text(root, "name", required: true, PackLimits.MaxNameLength)!;
-        var version = Text(root, "version", required: true, 40)!;
+        var name = Text(root, PackKeys.Name, required: true, PackLimits.MaxNameLength)!;
+        var version = Text(root, PackKeys.Version, required: true, PackLimits.MaxVersionLength)!;
         if (!PackVersion.IsValid(version))
         {
             throw Fail("the pack's version must look like 1.2.3");
         }
 
-        var minApp = Text(root, "minAppVersion", required: false, 20);
+        var minApp = Text(root, PackKeys.MinAppVersion, required: false, PackLimits.MaxMinAppVersionLength);
         if (minApp is not null)
         {
             if (!Version.TryParse(minApp, out var needed))
@@ -121,22 +136,22 @@ internal sealed partial class PackParser
             }
         }
 
-        if (root.TryGetProperty("requires", out var requires) && requires.ValueKind == JsonValueKind.Array && requires.GetArrayLength() > 0)
+        if (root.TryGetProperty(PackKeys.Requires, out var requires) && requires.ValueKind == JsonValueKind.Array && requires.GetArrayLength() > 0)
         {
             throw Fail("This pack needs features this version of HeySip doesn't have");
         }
 
         var tier = PackTier.Free;
         string? storeId = null;
-        if (root.TryGetProperty("distribution", out var distribution) && distribution.ValueKind == JsonValueKind.Object)
+        if (root.TryGetProperty(PackKeys.Distribution, out var distribution) && distribution.ValueKind == JsonValueKind.Object)
         {
-            tier = Text(distribution, "tier", required: false, 10) switch
+            tier = Text(distribution, PackKeys.Tier, required: false, PackLimits.MaxTierLength) switch
             {
-                null or "free" => PackTier.Free,
-                "premium" => PackTier.Premium,
+                null or PackKeys.TierFree => PackTier.Free,
+                PackKeys.TierPremium => PackTier.Premium,
                 _ => throw Fail("the pack's tier must be \"free\" or \"premium\""),
             };
-            storeId = Text(distribution, "storeId", required: false, 64);
+            storeId = Text(distribution, PackKeys.StoreId, required: false, PackLimits.MaxStoreIdLength);
         }
 
         return new PackHeader(
@@ -145,9 +160,9 @@ internal sealed partial class PackParser
             id,
             name,
             version,
-            Text(root, "author", required: false, 64) ?? "",
-            Text(root, "license", required: false, 64) ?? "",
-            Text(root, "description", required: false, 256) ?? "",
+            Text(root, PackKeys.Author, required: false, PackLimits.MaxAuthorLength) ?? "",
+            Text(root, PackKeys.License, required: false, PackLimits.MaxLicenseLength) ?? "",
+            Text(root, PackKeys.Description, required: false, PackLimits.MaxDescriptionLength) ?? "",
             minApp,
             tier,
             storeId);
@@ -155,7 +170,7 @@ internal sealed partial class PackParser
 
     private void ReadPalette(JsonElement root, PackKind kind)
     {
-        if (root.TryGetProperty("palette", out var palette))
+        if (root.TryGetProperty(PackKeys.Palette, out var palette))
         {
             if (palette.ValueKind != JsonValueKind.Object)
             {
@@ -185,7 +200,7 @@ internal sealed partial class PackParser
 
         if (kind == PackKind.Character)
         {
-            foreach (var required in new[] { "light", "deep", "outline" })
+            foreach (var required in PackKeys.RequiredPaletteColors)
             {
                 if (!_palette.ContainsKey(required))
                 {
@@ -201,8 +216,8 @@ internal sealed partial class PackParser
     {
         var anchors = ReadAnchors(root);
 
-        var body = RequireShapes(root, "body", Absolute);
-        var feet = root.TryGetProperty("feet", out _) ? RequireShapes(root, "feet", Absolute, allowEmpty: true) : [];
+        var body = RequireShapes(root, PackKeys.Body, Absolute);
+        var feet = root.TryGetProperty(PackKeys.Feet, out _) ? RequireShapes(root, PackKeys.Feet, Absolute, allowEmpty: true) : [];
 
         return new CharacterPack(
             header,
@@ -219,7 +234,7 @@ internal sealed partial class PackParser
 
     private Dictionary<string, PackPoint> ReadAnchors(JsonElement root)
     {
-        if (!root.TryGetProperty("anchors", out var anchors) || anchors.ValueKind != JsonValueKind.Object)
+        if (!root.TryGetProperty(PackKeys.Anchors, out var anchors) || anchors.ValueKind != JsonValueKind.Object)
         {
             throw Fail("the character has no anchors");
         }
@@ -241,43 +256,43 @@ internal sealed partial class PackParser
     private static PackMotion ReadMotion(JsonElement root)
     {
         var motion = PackMotion.Default;
-        if (!root.TryGetProperty("motion", out var element) || element.ValueKind != JsonValueKind.Object)
+        if (!root.TryGetProperty(PackKeys.Motion, out var element) || element.ValueKind != JsonValueKind.Object)
         {
             return motion;
         }
 
         // Out-of-range values are brought into range, so a pack can never make the character flash or spin.
         return new PackMotion(
-            Clamped(element, "bob", motion.Bob, 0, 4),
-            Clamped(element, "bobSpeed", motion.BobSpeed, 0.5, 4),
-            Clamped(element, "squash", motion.Squash, 0, 0.05),
-            (int)Clamped(element, "blinkEveryMs", motion.BlinkEveryMs, 2000, 10000),
-            (int)Clamped(element, "blinkMs", motion.BlinkMs, 80, 300));
+            Clamped(element, PackKeys.Bob, motion.Bob, PackLimits.Bob),
+            Clamped(element, PackKeys.BobSpeed, motion.BobSpeed, PackLimits.BobSpeed),
+            Clamped(element, PackKeys.Squash, motion.Squash, PackLimits.Squash),
+            (int)Clamped(element, PackKeys.BlinkEveryMs, motion.BlinkEveryMs, PackLimits.BlinkEveryMs),
+            (int)Clamped(element, PackKeys.BlinkMs, motion.BlinkMs, PackLimits.BlinkMs));
     }
 
-    private static double Clamped(JsonElement element, string name, double fallback, double min, double max) =>
+    private static double Clamped(JsonElement element, string name, double fallback, PackRange range) =>
         element.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Number && value.TryGetDouble(out var number) && double.IsFinite(number)
-            ? Math.Clamp(number, min, max)
+            ? range.Clamp(number)
             : fallback;
 
     private ArmStyle ReadArms(JsonElement root)
     {
-        var fill = _palette["deep"];
-        var outline = _palette["outline"];
-        double width = 5;
-        double outlineWidth = 8;
+        var fill = _palette[PackKeys.PaletteDeep];
+        var outline = _palette[PackKeys.PaletteOutline];
+        var width = PackLimits.DefaultArmWidth;
+        var outlineWidth = PackLimits.DefaultArmOutlineWidth;
 
-        if (root.TryGetProperty("arms", out var arms))
+        if (root.TryGetProperty(PackKeys.Arms, out var arms))
         {
             if (arms.ValueKind != JsonValueKind.Object)
             {
                 throw Fail("arms must be an object");
             }
 
-            fill = OptionalColor(arms, "fill") ?? fill;
-            outline = OptionalColor(arms, "outline") ?? outline;
-            width = OptionalNumber(arms, "width", 0, PackLimits.MaxStrokeWidth) ?? width;
-            outlineWidth = OptionalNumber(arms, "outlineWidth", 0, PackLimits.MaxStrokeWidth) ?? outlineWidth;
+            fill = OptionalColor(arms, PackKeys.Fill) ?? fill;
+            outline = OptionalColor(arms, PackKeys.Outline) ?? outline;
+            width = OptionalNumber(arms, PackKeys.Width, PackLimits.Stroke) ?? width;
+            outlineWidth = OptionalNumber(arms, PackKeys.OutlineWidth, PackLimits.Stroke) ?? outlineWidth;
         }
 
         return new ArmStyle(fill, outline, width, outlineWidth);
@@ -286,7 +301,7 @@ internal sealed partial class PackParser
     private Dictionary<StandardPose, PoseOverride> ReadPoses(JsonElement root)
     {
         var result = new Dictionary<StandardPose, PoseOverride>();
-        if (!root.TryGetProperty("poses", out var poses))
+        if (!root.TryGetProperty(PackKeys.Poses, out var poses))
         {
             return result;
         }
@@ -319,19 +334,19 @@ internal sealed partial class PackParser
     {
         PackPoint? left = null;
         PackPoint? right = null;
-        if (element.TryGetProperty("arms", out var arms))
+        if (element.TryGetProperty(PackKeys.Arms, out var arms))
         {
             if (arms.ValueKind != JsonValueKind.Object)
             {
                 throw Fail($"the {name} pose's arms must be an object");
             }
 
-            left = arms.TryGetProperty("left", out var l) ? ReadPoint(l, $"the {name} pose's left hand", Absolute) : null;
-            right = arms.TryGetProperty("right", out var r) ? ReadPoint(r, $"the {name} pose's right hand", Absolute) : null;
+            left = arms.TryGetProperty(PackKeys.Left, out var l) ? ReadPoint(l, $"the {name} pose's left hand", Absolute) : null;
+            right = arms.TryGetProperty(PackKeys.Right, out var r) ? ReadPoint(r, $"the {name} pose's right hand", Absolute) : null;
         }
 
         ArmSway? sway = null;
-        if (element.TryGetProperty("sway", out var swayElement))
+        if (element.TryGetProperty(PackKeys.Sway, out var swayElement))
         {
             if (swayElement.ValueKind != JsonValueKind.Object)
             {
@@ -339,16 +354,16 @@ internal sealed partial class PackParser
             }
 
             sway = new ArmSway(
-                Text(swayElement, "arm", required: false, 8) != "left",
-                Clamped(swayElement, "amplitude", 5, 0, 15),
-                Clamped(swayElement, "speed", 6, 0, 12));
+                Text(swayElement, PackKeys.SwayArm, required: false, PackLimits.MaxKeywordLength) != PackKeys.Left,
+                Clamped(swayElement, PackKeys.SwayAmplitude, PackLimits.DefaultSwayAmplitude, PackLimits.SwayAmplitude),
+                Clamped(swayElement, PackKeys.SwaySpeed, PackLimits.DefaultSwaySpeed, PackLimits.SwaySpeed));
         }
 
         List<PoseEffect>? effects = null;
-        if (element.TryGetProperty("effects", out var effectList))
+        if (element.TryGetProperty(PackKeys.Effects, out var effectList))
         {
             effects = [];
-            if (effectList.ValueKind != JsonValueKind.Array || effectList.GetArrayLength() > 8)
+            if (effectList.ValueKind != JsonValueKind.Array || effectList.GetArrayLength() > PackLimits.MaxEffectsPerPose)
             {
                 throw Fail($"the {name} pose's effects must be a short list");
             }
@@ -360,9 +375,9 @@ internal sealed partial class PackParser
         }
 
         return new PoseOverride(
-            OptionalEnum<EyeStyle>(element, "eyes", name),
-            OptionalEnum<MouthStyle>(element, "mouth", name),
-            OptionalEnum<BrowStyle>(element, "brows", name),
+            OptionalEnum<EyeStyle>(element, PackKeys.Eyes, name),
+            OptionalEnum<MouthStyle>(element, PackKeys.Mouth, name),
+            OptionalEnum<BrowStyle>(element, PackKeys.Brows, name),
             left,
             right,
             sway,
@@ -371,7 +386,7 @@ internal sealed partial class PackParser
 
     private FaceShapes ReadFace(JsonElement root)
     {
-        if (!root.TryGetProperty("face", out var face))
+        if (!root.TryGetProperty(PackKeys.Face, out var face))
         {
             return FaceShapes.None;
         }
@@ -386,53 +401,56 @@ internal sealed partial class PackParser
         var mouths = new Dictionary<MouthStyle, IReadOnlyList<PackShape>>();
         var brows = new Dictionary<BrowStyle, IReadOnlyList<PackShape>>();
 
-        if (face.TryGetProperty("eyes", out var eyeElement))
+        if (face.TryGetProperty(PackKeys.FaceEyes, out var eyeElement))
         {
-            RequireObject(eyeElement, "face.eyes");
+            RequireObject(eyeElement, FacePath(PackKeys.FaceEyes));
             foreach (var entry in eyeElement.EnumerateObject())
             {
-                var isRight = entry.Name.EndsWith("Right", StringComparison.OrdinalIgnoreCase);
-                var styleName = isRight ? entry.Name[..^"Right".Length] : entry.Name;
+                var isRight = entry.Name.EndsWith(PackKeys.RightEyeSuffix, StringComparison.OrdinalIgnoreCase);
+                var styleName = isRight ? entry.Name[..^PackKeys.RightEyeSuffix.Length] : entry.Name;
                 if (!TryParseEnum<EyeStyle>(styleName, out var style))
                 {
                     continue;
                 }
 
-                (isRight ? rightEyes : eyes)[style] = Shapes(entry.Value, $"face.eyes.{entry.Name}", Relative);
+                (isRight ? rightEyes : eyes)[style] = Shapes(entry.Value, $"{FacePath(PackKeys.FaceEyes)}.{entry.Name}", Relative);
             }
         }
 
-        if (face.TryGetProperty("mouths", out var mouthElement))
+        if (face.TryGetProperty(PackKeys.FaceMouths, out var mouthElement))
         {
-            RequireObject(mouthElement, "face.mouths");
+            RequireObject(mouthElement, FacePath(PackKeys.FaceMouths));
             foreach (var entry in mouthElement.EnumerateObject())
             {
                 if (TryParseEnum<MouthStyle>(entry.Name, out var style))
                 {
-                    mouths[style] = Shapes(entry.Value, $"face.mouths.{entry.Name}", Relative);
+                    mouths[style] = Shapes(entry.Value, $"{FacePath(PackKeys.FaceMouths)}.{entry.Name}", Relative);
                 }
             }
         }
 
-        if (face.TryGetProperty("brows", out var browElement))
+        if (face.TryGetProperty(PackKeys.FaceBrows, out var browElement))
         {
-            RequireObject(browElement, "face.brows");
+            RequireObject(browElement, FacePath(PackKeys.FaceBrows));
             foreach (var entry in browElement.EnumerateObject())
             {
                 if (TryParseEnum<BrowStyle>(entry.Name, out var style))
                 {
-                    brows[style] = Shapes(entry.Value, $"face.brows.{entry.Name}", Relative);
+                    brows[style] = Shapes(entry.Value, $"{FacePath(PackKeys.FaceBrows)}.{entry.Name}", Relative);
                 }
             }
         }
 
-        var mirrored = !(face.TryGetProperty("eyesMirrored", out var flag) && flag.ValueKind == JsonValueKind.False);
+        var mirrored = !(face.TryGetProperty(PackKeys.EyesMirrored, out var flag) && flag.ValueKind == JsonValueKind.False);
         return new FaceShapes(eyes, rightEyes, mouths, brows, mirrored);
     }
 
+    /// <summary>How a part of the face is named in an error message, such as <c>face.eyes</c>.</summary>
+    private static string FacePath(string part) => $"{PackKeys.Face}.{part}";
+
     private static PackSounds ReadSounds(JsonElement root)
     {
-        if (!root.TryGetProperty("sounds", out var sounds))
+        if (!root.TryGetProperty(PackKeys.Sounds, out var sounds))
         {
             return new PackSounds(null, null);
         }
@@ -443,13 +461,13 @@ internal sealed partial class PackParser
         }
 
         return new PackSounds(
-            SoundName(sounds, "reminder"),
-            SoundName(sounds, "drank"));
+            SoundName(sounds, PackKeys.SoundReminder),
+            SoundName(sounds, PackKeys.SoundDrank));
     }
 
     private static string? SoundName(JsonElement sounds, string key)
     {
-        var name = Text(sounds, key, required: false, 64);
+        var name = Text(sounds, key, required: false, PackLimits.MaxSoundNameLength);
         if (name is not null && !PackLoader.IsSoundFileName(name))
         {
             throw Fail($"the {key} sound has a file name that isn't allowed");
@@ -462,15 +480,15 @@ internal sealed partial class PackParser
 
     private AccessoryPack ReadAccessory(JsonElement root, PackHeader header)
     {
-        var slot = ParseEnumValue<AccessorySlot>(Require(root, "slot"), "the accessory slot");
-        var inFront = Text(root, "layer", required: false, 8) switch
+        var slot = ParseEnumValue<AccessorySlot>(Require(root, PackKeys.Slot), "the accessory slot");
+        var inFront = Text(root, PackKeys.Layer, required: false, PackLimits.MaxKeywordLength) switch
         {
-            null or "front" => true,
-            "back" => false,
+            null or PackKeys.LayerFront => true,
+            PackKeys.LayerBack => false,
             _ => throw Fail("an accessory's layer must be \"front\" or \"back\""),
         };
 
-        return new AccessoryPack(header, slot, inFront, RequireShapes(root, "parts", Relative));
+        return new AccessoryPack(header, slot, inFront, RequireShapes(root, PackKeys.Parts, Relative));
     }
 
     // ---- shapes
@@ -519,17 +537,17 @@ internal sealed partial class PackParser
             throw Fail($"a shape in {where} must be an object");
         }
 
-        var hasPath = element.TryGetProperty("path", out var path);
-        var hasEllipse = element.TryGetProperty("ellipse", out var ellipse);
-        var hasLine = element.TryGetProperty("line", out var line);
-        if ((hasPath ? 1 : 0) + (hasEllipse ? 1 : 0) + (hasLine ? 1 : 0) != 1)
+        var hasPath = element.TryGetProperty(PackKeys.ShapePath, out var path);
+        var hasEllipse = element.TryGetProperty(PackKeys.ShapeEllipse, out var ellipse);
+        var hasLine = element.TryGetProperty(PackKeys.ShapeLine, out var line);
+        if ((hasPath ? 1 : 0) + (hasEllipse ? 1 : 0) + (hasLine ? 1 : 0) != ExactlyOneShapeKind)
         {
             throw Fail($"each shape in {where} must be exactly one of path, ellipse or line");
         }
 
         var fill = ReadFill(element);
         var stroke = ReadStroke(element);
-        var opacity = OptionalNumber(element, "opacity", 0, 1) ?? 1;
+        var opacity = OptionalNumber(element, PackKeys.Opacity, PackLimits.Opacity) ?? PackLimits.FullOpacity;
 
         if (fill is null && stroke is null)
         {
@@ -554,18 +572,18 @@ internal sealed partial class PackParser
         }
         else if (hasEllipse)
         {
-            var values = Numbers(ellipse, 4, $"an ellipse in {where}");
-            if (!InBox(box, values[0], values[1]) || values[2] <= 0 || values[3] <= 0 || values[2] > PackLimits.MaxRadius || values[3] > PackLimits.MaxRadius)
+            var values = Numbers(ellipse, PackKeys.EllipseNumbers, $"an ellipse in {where}");
+            if (!InBox(box, values[EllipseCenterX], values[EllipseCenterY]) || !ValidRadius(values[EllipseRadiusX]) || !ValidRadius(values[EllipseRadiusY]))
             {
                 throw Fail($"an ellipse in {where} is out of range");
             }
 
-            shape = new EllipseShape(values[0], values[1], values[2], values[3]);
+            shape = new EllipseShape(values[EllipseCenterX], values[EllipseCenterY], values[EllipseRadiusX], values[EllipseRadiusY]);
         }
         else
         {
-            var values = Numbers(line, 4, $"a line in {where}");
-            if (!InBox(box, values[0], values[1]) || !InBox(box, values[2], values[3]))
+            var values = Numbers(line, PackKeys.LineNumbers, $"a line in {where}");
+            if (!InBox(box, values[LineStartX], values[LineStartY]) || !InBox(box, values[LineEndX], values[LineEndY]))
             {
                 throw Fail($"a line in {where} is out of range");
             }
@@ -575,7 +593,7 @@ internal sealed partial class PackParser
                 throw Fail($"a line in {where} needs a stroke");
             }
 
-            shape = new LineShape(values[0], values[1], values[2], values[3]);
+            shape = new LineShape(values[LineStartX], values[LineStartY], values[LineEndX], values[LineEndY]);
         }
 
         return shape with { Fill = fill, Stroke = stroke, Opacity = opacity };
@@ -583,7 +601,7 @@ internal sealed partial class PackParser
 
     private PackFill? ReadFill(JsonElement element)
     {
-        if (!element.TryGetProperty("fill", out var fill))
+        if (!element.TryGetProperty(PackKeys.Fill, out var fill))
         {
             return null;
         }
@@ -594,9 +612,9 @@ internal sealed partial class PackParser
         }
 
         if (fill.ValueKind == JsonValueKind.Object
-            && fill.TryGetProperty("gradient", out var gradient)
+            && fill.TryGetProperty(PackKeys.FillGradient, out var gradient)
             && gradient.ValueKind == JsonValueKind.Array
-            && gradient.GetArrayLength() == 2
+            && gradient.GetArrayLength() == PackKeys.GradientColors
             && gradient[0].ValueKind == JsonValueKind.String
             && gradient[1].ValueKind == JsonValueKind.String)
         {
@@ -608,7 +626,7 @@ internal sealed partial class PackParser
 
     private PackStroke? ReadStroke(JsonElement element)
     {
-        if (!element.TryGetProperty("stroke", out var stroke))
+        if (!element.TryGetProperty(PackKeys.Stroke, out var stroke))
         {
             return null;
         }
@@ -618,16 +636,16 @@ internal sealed partial class PackParser
             throw Fail("a stroke must be an object");
         }
 
-        var color = OptionalColor(stroke, "color") ?? throw Fail("a stroke needs a colour");
-        var width = OptionalNumber(stroke, "width", 0, PackLimits.MaxStrokeWidth) ?? throw Fail("a stroke needs a width");
-        var cap = Text(stroke, "cap", required: false, 8);
-        var join = Text(stroke, "join", required: false, 8);
-        if (cap is not (null or "round" or "flat") || join is not (null or "round" or "miter"))
+        var color = OptionalColor(stroke, PackKeys.StrokeColor) ?? throw Fail("a stroke needs a colour");
+        var width = OptionalNumber(stroke, PackKeys.StrokeWidth, PackLimits.Stroke) ?? throw Fail("a stroke needs a width");
+        var cap = Text(stroke, PackKeys.StrokeCap, required: false, PackLimits.MaxKeywordLength);
+        var join = Text(stroke, PackKeys.StrokeJoin, required: false, PackLimits.MaxKeywordLength);
+        if (cap is not (null or PackKeys.CapRound or PackKeys.CapFlat) || join is not (null or PackKeys.JoinRound or PackKeys.JoinMiter))
         {
             throw Fail("a stroke's cap must be round or flat, and its join round or miter");
         }
 
-        return new PackStroke(color, width, cap != "flat", join != "miter");
+        return new PackStroke(color, width, cap != PackKeys.CapFlat, join != PackKeys.JoinMiter);
     }
 
     // ---- small readers
@@ -698,22 +716,22 @@ internal sealed partial class PackParser
 
     private static PackPoint ReadPoint(JsonElement element, string what, Box box)
     {
-        var values = Numbers(element, 2, what);
-        return InBox(box, values[0], values[1]) ? new PackPoint(values[0], values[1]) : throw Fail($"{what} is out of range");
+        var values = Numbers(element, PackKeys.PointNumbers, what);
+        return InBox(box, values[PointX], values[PointY]) ? new PackPoint(values[PointX], values[PointY]) : throw Fail($"{what} is out of range");
     }
 
     private static bool InBox(Box box, double x, double y) => x >= box.MinX && x <= box.MaxX && y >= box.MinY && y <= box.MaxY;
 
-    private static double? OptionalNumber(JsonElement element, string name, double min, double max)
+    private static double? OptionalNumber(JsonElement element, string name, PackRange range)
     {
         if (!element.TryGetProperty(name, out var value))
         {
             return null;
         }
 
-        if (value.ValueKind != JsonValueKind.Number || !value.TryGetDouble(out var number) || !double.IsFinite(number) || number < min || number > max)
+        if (value.ValueKind != JsonValueKind.Number || !value.TryGetDouble(out var number) || !double.IsFinite(number) || !range.Contains(number))
         {
-            throw Fail($"\"{name}\" must be a number from {min.ToString(CultureInfo.InvariantCulture)} to {max.ToString(CultureInfo.InvariantCulture)}");
+            throw Fail($"\"{name}\" must be a number from {range.Min.ToString(CultureInfo.InvariantCulture)} to {range.Max.ToString(CultureInfo.InvariantCulture)}");
         }
 
         return number;
@@ -731,7 +749,7 @@ internal sealed partial class PackParser
 
     private PackColor ResolveColor(string text)
     {
-        if (text.StartsWith('$'))
+        if (text.StartsWith(PackKeys.PaletteReference))
         {
             return _palette.TryGetValue(text[1..], out var named) ? named : throw Fail($"the colour {Shorten(text)} isn't in the palette");
         }
@@ -746,8 +764,8 @@ internal sealed partial class PackParser
             return null;
         }
 
-        byte Part(int index) => byte.Parse(text.AsSpan(1 + index * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-        return new PackColor(Part(0), Part(1), Part(2), text.Length == 9 ? Part(3) : (byte)255);
+        byte Part(int index) => byte.Parse(text.AsSpan(HexPrefixLength + (index * HexDigitsPerPart), HexDigitsPerPart), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        return new PackColor(Part(RedPart), Part(GreenPart), Part(BluePart), text.Length == HexWithAlphaLength ? Part(AlphaPart) : PackColor.Opaque);
     }
 
     private static bool TryParseEnum<T>(string text, out T value)
@@ -773,5 +791,7 @@ internal sealed partial class PackParser
         where T : struct, Enum =>
         element.TryGetProperty(name, out var value) ? ParseEnumValue<T>(value, $"{name} in the {pose} pose") : null;
 
-    private static string Shorten(string text) => text.Length <= 24 ? text : text[..24] + "…";
+    private static string Shorten(string text) => PackText.Shorten(text, PackLimits.MaxQuotedValueLength);
+
+    private static bool ValidRadius(double radius) => radius > 0 && radius <= PackLimits.MaxRadius;
 }

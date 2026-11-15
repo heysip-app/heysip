@@ -12,7 +12,13 @@ public static partial class PackLoader
 {
     private const string ManifestName = "pack.json";
     private const string SignatureName = "pack.sig";
-    private const int MaxSignatureBytes = 4096;
+    private const int MaxSignatureBytes = PackLimits.MaxSignatureBytes;
+    private const string SoundsFolder = "sounds/";
+
+    // A zip entry made on Linux or macOS keeps its Unix file mode in the top 16 bits of ExternalAttributes.
+    private const int UnixModeShift = 16;
+    private const int UnixFileTypeMask = 0xF000;
+    private const int UnixSymbolicLink = 0xA000;
 
     [GeneratedRegex(@"^sounds/[a-z0-9][a-z0-9._-]{0,47}\.(wav|ogg)$")]
     private static partial Regex SoundNamePattern();
@@ -32,7 +38,7 @@ public static partial class PackLoader
         foreach (var entry in zip.Entries)
         {
             var name = entry.FullName;
-            if (name == "sounds/")
+            if (name == SoundsFolder)
             {
                 continue; // the folder itself
             }
@@ -40,7 +46,7 @@ public static partial class PackLoader
             CheckName(name);
 
             // A symbolic link in a zip made on Linux or macOS: never follow one.
-            if (((entry.ExternalAttributes >> 16) & 0xF000) == 0xA000)
+            if (((entry.ExternalAttributes >> UnixModeShift) & UnixFileTypeMask) == UnixSymbolicLink)
             {
                 throw new InvalidPackException($"The pack contains a link ({name}), which isn't allowed");
             }
@@ -175,7 +181,7 @@ public static partial class PackLoader
 
     private static void CopyCapped(Stream from, Stream to, int cap, string message)
     {
-        var buffer = new byte[16 * 1024];
+        var buffer = new byte[PackLimits.ReadChunkBytes];
         long total = 0;
         int read;
         while ((read = from.Read(buffer, 0, buffer.Length)) > 0)
@@ -277,5 +283,5 @@ public static partial class PackLoader
         }
     }
 
-    private static string Shorten(string text) => text.Length <= 40 ? text : text[..40] + "…";
+    private static string Shorten(string text) => PackText.Shorten(text, PackLimits.MaxQuotedFileNameLength);
 }

@@ -5,15 +5,30 @@ namespace HeySip.Core.Features.Companion.Packs;
 /// <summary>Checks SVG path data against what packs may use: the commands M L H V C S Q T A Z, within size limits.</summary>
 public static class PathDataCheck
 {
+    private const char MoveTo = 'M';
+    private const char ArcTo = 'A';
+
+    /// <summary>What <see cref="ArgumentCount"/> says for a letter that isn't a path command.</summary>
+    private const int NotACommand = -1;
+
+    // Arc arguments: rx ry rotation large-arc-flag sweep-flag x y. The two flags are a single 0 or 1.
+    private const int ArcLargeArcFlagIndex = 3;
+    private const int ArcSweepFlagIndex = 4;
+
+    private const char Comma = ',';
+    private const char DecimalPoint = '.';
+    private const char FlagOff = '0';
+    private const char FlagOn = '1';
+
     private static int ArgumentCount(char command) => char.ToUpperInvariant(command) switch
     {
-        'M' or 'L' or 'T' => 2,
+        MoveTo or 'L' or 'T' => 2,
         'H' or 'V' => 1,
         'C' => 6,
         'S' or 'Q' => 4,
-        'A' => 7,
+        ArcTo => 7,
         'Z' => 0,
-        _ => -1,
+        _ => NotACommand,
     };
 
     /// <summary>Returns null when the data is acceptable, otherwise a short reason.</summary>
@@ -48,7 +63,7 @@ public static class PathDataCheck
                 return $"a path uses '{command}', which isn't allowed";
             }
 
-            if (!seenCommand && char.ToUpperInvariant(command) != 'M')
+            if (!seenCommand && char.ToUpperInvariant(command) != MoveTo)
             {
                 return "a path must start with M";
             }
@@ -79,7 +94,7 @@ public static class PathDataCheck
                 for (var i = 0; i < count; i++)
                 {
                     SkipSeparators(data, ref position);
-                    var isFlag = char.ToUpperInvariant(command) == 'A' && (i == 3 || i == 4);
+                    var isFlag = char.ToUpperInvariant(command) == ArcTo && (i == ArcLargeArcFlagIndex || i == ArcSweepFlagIndex);
                     if (!TryReadNumber(data, ref position, isFlag, out var value))
                     {
                         return "a path has a missing or malformed number";
@@ -109,7 +124,7 @@ public static class PathDataCheck
 
     private static void SkipSeparators(string data, ref int position)
     {
-        while (position < data.Length && (char.IsWhiteSpace(data[position]) || data[position] == ','))
+        while (position < data.Length && (char.IsWhiteSpace(data[position]) || data[position] == Comma))
         {
             position++;
         }
@@ -121,9 +136,9 @@ public static class PathDataCheck
         if (isFlag)
         {
             // Arc flags are a single 0 or 1, and may be written without a separator after them.
-            if (position < data.Length && (data[position] == '0' || data[position] == '1'))
+            if (position < data.Length && (data[position] == FlagOff || data[position] == FlagOn))
             {
-                value = data[position] - '0';
+                value = data[position] - FlagOff;
                 position++;
                 return true;
             }
@@ -144,7 +159,7 @@ public static class PathDataCheck
             digits++;
         }
 
-        if (position < data.Length && data[position] == '.')
+        if (position < data.Length && data[position] == DecimalPoint)
         {
             position++;
             while (position < data.Length && char.IsAsciiDigit(data[position]))

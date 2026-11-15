@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HeySip.Core.Features.Companion.Packs;
+using HeySip.Core.SharedKernel;
 
 namespace HeySip.Core.Features.Companion.Store;
 
@@ -49,6 +50,32 @@ public static partial class StoreCatalog
     public const int MaxPriceCents = 100_000;
     public const int MaxAccessoriesPerCharacter = PackBundle.MaxAccessories;
 
+    // How long each piece of text in an entry may be.
+    public const int MaxNameLength = 60;
+    public const int MaxAuthorLength = 60;
+    public const int MaxDescriptionLength = 400;
+    public const int MaxAddressLength = 512;
+
+    /// <summary>A SHA-256 hash written in hex: 2 digits for each of its 32 bytes. The pattern below says the same (a test keeps them equal).</summary>
+    public const int Sha256HexLength = 64;
+
+    private const string KeyItems = "items";
+    private const string KeyId = "id";
+    private const string KeyName = "name";
+    private const string KeyVersion = "version";
+    private const string KeyKind = "kind";
+    private const string KeyPriceCents = "priceCents";
+    private const string KeySize = "size";
+    private const string KeySha256 = "sha256";
+    private const string KeyPack = "pack";
+    private const string KeyBuyUrl = "buyUrl";
+    private const string KeyAccessories = "accessories";
+    private const string KeyAuthor = "author";
+    private const string KeyDescription = "description";
+
+    private const string KindCharacter = "character";
+    private const string KindAccessory = "accessory";
+
     [GeneratedRegex("^[0-9a-fA-F]{64}$")]
     private static partial Regex Sha256Pattern();
 
@@ -59,24 +86,18 @@ public static partial class StoreCatalog
             return StoreCatalogResult.Failure("The list is too big");
         }
 
-        var span = json.Span;
-        if (span.Length >= 3 && span[0] == 0xEF && span[1] == 0xBB && span[2] == 0xBF)
-        {
-            json = json[3..];
-        }
+        json = JsonInput.WithoutByteOrderMark(json);
 
         try
         {
-            using var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = 8 });
+            using var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = JsonInput.MaxDepth });
             var root = document.RootElement;
-            if (root.ValueKind != JsonValueKind.Object
-                || !root.TryGetProperty("formatVersion", out var format) || format.ValueKind != JsonValueKind.Number
-                || !format.TryGetInt32(out var version) || version != 1)
+            if (!JsonInput.HasFormatVersion(root, JsonInput.SupportedFormatVersion))
             {
                 return StoreCatalogResult.Failure("The list isn't in a format this version understands");
             }
 
-            if (!root.TryGetProperty("items", out var items) || items.ValueKind != JsonValueKind.Array)
+            if (!root.TryGetProperty(KeyItems, out var items) || items.ValueKind != JsonValueKind.Array)
             {
                 return StoreCatalogResult.Failure("The list has no items");
             }
@@ -117,13 +138,13 @@ public static partial class StoreCatalog
             return null;
         }
 
-        var id = Text(item, "id", 64);
-        var name = Text(item, "name", 60);
-        var version = Text(item, "version", 40);
-        var kind = Text(item, "kind", 16) switch
+        var id = Text(item, KeyId, PackLimits.MaxIdLength);
+        var name = Text(item, KeyName, MaxNameLength);
+        var version = Text(item, KeyVersion, PackLimits.MaxVersionLength);
+        var kind = Text(item, KeyKind, PackLimits.MaxKindLength) switch
         {
-            "character" => (PackKind?)PackKind.Character,
-            "accessory" => PackKind.Accessory,
+            KindCharacter => (PackKind?)PackKind.Character,
+            KindAccessory => PackKind.Accessory,
             _ => null,
         };
 
@@ -133,32 +154,35 @@ public static partial class StoreCatalog
         }
 
         var price = 0;
-        if (item.TryGetProperty("priceCents", out var priceElement)
+        if (item.TryGetProperty(KeyPriceCents, out var priceElement)
             && (priceElement.ValueKind != JsonValueKind.Number || !priceElement.TryGetInt32(out price) || price < 0 || price > MaxPriceCents))
         {
             return null;
         }
 
         long size = 0;
-        if (item.TryGetProperty("size", out var sizeElement)
+        if (item.TryGetProperty(KeySize, out var sizeElement)
             && (sizeElement.ValueKind != JsonValueKind.Number || !sizeElement.TryGetInt64(out size) || size < 0 || size > PackLimits.MaxPackBytes))
         {
             return null;
         }
 
-        var sha = Text(item, "sha256", 64);
-        if (sha is not null && !Sha256Pattern().IsMatch(sha))
+        // A hash that is written but isn't a proper one (too long reads as "missing" below) must not quietly switch the
+        // check off: the download would then be installed unverified. So such an entry is left out.
+        var sha = Text(item, KeySha256, Sha256HexLength);
+        var hashWritten = item.TryGetProperty(KeySha256, out var shaElement) && shaElement.ValueKind != JsonValueKind.Null;
+        if (hashWritten && (sha is null || !Sha256Pattern().IsMatch(sha)))
         {
             return null;
         }
 
-        var location = Text(item, "pack", 512);
+        var location = Text(item, KeyPack, MaxAddressLength);
         if (location is not null && (location.Any(char.IsControl) || location.Contains("..", StringComparison.Ordinal)))
         {
             return null;
         }
 
-        var buy = Text(item, "buyUrl", 512);
+        var buy = Text(item, KeyBuyUrl, MaxAddressLength);
         if (buy is not null && !(Uri.TryCreate(buy, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps))
         {
             return null;
@@ -166,7 +190,7 @@ public static partial class StoreCatalog
 
         // Only a character can come with accessories. One bad id spoils the entry, so a character is never offered half its set.
         IReadOnlyList<string>? accessories = null;
-        if (kind == PackKind.Character && item.TryGetProperty("accessories", out var accessoryList))
+        if (kind == PackKind.Character && item.TryGetProperty(KeyAccessories, out var accessoryList))
         {
             if (ReadAccessoryIds(accessoryList, id!) is not { } ids)
             {
@@ -177,8 +201,8 @@ public static partial class StoreCatalog
         }
 
         return new StoreEntry(
-            id!, kind.Value, name.Trim(), (Text(item, "author", 60) ?? "").Trim(), version!,
-            (Text(item, "description", 400) ?? "").Trim(), price, location, sha?.ToLowerInvariant(), size, buy, accessories);
+            id!, kind.Value, name.Trim(), (Text(item, KeyAuthor, MaxAuthorLength) ?? "").Trim(), version!,
+            (Text(item, KeyDescription, MaxDescriptionLength) ?? "").Trim(), price, location, sha?.ToLowerInvariant(), size, buy, accessories);
     }
 
     private static List<string>? ReadAccessoryIds(JsonElement list, string characterId)

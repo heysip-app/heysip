@@ -73,7 +73,11 @@ public enum StandardPose
 
 public readonly record struct PackPoint(double X, double Y);
 
-public readonly record struct PackColor(byte R, byte G, byte B, byte A = 255);
+public readonly record struct PackColor(byte R, byte G, byte B, byte A = PackColor.Opaque)
+{
+    /// <summary>The alpha of a colour that isn't see-through.</summary>
+    public const byte Opaque = byte.MaxValue;
+}
 
 public abstract record PackFill;
 
@@ -114,7 +118,13 @@ public sealed record PackHeader(
 
 public sealed record PackMotion(double Bob, double BobSpeed, double Squash, int BlinkEveryMs, int BlinkMs)
 {
-    public static PackMotion Default { get; } = new(1.5, 2.2, 0.012, 4200, 130);
+    private const double DefaultBob = 1.5;
+    private const double DefaultBobSpeed = 2.2;
+    private const double DefaultSquash = 0.012;
+    private const int DefaultBlinkEveryMs = 4200;
+    private const int DefaultBlinkMs = 130;
+
+    public static PackMotion Default { get; } = new(DefaultBob, DefaultBobSpeed, DefaultSquash, DefaultBlinkEveryMs, DefaultBlinkMs);
 }
 
 public sealed record ArmStyle(PackColor Fill, PackColor Outline, double Width, double OutlineWidth);
@@ -164,11 +174,7 @@ public sealed record CharacterPack(
     PackSounds Sounds) : Pack(Header)
 {
     /// <summary>The anchors every character must define, so accessories fit every body.</summary>
-    public static IReadOnlyList<string> RequiredAnchors { get; } =
-    [
-        "eyeLeft", "eyeRight", "mouth", "cheekLeft", "cheekRight", "shoulderLeft", "shoulderRight",
-        "headTop", "eyeLine", "neck", "handHold",
-    ];
+    public static IReadOnlyList<string> RequiredAnchors => PackAnchors.Required;
 }
 
 public sealed record AccessoryPack(PackHeader Header, AccessorySlot Slot, bool InFront, IReadOnlyList<PackShape> Parts) : Pack(Header);
