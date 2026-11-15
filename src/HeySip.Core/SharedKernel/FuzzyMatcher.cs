@@ -16,13 +16,24 @@ public static class FuzzyMatcher
     private const int MaxSpreadPerChar = 4;
     private const int MaxSpreadSlack = 4;
 
+    /// <summary>A match is marked down by how far into the text it starts, but never by more than this.</summary>
+    private const int MaxStartPenalty = 15;
+
+    /// <summary>The same for each letter of an abbreviation, by how many letters it skips.</summary>
+    private const int MaxGapPenalty = 5;
+
+    /// <summary>An abbreviation that matches at all always scores at least this.</summary>
+    private const int MinScatteredScore = 1;
+
+    private const char WordSeparator = ' ';
+
     /// <summary>
     /// A score (higher is better) when every space-separated word of <paramref name="query"/> matches
     /// <paramref name="text"/>, or null when any word doesn't. An empty query matches everything with score 0.
     /// </summary>
     public static int? Score(string? query, string text)
     {
-        var words = (query ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var words = (query ?? "").Split(WordSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (words.Length == 0)
         {
             return 0;
@@ -59,7 +70,7 @@ public static class FuzzyMatcher
                 score += WordStartBonus;
             }
 
-            return score - Math.Min(at, 15);
+            return score - Math.Min(at, MaxStartPenalty);
         }
 
         // Letters spread through the text only count as an abbreviation ("tlp" for "Toggle log panel"): the first letter must
@@ -93,12 +104,12 @@ public static class FuzzyMatcher
                 scattered += SubsequenceWordStartBonus;
             }
 
-            scattered -= Math.Min(found - next, 5);
+            scattered -= Math.Min(found - next, MaxGapPenalty);
             last = found;
             next = found + 1;
         }
 
-        return last - first <= (word.Length * MaxSpreadPerChar) + MaxSpreadSlack ? Math.Max(1, scattered) : null;
+        return last - first <= (word.Length * MaxSpreadPerChar) + MaxSpreadSlack ? Math.Max(MinScatteredScore, scattered) : null;
     }
 
     private static int FirstWordStartOf(char letter, string text)

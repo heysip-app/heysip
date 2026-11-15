@@ -13,19 +13,34 @@ public sealed class DiagnosticLog(TimeProvider time, string directory)
 
     private const string FilePrefix = "heysip-";
 
+    /// <summary>How many lines <see cref="Tail"/> gives when it isn't told.</summary>
+    public const int DefaultTailLines = 80;
+
+    private const string InfoLevel = "INFO";
+    private const string WarningLevel = "WARN";
+    private const string ErrorLevel = "ERROR";
+
+    /// <summary>The levels are padded to the longest, so the messages line up.</summary>
+    private const int LevelWidth = 5;
+
+    private const string TimestampFormat = "yyyy-MM-dd'T'HH:mm:ss.fffzzz";
+
+    /// <summary>Put in front of each line of an exception's details, so they read as part of the entry above them.</summary>
+    private const string DetailIndent = "    ";
+
     private readonly Lock _gate = new();
     private DateOnly _prunedOn;
 
     public string Directory => directory;
 
-    public void Info(string area, string message) => Write("INFO", area, message, null);
+    public void Info(string area, string message) => Write(InfoLevel, area, message, null);
 
-    public void Warning(string area, string message, Exception? exception = null) => Write("WARN", area, message, exception);
+    public void Warning(string area, string message, Exception? exception = null) => Write(WarningLevel, area, message, exception);
 
-    public void Error(string area, string message, Exception? exception = null) => Write("ERROR", area, message, exception);
+    public void Error(string area, string message, Exception? exception = null) => Write(ErrorLevel, area, message, exception);
 
     /// <summary>The last <paramref name="lines"/> lines across today's and yesterday's files, oldest first.</summary>
-    public IReadOnlyList<string> Tail(int lines = 80)
+    public IReadOnlyList<string> Tail(int lines = DefaultTailLines)
     {
         try
         {
@@ -52,15 +67,15 @@ public sealed class DiagnosticLog(TimeProvider time, string directory)
     {
         var now = time.GetLocalNow();
         var text = new StringBuilder()
-            .Append(now.ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture))
-            .Append(' ').Append(level.PadRight(5))
+            .Append(now.ToString(TimestampFormat, CultureInfo.InvariantCulture))
+            .Append(' ').Append(level.PadRight(LevelWidth))
             .Append(' ').Append(area)
             .Append(": ").AppendLine(message);
         if (exception is not null)
         {
             foreach (var line in exception.ToString().Split('\n'))
             {
-                text.Append("    ").AppendLine(line.TrimEnd('\r'));
+                text.Append(DetailIndent).AppendLine(line.TrimEnd('\r'));
             }
         }
 

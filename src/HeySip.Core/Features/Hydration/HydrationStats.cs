@@ -22,6 +22,12 @@ public sealed record HydrationSummary(
 /// <summary>Pure calculations over the drink log, kept separate from storage so they are easy to test.</summary>
 public static class HydrationStats
 {
+    public const double FullPercent = 100.0;
+
+    /// <summary>How far toward the goal a total is, from 0 to 100. A missing goal counts as 1 ml so it can't divide by zero.</summary>
+    public static double Percent(int milliliters, int goalMilliliters) =>
+        Math.Min(FullPercent, milliliters * FullPercent / Math.Max(1, goalMilliliters));
+
     /// <summary>One total per calendar day from <paramref name="first"/> to <paramref name="last"/> inclusive, zero-filled.</summary>
     public static IReadOnlyList<DayTotal> Daily(IEnumerable<IntakeEntry> entries, DateOnly first, DateOnly last, TimeZoneInfo zone)
     {

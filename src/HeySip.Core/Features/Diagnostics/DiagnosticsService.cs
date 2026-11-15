@@ -44,7 +44,7 @@ public sealed class DiagnosticsService(
         report.AppendLine("Settings (name left out)");
         report.AppendLine($"  Name set: {(string.IsNullOrWhiteSpace(current.Name) ? "no" : "yes")}");
         report.AppendLine($"  Remind every {current.IntervalMinutes} min, snooze {current.SnoozeMinutes} min");
-        report.AppendLine($"  Active {current.ActiveStart:HH\\:mm}-{current.ActiveEnd:HH\\:mm} on {string.Join(", ", current.ActiveDays.Select(day => day.ToString()[..3]))}");
+        report.AppendLine($"  Active {current.ActiveStart.ToString(TimeFormats.Clock)}-{current.ActiveEnd.ToString(TimeFormats.Clock)} on {string.Join(", ", current.ActiveDays.Select(day => day.ToString()[..3]))}");
         report.AppendLine($"  Goal {current.DailyGoalMilliliters} ml, glass {current.GlassMilliliters} ml");
         report.AppendLine($"  Escalate {current.Escalate}, pause when away {current.PauseWhenAway}");
         report.AppendLine($"  Theme {current.Theme}, character {current.Character}, messages {current.Messages}, monitor {current.Monitor}");
@@ -72,7 +72,7 @@ public sealed class DiagnosticsService(
     }
 
     private static string DescribeFile(string path) =>
-        File.Exists(path) ? $"{new FileInfo(path).Length / 1024.0:0.#} KB" : "not created yet";
+        File.Exists(path) ? ByteSize.InKilobytes(new FileInfo(path).Length) : "not created yet";
 
     private static string ReadVersion()
     {

@@ -8,6 +8,15 @@ public sealed class HydrationService(IntakeStore store, SettingsService settings
 {
     private const int StreakLookbackDays = 366;
 
+    /// <summary>When one day alone fills a whole page, the page grows by this factor until the day fits.</summary>
+    private const int PageGrowthFactor = 2;
+
+    /// <summary>How many days one page of the browsable history holds, unless asked for another amount.</summary>
+    public const int DefaultHistoryPageDays = 14;
+
+    /// <summary>A generous guess at drinks per day, used to size how many rows to read for a page of days.</summary>
+    private const int EntriesPerDayEstimate = 12;
+
     public event EventHandler? Changed;
 
     /// <summary>Raised after a drink is logged (not for removals), so a reminder can treat it as answered wherever it came from.</summary>
@@ -76,13 +85,13 @@ public sealed class HydrationService(IntakeStore store, SettingsService settings
     /// with <c>before: null</c> (today included), then pass the previous page's <see cref="Hydration.HistoryPage.Next"/> to go further back.
     /// Days are never split across pages.
     /// </summary>
-    public HistoryPage BrowseHistory(DateOnly? before, int days = 14)
+    public HistoryPage BrowseHistory(DateOnly? before, int days = DefaultHistoryPageDays)
     {
         days = Math.Max(1, days);
         var zone = Zone();
         var today = ZoneResolver.LocalDate(time.GetUtcNow(), zone);
         var end = before is { } day ? DayBounds(day, zone).Start : DayBounds(today, zone).End;
-        var limit = days * 12;
+        var limit = days * EntriesPerDayEstimate;
 
         while (true)
         {
@@ -98,7 +107,7 @@ public sealed class HydrationService(IntakeStore store, SettingsService settings
             {
                 if (grouped.Count == 1)
                 {
-                    limit *= 2; // one enormous day: look at more of it
+                    limit *= PageGrowthFactor; // one enormous day: look at more of it
                     continue;
                 }
 
