@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -12,6 +13,16 @@ namespace HeySip.Tests.Ui;
 /// <summary>The active hours are typed, not scrolled through; these walk the box on the Settings page the way a person would.</summary>
 public sealed class TimeBoxTests
 {
+    /// <summary>The expected texts assume a 12-hour clock, so the tests ask for one whatever the machine is set to.</summary>
+    private sealed class UnitedStatesClock : IDisposable
+    {
+        private readonly CultureInfo _before = CultureInfo.CurrentCulture;
+
+        public UnitedStatesClock() => CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+
+        public void Dispose() => CultureInfo.CurrentCulture = _before;
+    }
+
     private static (UiHarness Ui, TimeBox From, TimeBox Until) OpenSettings()
     {
         var ui = UiHarness.Create();
@@ -36,6 +47,7 @@ public sealed class TimeBoxTests
     [AvaloniaFact]
     public void It_shows_the_current_hours_as_text()
     {
+        using var clock = new UnitedStatesClock();
         var (ui, from, until) = OpenSettings();
         using (ui)
         {
@@ -47,6 +59,7 @@ public sealed class TimeBoxTests
     [AvaloniaFact]
     public void A_typed_time_is_kept_when_enter_is_pressed()
     {
+        using var clock = new UnitedStatesClock();
         var (ui, from, _) = OpenSettings();
         using (ui)
         {
@@ -61,6 +74,7 @@ public sealed class TimeBoxTests
     [AvaloniaFact]
     public void A_bare_hour_keeps_the_evening_when_an_evening_time_was_showing()
     {
+        using var clock = new UnitedStatesClock();
         var (ui, _, until) = OpenSettings();
         using (ui)
         {
@@ -73,6 +87,7 @@ public sealed class TimeBoxTests
     [AvaloniaFact]
     public void Something_that_is_not_a_time_puts_the_old_time_back()
     {
+        using var clock = new UnitedStatesClock();
         var (ui, from, _) = OpenSettings();
         using (ui)
         {
@@ -86,6 +101,7 @@ public sealed class TimeBoxTests
     [AvaloniaFact]
     public void Up_and_down_move_to_the_next_step_and_wrap_around_midnight()
     {
+        using var clock = new UnitedStatesClock();
         var (ui, from, _) = OpenSettings();
         using (ui)
         {

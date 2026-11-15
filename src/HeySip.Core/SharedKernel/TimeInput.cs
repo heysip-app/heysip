@@ -14,6 +14,9 @@ public static partial class TimeInput
     private const int MaxMinute = 59;
     private const int MaxHour = 23;
 
+    /// <summary>The standard short time format that <see cref="Format"/> writes.</summary>
+    private const string ScreenFormat = "t";
+
     [GeneratedRegex(@"^(?<hour>\d{1,2})(?:[:.](?<minute>\d{2}))?$")]
     private static partial Regex HourAndMinute();
 
@@ -25,20 +28,25 @@ public static partial class TimeInput
 
     /// <summary>The time as the computer's language writes it, such as "9:30 PM" or "21:30".</summary>
     public static string Format(TimeOnly time, IFormatProvider? culture = null) =>
-        time.ToString("t", culture ?? CultureInfo.CurrentCulture);
+        time.ToString(ScreenFormat, culture ?? CultureInfo.CurrentCulture);
 
     /// <summary>
     /// Reads <paramref name="text"/> as a time. With "am" or "pm" the hour is 1 to 12; without, hours 13 to 23 and 0 are on a
-    /// 24-hour clock, and an hour from 1 to 11 written without a leading zero keeps the half of the day <paramref name="previous"/> was in (so
-    /// changing "10:00 PM" by typing "9" gives 9 PM, while "09" is always the morning). Twelve is noon. With no <paramref name="previous"/> a bare hour is read on a 24-hour clock.
+    /// 24-hour clock. Where the language shows a 12-hour clock, an hour from 1 to 11 written without a leading zero keeps the half
+    /// of the day <paramref name="previous"/> was in (so changing "10:00 PM" by typing "9" gives 9 PM, while "09" is always the
+    /// morning); where it shows a 24-hour clock, "9" is simply 09:00. Twelve is noon. With no <paramref name="previous"/> a bare
+    /// hour is read on a 24-hour clock. Times written the way <paramref name="culture"/> writes them (for example with its own
+    /// "AM" and "PM" words) are read too, so what the screen shows can always be typed back.
     /// </summary>
-    public static bool TryParse(string? text, TimeOnly? previous, out TimeOnly time)
+    public static bool TryParse(string? text, TimeOnly? previous, out TimeOnly time, IFormatProvider? culture = null)
     {
         time = default;
         if (string.IsNullOrWhiteSpace(text))
         {
             return false;
         }
+
+        var info = DateTimeFormatInfo.GetInstance(culture ?? CultureInfo.CurrentCulture);
 
         var body = text.Trim().ToLowerInvariant();
         switch (body)
@@ -64,7 +72,7 @@ public static partial class TimeInput
             match = Compact().Match(body);
             if (!match.Success)
             {
-                return false;
+                return ReadInTheLanguageOf(info, text, out time);
             }
         }
 
@@ -85,7 +93,7 @@ public static partial class TimeInput
 
             hour = marker == 'p' ? hour % HoursInHalfDay + HoursInHalfDay : hour % HoursInHalfDay;
         }
-        else if (hour is >= 1 and < NoonHour && !hourText.StartsWith('0') && previous is { Hour: >= NoonHour })
+        else if (UsesTwelveHourClock(info) && hour is >= 1 and < NoonHour && !hourText.StartsWith('0') && previous is { Hour: >= NoonHour })
         {
             // "9" with an afternoon time already showing means 9 in the evening. A leading zero ("09") always means the morning.
             hour += HoursInHalfDay;
@@ -97,6 +105,27 @@ public static partial class TimeInput
         }
 
         time = new TimeOnly(hour, minute);
+        return true;
+    }
+
+    /// <summary>True when the language writes times with "AM" and "PM" (an "h" in its pattern) rather than on 24 hours.</summary>
+    private static bool UsesTwelveHourClock(DateTimeFormatInfo info) => info.ShortTimePattern.Contains('h');
+
+    /// <summary>The way the language itself writes a time, such as "10:00 ص". Only tried when the text carries its AM or PM word.</summary>
+    private static bool ReadInTheLanguageOf(DateTimeFormatInfo info, string text, out TimeOnly time)
+    {
+        time = default;
+
+        // Exactly what Format writes always comes back. Otherwise the text has to carry the language's own AM or PM word.
+        var hasDesignator = new[] { info.AMDesignator, info.PMDesignator }
+            .Any(word => word.Length > 0 && text.Contains(word, StringComparison.OrdinalIgnoreCase));
+        if (!TimeOnly.TryParseExact(text.Trim(), ScreenFormat, info, DateTimeStyles.None, out var parsed)
+            && !(hasDesignator && TimeOnly.TryParse(text, info, DateTimeStyles.None, out parsed)))
+        {
+            return false;
+        }
+
+        time = new TimeOnly(parsed.Hour, parsed.Minute);
         return true;
     }
 }
