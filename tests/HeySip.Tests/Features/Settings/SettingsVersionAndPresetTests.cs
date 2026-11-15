@@ -123,7 +123,7 @@ public sealed class SettingsVersionAndPresetTests : IDisposable
     {
         var before = new AppSettings { Name = "Kai", IntervalMinutes = 30 };
 
-        var office = WorkHoursPresets.All.Single(p => p.Id == "office").Apply(before);
+        var office = WorkHoursPresets.All.Single(p => p.Id == WorkHoursPresets.OfficeId).Apply(before);
 
         Assert.Equal(new TimeOnly(9, 0), office.ActiveStart);
         Assert.Equal(new TimeOnly(18, 0), office.ActiveEnd);
@@ -137,7 +137,7 @@ public sealed class SettingsVersionAndPresetTests : IDisposable
     [Fact]
     public void The_matching_preset_is_found_and_goes_away_when_the_schedule_is_customised()
     {
-        var settings = WorkHoursPresets.All.Single(p => p.Id == "nightowl").Apply(new AppSettings());
+        var settings = WorkHoursPresets.All.Single(p => p.Id == WorkHoursPresets.NightOwlId).Apply(new AppSettings());
         Assert.Equal("nightowl", WorkHoursPresets.Matching(settings)?.Id);
 
         Assert.Null(WorkHoursPresets.Matching(settings with { ActiveEnd = new TimeOnly(3, 0) }));
@@ -153,11 +153,11 @@ public sealed class SettingsVersionAndPresetTests : IDisposable
     [Fact]
     public void Night_owl_hours_cross_midnight_and_office_hours_skip_the_weekend()
     {
-        var nightOwl = WorkHoursPresets.All.Single(p => p.Id == "nightowl").Apply(new AppSettings());
+        var nightOwl = WorkHoursPresets.All.Single(p => p.Id == WorkHoursPresets.NightOwlId).Apply(new AppSettings());
         Assert.True(ActiveHours.Contains(nightOwl, new DateTime(2026, 3, 11, 1, 0, 0)));
         Assert.False(ActiveHours.Contains(nightOwl, new DateTime(2026, 3, 11, 9, 0, 0)));
 
-        var office = WorkHoursPresets.All.Single(p => p.Id == "office").Apply(new AppSettings());
+        var office = WorkHoursPresets.All.Single(p => p.Id == WorkHoursPresets.OfficeId).Apply(new AppSettings());
         Assert.True(ActiveHours.Contains(office, new DateTime(2026, 3, 10, 10, 0, 0)));    // Tuesday
         Assert.False(ActiveHours.Contains(office, new DateTime(2026, 3, 14, 10, 0, 0)));   // Saturday
         Assert.False(ActiveHours.Contains(office, new DateTime(2026, 3, 10, 18, 0, 0)));   // 18:00 is the end

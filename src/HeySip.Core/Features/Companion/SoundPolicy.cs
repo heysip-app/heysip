@@ -28,7 +28,7 @@ public static class SoundPolicy
     /// </summary>
     public static float Gain(AppSettings settings)
     {
-        var level = Math.Clamp(settings.SoundVolume, 0, 100) / 100f;
+        var level = (float)SettingsLimits.SoundVolume.Clamp(settings.SoundVolume) / SettingsLimits.SoundVolume.Max;
         return level * level;
     }
 }

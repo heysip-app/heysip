@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using HeySip.Core.Features.Companion;
 using HeySip.Core.Features.Companion.Packs;
+using HeySip.Core.SharedKernel;
 
 namespace HeySip.Core.Features.Settings;
 
@@ -22,21 +23,25 @@ public sealed record AppSettings
 
     public string Name { get; init; } = "";
 
-    public int IntervalMinutes { get; init; } = 45;
+    public int IntervalMinutes { get; init; } = SettingsLimits.IntervalMinutes.Default;
 
-    public int SnoozeMinutes { get; init; } = 10;
+    public int SnoozeMinutes { get; init; } = SettingsLimits.SnoozeMinutes.Default;
 
-    public TimeOnly ActiveStart { get; init; } = new(10, 0);
+    public static readonly TimeOnly DefaultActiveStart = new(10, 0);
 
-    public TimeOnly ActiveEnd { get; init; } = new(23, 0);
+    public static readonly TimeOnly DefaultActiveEnd = new(23, 0);
 
-    public DayOfWeek[] ActiveDays { get; init; } = Enum.GetValues<DayOfWeek>();
+    public TimeOnly ActiveStart { get; init; } = DefaultActiveStart;
+
+    public TimeOnly ActiveEnd { get; init; } = DefaultActiveEnd;
+
+    public DayOfWeek[] ActiveDays { get; init; } = WeekDays.AllDays();
 
     /// <summary>
     /// The days that count as the weekend, whichever they are for this user: none, one, two or more. The schedule presets
     /// that skip the weekend ("Office", "Weekends off") leave these days out. Saturday and Sunday until changed.
     /// </summary>
-    public DayOfWeek[] WeekendDays { get; init; } = [DayOfWeek.Saturday, DayOfWeek.Sunday];
+    public DayOfWeek[] WeekendDays { get; init; } = WeekDays.DefaultWeekend();
 
     /// <summary>
     /// What each character wears: character id, then at most one accessory per slot, as slot name ("hat", "eyes", "neck",
@@ -62,9 +67,9 @@ public sealed record AppSettings
     /// <summary>IANA/Windows time zone id used for active hours and day boundaries; null means the machine's zone.</summary>
     public string? TimeZoneId { get; init; }
 
-    public int DailyGoalMilliliters { get; init; } = 2000;
+    public int DailyGoalMilliliters { get; init; } = SettingsLimits.DailyGoalMilliliters.Default;
 
-    public int GlassMilliliters { get; init; } = 250;
+    public int GlassMilliliters { get; init; } = SettingsLimits.GlassMilliliters.Default;
 
     /// <summary>Ignored reminders come back sooner and more insistently.</summary>
     public bool Escalate { get; init; } = true;
@@ -83,13 +88,13 @@ public sealed record AppSettings
     public MessageStyle Messages { get; init; } = MessageStyle.Friendly;
 
     /// <summary>1-based monitor number the companion appears on; 1 is the primary display.</summary>
-    public int Monitor { get; init; } = 1;
+    public int Monitor { get; init; } = SettingsLimits.Monitor.Default;
 
     /// <summary>Play a chime when a reminder appears and a gulp when a drink is logged.</summary>
     public bool SoundEnabled { get; init; } = true;
 
     /// <summary>How loud, from 0 to 100. Gentle by default: reminders should nudge, not startle.</summary>
-    public int SoundVolume { get; init; } = 40;
+    public int SoundVolume { get; init; } = SettingsLimits.SoundVolume.Default;
 
     /// <summary>Whether the Characters page may look on the internet for new characters. Only matters once an online list is set up.</summary>
     public bool OnlineCharacters { get; init; } = true;
@@ -105,16 +110,16 @@ public sealed record AppSettings
     {
         SchemaVersion = CurrentSchemaVersion,
         Name = TrimName(Name),
-        IntervalMinutes = Math.Clamp(IntervalMinutes, 1, 720),
-        SnoozeMinutes = Math.Clamp(SnoozeMinutes, 1, 120),
-        DailyGoalMilliliters = Math.Clamp(DailyGoalMilliliters, 250, 10_000),
-        GlassMilliliters = Math.Clamp(GlassMilliliters, 50, 2_000),
-        Monitor = Math.Max(1, Monitor),
-        SoundVolume = Math.Clamp(SoundVolume, 0, 100),
+        IntervalMinutes = SettingsLimits.IntervalMinutes.Clamp(IntervalMinutes),
+        SnoozeMinutes = SettingsLimits.SnoozeMinutes.Clamp(SnoozeMinutes),
+        DailyGoalMilliliters = SettingsLimits.DailyGoalMilliliters.Clamp(DailyGoalMilliliters),
+        GlassMilliliters = SettingsLimits.GlassMilliliters.Clamp(GlassMilliliters),
+        Monitor = SettingsLimits.Monitor.Clamp(Monitor),
+        SoundVolume = SettingsLimits.SoundVolume.Clamp(SoundVolume),
         // An empty list is a real choice (no reminders on any day); only a missing list falls back to every day.
-        ActiveDays = ((DayOfWeek[]?)ActiveDays)?.Distinct().Order().ToArray() ?? Enum.GetValues<DayOfWeek>(),
+        ActiveDays = ((DayOfWeek[]?)ActiveDays)?.Distinct().Order().ToArray() ?? WeekDays.AllDays(),
         // As above, an empty list is a real choice (a week with no weekend); only a missing list falls back to Saturday and Sunday.
-        WeekendDays = ((DayOfWeek[]?)WeekendDays)?.Distinct().Order().ToArray() ?? [DayOfWeek.Saturday, DayOfWeek.Sunday],
+        WeekendDays = ((DayOfWeek[]?)WeekendDays)?.Distinct().Order().ToArray() ?? WeekDays.DefaultWeekend(),
         Character = PackId.IsValid(Character) ? Character : PackId.DefaultCharacter,
         Outfits = CleanOutfits(Outfits),
         LegacyOutfit = null,
@@ -178,6 +183,6 @@ public sealed record AppSettings
     private static string TrimName(string? name)
     {
         var trimmed = (name ?? "").Trim();
-        return trimmed.Length > 24 ? trimmed[..24] : trimmed;
+        return trimmed.Length > SettingsLimits.NameMaxLength ? trimmed[..SettingsLimits.NameMaxLength] : trimmed;
     }
 }
