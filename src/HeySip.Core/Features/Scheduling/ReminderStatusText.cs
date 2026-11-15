@@ -6,6 +6,9 @@ namespace HeySip.Core.Features.Scheduling;
 /// <summary>Plain-language descriptions of when the next reminder will happen, shared by every place that shows it.</summary>
 public static class ReminderStatusText
 {
+    private const string Today = "today";
+    private const string Tomorrow = "tomorrow";
+
     /// <summary>A full sentence for the Today page.</summary>
     public static string Full(ReminderStatus status, AppSettings settings, TimeProvider time)
     {
@@ -23,11 +26,11 @@ public static class ReminderStatusText
 
         if (status.OutsideActiveHours)
         {
-            return $"Outside your active hours. Next nudge {DayWord(next, settings, time)} at {LocalTime(next, settings, time):HH:mm}";
+            return $"Outside your active hours. Next nudge {DayOf(next, settings, time).Word} at {ClockOf(next, settings, time)}";
         }
 
         var left = status.TimeUntilNext ?? TimeSpan.Zero;
-        return left.TotalMinutes < 1 ? "Next nudge: any moment now" : $"Next nudge in about {Math.Round(left.TotalMinutes)} min";
+        return left < ReminderRules.ImminentWithin ? "Next nudge: any moment now" : $"Next nudge in about {Math.Round(left.TotalMinutes)} min";
     }
 
     /// <summary>A few words for the status bar and tray tooltip.</summary>
@@ -47,32 +50,38 @@ public static class ReminderStatusText
 
         if (status.OutsideActiveHours)
         {
-            var day = DayWord(next, settings, time);
-            return day == "today"
-                ? $"Quiet until {LocalTime(next, settings, time):HH:mm}"
-                : $"Quiet until {day} {LocalTime(next, settings, time):HH:mm}";
+            return $"Quiet until {UntilText(next, settings, time)}";
         }
 
         var left = status.TimeUntilNext ?? TimeSpan.Zero;
-        return left.TotalMinutes < 1 ? "Next nudge now" : $"Next nudge in {Math.Max(1, (int)Math.Round(left.TotalMinutes))} min";
+        return left < ReminderRules.ImminentWithin ? "Next nudge now" : $"Next nudge in {Math.Max(1, (int)Math.Round(left.TotalMinutes))} min";
     }
 
     /// <summary>"15:00" when it is today, otherwise "tomorrow 10:00" or "Friday 10:00".</summary>
     private static string UntilText(DateTimeOffset moment, AppSettings settings, TimeProvider time)
     {
-        var day = DayWord(moment, settings, time);
-        var clock = LocalTime(moment, settings, time).ToString("HH:mm");
-        return day == "today" ? clock : $"{day} {clock}";
+        var day = DayOf(moment, settings, time);
+        var clock = ClockOf(moment, settings, time);
+        return day.IsToday ? clock : $"{day.Word} {clock}";
     }
 
-    private static DateTime LocalTime(DateTimeOffset moment, AppSettings settings, TimeProvider time) =>
-        TimeZoneInfo.ConvertTime(moment, ZoneResolver.Resolve(settings.TimeZoneId, time)).DateTime;
+    private static string ClockOf(DateTimeOffset moment, AppSettings settings, TimeProvider time) =>
+        TimeZoneInfo.ConvertTime(moment, ZoneResolver.Resolve(settings.TimeZoneId, time)).ToString(TimeFormats.Clock);
 
-    private static string DayWord(DateTimeOffset moment, AppSettings settings, TimeProvider time)
+    /// <summary>How a moment's calendar day is said: "today", "tomorrow", or the weekday's name.</summary>
+    private readonly record struct DayWord(bool IsToday, string Word);
+
+    private static DayWord DayOf(DateTimeOffset moment, AppSettings settings, TimeProvider time)
     {
         var zone = ZoneResolver.Resolve(settings.TimeZoneId, time);
         var today = ZoneResolver.LocalDate(time.GetUtcNow(), zone);
         var day = ZoneResolver.LocalDate(moment, zone);
-        return day == today ? "today" : day == today.AddDays(1) ? "tomorrow" : LocalTime(moment, settings, time).ToString("dddd");
+
+        if (day == today)
+        {
+            return new DayWord(IsToday: true, Today);
+        }
+
+        return new DayWord(IsToday: false, day == today.AddDays(1) ? Tomorrow : TimeZoneInfo.ConvertTime(moment, zone).ToString(TimeFormats.DayName));
     }
 }

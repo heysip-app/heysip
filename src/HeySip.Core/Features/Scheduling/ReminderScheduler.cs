@@ -27,13 +27,10 @@ public sealed class ReminderScheduler(TimeProvider time)
 
     public DateTimeOffset? PausedUntil => IsPaused ? _pausedUntil : null;
 
-    /// <summary>How many times longer the interval gets once the goal is met, if the user chose to be reminded less then.</summary>
-    public const int AfterGoalFactor = 3;
-
     private static bool Relaxed(AppSettings settings, bool goalReached) => goalReached && settings.RemindLessAfterGoal;
 
     private static int Interval(AppSettings settings, bool goalReached) =>
-        settings.IntervalMinutes * (Relaxed(settings, goalReached) ? AfterGoalFactor : 1);
+        settings.IntervalMinutes * (Relaxed(settings, goalReached) ? ReminderRules.AfterGoalFactor : 1);
 
     /// <summary>Once the goal is met (and the user asked for fewer reminders) reminders stay calm however many are ignored.</summary>
     public EscalationLevel Level(AppSettings settings, bool goalReached = false) =>
@@ -56,17 +53,26 @@ public sealed class ReminderScheduler(TimeProvider time)
     public void Missed(AppSettings settings, bool goalReached = false)
     {
         Ignored++;
-        var minutes = settings.Escalate && !Relaxed(settings, goalReached)
-            ? Math.Min(settings.IntervalMinutes, Math.Clamp(settings.IntervalMinutes / 3, 5, 15))
-            : Interval(settings, goalReached);
+        var minutes = settings.Escalate && !Relaxed(settings, goalReached) ? EscalatedRetryMinutes(settings) : Interval(settings, goalReached);
         NextDueAt = time.GetUtcNow().AddMinutes(minutes);
     }
 
-    private static TimeSpan StaleAfter(AppSettings settings) => TimeSpan.FromMinutes(Math.Max(settings.IntervalMinutes, 60));
+    /// <summary>How soon an ignored reminder comes back: a fraction of the interval kept within sensible bounds, never longer than the interval itself.</summary>
+    private static int EscalatedRetryMinutes(AppSettings settings) =>
+        Math.Min(
+            settings.IntervalMinutes,
+            Math.Clamp(settings.IntervalMinutes / ReminderRules.EscalatedRetryDivisor, ReminderRules.EscalatedRetryMinMinutes, ReminderRules.EscalatedRetryMaxMinutes));
+
+    private static TimeSpan StaleAfter(AppSettings settings) =>
+        TimeSpan.FromMinutes(Math.Max(settings.IntervalMinutes, ReminderRules.MinimumStaleAfter.TotalMinutes));
 
     public void DueIn(TimeSpan delay) => NextDueAt = time.GetUtcNow().Add(delay);
 
-    public void PauseFor(TimeSpan duration) => _pausedUntil = time.GetUtcNow().Add(duration);
+    public void PauseFor(TimeSpan duration)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero);
+        _pausedUntil = time.GetUtcNow().Add(duration);
+    }
 
     /// <summary>Quiet until a moment in time. A moment that has already passed ends any pause.</summary>
     public void PauseUntil(DateTimeOffset until) => _pausedUntil = until > time.GetUtcNow() ? until : null;
@@ -125,7 +131,8 @@ public sealed class ReminderScheduler(TimeProvider time)
 
         var zone = ZoneResolver.Resolve(settings.TimeZoneId, time);
         var candidate = NextDueAt > time.GetUtcNow() ? NextDueAt : time.GetUtcNow();
-        for (var step = 0; step <= 8 * 24 * 60; step++, candidate = candidate.AddMinutes(1))
+        var steps = (int)(TimeSpan.FromDays(ReminderRules.LookAheadDays) / ReminderRules.LookAheadStep);
+        for (var step = 0; step <= steps; step++, candidate += ReminderRules.LookAheadStep)
         {
             if (ActiveHours.Contains(settings, TimeZoneInfo.ConvertTime(candidate, zone).DateTime))
             {

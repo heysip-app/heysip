@@ -19,7 +19,7 @@ public static class ActiveHours
             return settings.ActiveDays.Contains(localNow.DayOfWeek);
         }
 
-        if (start < end)
+        if (!IsOvernight(settings))
         {
             return settings.ActiveDays.Contains(localNow.DayOfWeek) && time >= start && time < end;
         }
@@ -29,4 +29,11 @@ public static class ActiveHours
             ? settings.ActiveDays.Contains(localNow.DayOfWeek)
             : time < end && settings.ActiveDays.Contains(localNow.AddDays(-1).DayOfWeek);
     }
+
+    /// <summary>The window ends before it starts (22:00-02:00), so it runs past midnight into the next calendar day.</summary>
+    public static bool IsOvernight(AppSettings settings) => settings.ActiveStart > settings.ActiveEnd;
+
+    /// <summary>The small hours of an overnight window: past midnight, but still part of the window that began yesterday.</summary>
+    public static bool IsInOvernightTail(AppSettings settings, DateTime localNow) =>
+        IsOvernight(settings) && TimeOnly.FromDateTime(localNow) < settings.ActiveEnd;
 }

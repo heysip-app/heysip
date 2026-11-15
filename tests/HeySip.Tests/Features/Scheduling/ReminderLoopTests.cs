@@ -39,7 +39,7 @@ public sealed class ReminderLoopTests : IDisposable
         // sleeping a fixed time, so a slow machine can't make this flaky.
         for (var i = 0; i < 100 && Volatile.Read(ref presence.Calls) < 2; i++)
         {
-            _core.Time.Advance(ReminderService.PollInterval);
+            _core.Time.Advance(ReminderRules.PollInterval);
             await Task.Delay(20, TestContext.Current.CancellationToken);
         }
 

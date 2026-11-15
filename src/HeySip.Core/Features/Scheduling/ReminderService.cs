@@ -43,8 +43,6 @@ public sealed class ReminderService(
     DiagnosticLog? log = null,
     HydrationService? hydration = null)
 {
-    public static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(20);
-
     private readonly Lock _gate = new();
     private CancellationTokenSource? _stopping;
     private Task? _loop;
@@ -197,8 +195,13 @@ public sealed class ReminderService(
     public void PauseUntilTomorrow()
     {
         var zone = ZoneResolver.Resolve(settings.Current.TimeZoneId, time);
-        var tomorrow = ZoneResolver.LocalNow(zone, time).Date.AddDays(1) + settings.Current.ActiveStart.ToTimeSpan();
-        PauseAt(tomorrow, zone);
+        var current = settings.Current;
+        var now = ZoneResolver.LocalNow(zone, time);
+
+        // Just after midnight in an overnight window (22:00-02:00 at 00:30) it is still "last night": the next time the
+        // active hours begin is later today, and skipping to the next calendar day would silence a whole window.
+        var startDay = ActiveHours.IsInOvernightTail(current, now) ? now.Date : now.Date.AddDays(1);
+        PauseAt(startDay + current.ActiveStart.ToTimeSpan(), zone);
     }
 
     private void PauseAt(DateTime local, TimeZoneInfo zone)
@@ -277,7 +280,7 @@ public sealed class ReminderService(
 
     private async Task RunAsync(CancellationToken stopping)
     {
-        using var timer = new PeriodicTimer(PollInterval, time);
+        using var timer = new PeriodicTimer(ReminderRules.PollInterval, time);
         try
         {
             while (await timer.WaitForNextTickAsync(stopping).ConfigureAwait(false))
