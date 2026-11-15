@@ -546,7 +546,9 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 
     public bool ShowRemindersCard => ShowTimingRow || ShowPresets || ShowHours || ShowDays || ShowZone || ShowEscalate || ShowAfterGoal || ShowAway || ShowTest;
 
-    public bool ShowCompanionCard => ShowCharacter || ShowOnline || ShowOutfit || ShowSounds || ShowStyleRow;
+    public bool ShowCompanionCard => ShowCharacter || ShowOnline || ShowOutfit;
+
+    public bool ShowSoundsCard => ShowSounds || ShowStyleRow;
 
     public bool ShowAppCard => ShowTheme || ShowTray || ShowStartup;
 
@@ -554,7 +556,7 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 
     public bool ShowDataCard => ShowData;
 
-    public bool NoResults => !(ShowAboutCard || ShowRemindersCard || ShowCompanionCard || ShowAppCard || ShowHelpCard || ShowDataCard);
+    public bool NoResults => !(ShowAboutCard || ShowRemindersCard || ShowSoundsCard || ShowCompanionCard || ShowAppCard || ShowHelpCard || ShowDataCard);
 
     [RelayCommand]
     private void TestReminder() => _reminders.Trigger();
@@ -592,7 +594,7 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
         nameof(ShowDays), nameof(ShowZone), nameof(ShowEscalate), nameof(ShowAway), nameof(ShowPresets), nameof(ShowAfterGoal), nameof(ShowTest), nameof(ShowCharacter), nameof(ShowOutfit), nameof(ShowOnline), nameof(ShowSounds),
         nameof(ShowMessages), nameof(ShowMonitor), nameof(ShowTheme), nameof(ShowTray), nameof(ShowStartup), nameof(ShowHelp),
         nameof(ShowData), nameof(ShowAmountsRow), nameof(ShowTimingRow), nameof(ShowStyleRow), nameof(ShowAboutCard),
-        nameof(ShowRemindersCard), nameof(ShowCompanionCard), nameof(ShowAppCard), nameof(ShowHelpCard), nameof(ShowDataCard),
+        nameof(ShowRemindersCard), nameof(ShowSoundsCard), nameof(ShowCompanionCard), nameof(ShowAppCard), nameof(ShowHelpCard), nameof(ShowDataCard),
         nameof(NoResults),
     ];
 
