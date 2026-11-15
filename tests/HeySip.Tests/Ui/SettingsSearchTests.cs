@@ -66,7 +66,7 @@ public sealed class SettingsSearchTests
         using var ui = Harness();
         var settings = ui.Shell.Settings;
 
-        Assert.True(settings.ShowAboutCard && settings.ShowRemindersCard && settings.ShowCompanionCard);
+        Assert.True(settings.ShowAboutCard && settings.ShowRemindersCard && settings.ShowSoundsCard && settings.ShowCompanionCard);
         Assert.True(settings.ShowAppCard && settings.ShowHelpCard && settings.ShowDataCard);
         Assert.False(settings.NoResults);
     }
@@ -210,7 +210,7 @@ public sealed class SettingsSearchTests
         ui.Show();
         var allCards = ui.Window.GetVisualDescendants().OfType<Border>()
             .Count(border => border.Classes.Contains("card") && border.IsEffectivelyVisible);
-        Assert.Equal(6, allCards);
+        Assert.Equal(7, allCards);
     }
 
     [AvaloniaFact]

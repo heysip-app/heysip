@@ -77,7 +77,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </comp:Field>
-            <comp:Field Label="Weekend days" IsVisible="{Binding ShowDays}">
+            <Expander Header="Which days count as the weekend?" IsVisible="{Binding ShowDays}" HorizontalAlignment="Left">
                 <StackPanel Spacing="{DynamicResource HbSpace6}">
                     <ItemsControl ItemsSource="{Binding WeekendDays}" Margin="{DynamicResource HbThickness0_2_0_0}">
                         <ItemsControl.ItemsPanel>
@@ -94,7 +94,7 @@
                     </ItemsControl>
                     <TextBlock Text="Any days, even just one or none. The Office and Weekends off schedules leave these out." Classes="muted" TextWrapping="Wrap" />
                 </StackPanel>
-            </comp:Field>
+            </Expander>
             <comp:Field Label="Time zone" IsVisible="{Binding ShowZone}">
                 <ComboBox ItemsSource="{Binding Zones}" SelectedItem="{Binding Zone}" Width="{DynamicResource HbZoneComboWidth}">
                     <ComboBox.ItemTemplate>
@@ -115,6 +115,44 @@
                           OffContent="Always remind, even when I'm away" />
             <Button Content="Show a test reminder" Command="{Binding TestReminderCommand}" HorizontalAlignment="Left"
                     IsVisible="{Binding ShowTest}" />
+        </comp:Card>
+
+        <comp:Card Heading="Sound and messages" Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding ShowSoundsCard}">
+            <StackPanel Spacing="{DynamicResource HbSpace10}" IsVisible="{Binding ShowSounds}">
+                <ToggleSwitch IsChecked="{Binding SoundsOn}"
+                              OnContent="Play a chime for reminders and a gulp when I drink"
+                              OffContent="Sounds are off" />
+                <comp:Field Label="Volume" IsEnabled="{Binding SoundsOn}">
+                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace12}">
+                        <Slider Minimum="{Binding VolumeBounds.SliderMinimum}" Maximum="{Binding VolumeBounds.SliderMaximum}" Value="{Binding SoundVolume}" Width="{DynamicResource HbSize240}" AutomationProperties.Name="Volume" />
+                        <TextBlock Text="{Binding SoundVolume, StringFormat='{}{0:0}%'}" VerticalAlignment="Center" Classes="muted" Width="{DynamicResource HbVolumeLabelWidth}" />
+                        <Button Content="Play a test sound" Command="{Binding TestSoundCommand}" />
+                    </StackPanel>
+                </comp:Field>
+                <TextBlock Text="Pausing reminders or choosing quiet time keeps every sound silent too." Classes="muted" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Classes="fields" IsVisible="{Binding ShowStyleRow}">
+                <comp:Field Label="How should I talk?" IsVisible="{Binding ShowMessages}">
+                    <ComboBox ItemsSource="{Binding MessageStyles}" SelectedItem="{Binding Messages}" Width="{DynamicResource HbChoiceComboWidth}" />
+                </comp:Field>
+                <comp:Field Label="Show on monitor" IsVisible="{Binding ShowMonitor}">
+                    <NumericUpDown Value="{Binding Monitor}" Minimum="{Binding MonitorBounds.Minimum}" Maximum="{Binding MonitorBounds.Maximum}" Increment="{Binding MonitorBounds.Increment}" FormatString="0" Width="{DynamicResource HbSize160}" />
+                </comp:Field>
+            </StackPanel>
+        </comp:Card>
+
+        <comp:Card Heading="App" Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding ShowAppCard}">
+            <comp:Field Label="Theme" IsVisible="{Binding ShowTheme}">
+                <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" Width="{DynamicResource HbChoiceComboWidth}" />
+            </comp:Field>
+            <ToggleSwitch IsChecked="{Binding CloseToTray}" IsVisible="{Binding ShowTray}"
+                          OnContent="Closing the window keeps me in the tray"
+                          OffContent="Closing the window quits" />
+            <StackPanel Spacing="{DynamicResource HbSpace8}" IsVisible="{Binding ShowStartup}">
+                <ToggleSwitch IsChecked="{Binding StartWithOs}" OnContent="Start when I sign in" OffContent="Don't start when I sign in" />
+                <TextBlock Text="{Binding StartupMessage}" Classes="muted" TextWrapping="Wrap"
+                           IsVisible="{Binding StartupMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
         </comp:Card>
 
         <comp:Card Heading="Companion" Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding ShowCompanionCard}">
@@ -192,41 +230,6 @@
             </ItemsControl>
             <Button Content="Get more accessories" Command="{Binding BrowseAccessoriesCommand}" HorizontalAlignment="Left"
                     IsVisible="{Binding ShowOutfit}" ToolTip.Tip="Find more accessories to wear" />
-            <StackPanel Spacing="{DynamicResource HbSpace10}" IsVisible="{Binding ShowSounds}">
-                <ToggleSwitch IsChecked="{Binding SoundsOn}"
-                              OnContent="Play a chime for reminders and a gulp when I drink"
-                              OffContent="Sounds are off" />
-                <comp:Field Label="Volume" IsEnabled="{Binding SoundsOn}">
-                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace12}">
-                        <Slider Minimum="{Binding VolumeBounds.SliderMinimum}" Maximum="{Binding VolumeBounds.SliderMaximum}" Value="{Binding SoundVolume}" Width="{DynamicResource HbSize240}" AutomationProperties.Name="Volume" />
-                        <TextBlock Text="{Binding SoundVolume, StringFormat='{}{0:0}%'}" VerticalAlignment="Center" Classes="muted" Width="{DynamicResource HbVolumeLabelWidth}" />
-                        <Button Content="Play a test sound" Command="{Binding TestSoundCommand}" />
-                    </StackPanel>
-                </comp:Field>
-                <TextBlock Text="Pausing reminders or choosing quiet time keeps every sound silent too." Classes="muted" TextWrapping="Wrap" />
-            </StackPanel>
-            <StackPanel Classes="fields" IsVisible="{Binding ShowStyleRow}">
-                <comp:Field Label="How should I talk?" IsVisible="{Binding ShowMessages}">
-                    <ComboBox ItemsSource="{Binding MessageStyles}" SelectedItem="{Binding Messages}" Width="{DynamicResource HbChoiceComboWidth}" />
-                </comp:Field>
-                <comp:Field Label="Show on monitor" IsVisible="{Binding ShowMonitor}">
-                    <NumericUpDown Value="{Binding Monitor}" Minimum="{Binding MonitorBounds.Minimum}" Maximum="{Binding MonitorBounds.Maximum}" Increment="{Binding MonitorBounds.Increment}" FormatString="0" Width="{DynamicResource HbSize160}" />
-                </comp:Field>
-            </StackPanel>
-        </comp:Card>
-
-        <comp:Card Heading="App" Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding ShowAppCard}">
-            <comp:Field Label="Theme" IsVisible="{Binding ShowTheme}">
-                <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" Width="{DynamicResource HbChoiceComboWidth}" />
-            </comp:Field>
-            <ToggleSwitch IsChecked="{Binding CloseToTray}" IsVisible="{Binding ShowTray}"
-                          OnContent="Closing the window keeps me in the tray"
-                          OffContent="Closing the window quits" />
-            <StackPanel Spacing="{DynamicResource HbSpace8}" IsVisible="{Binding ShowStartup}">
-                <ToggleSwitch IsChecked="{Binding StartWithOs}" OnContent="Start when I sign in" OffContent="Don't start when I sign in" />
-                <TextBlock Text="{Binding StartupMessage}" Classes="muted" TextWrapping="Wrap"
-                           IsVisible="{Binding StartupMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
         </comp:Card>
 
         <comp:Card Heading="About and help" Spacing="{DynamicResource HbSpace10}" IsVisible="{Binding ShowHelpCard}">

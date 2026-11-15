@@ -283,7 +283,7 @@ public sealed class SoundTests : IDisposable
         {
             ui.Shell.OpenSettings(word);
             Assert.True(ui.Shell.Settings.ShowSounds, word);
-            Assert.True(ui.Shell.Settings.ShowCompanionCard, word);
+            Assert.True(ui.Shell.Settings.ShowSoundsCard, word);
         }
 
         ui.Shell.OpenSettings("interval");
