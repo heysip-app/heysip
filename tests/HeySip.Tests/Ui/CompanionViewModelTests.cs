@@ -14,7 +14,7 @@ public sealed class CompanionViewModelTests : IDisposable
     public void Dispose() => _core.Dispose();
 
     /// <summary>Animations finish instantly; the 2-minute prompt timeout only elapses when the test says so.</summary>
-    private Task Delay(TimeSpan span) => span == CompanionViewModel.PromptTimeout ? _promptTimeout.Task : Task.CompletedTask;
+    private Task Delay(TimeSpan span) => span == CompanionTimings.PromptTimeout ? _promptTimeout.Task : Task.CompletedTask;
 
     private CompanionViewModel Create() =>
         new(_core.Settings, new MessageBook(new Random(7)), _core.Hydration, Delay);

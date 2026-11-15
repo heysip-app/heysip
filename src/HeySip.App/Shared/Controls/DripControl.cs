@@ -30,8 +30,10 @@ public enum DripPose
 /// </summary>
 public sealed class DripControl : Control
 {
-    private const double DesignWidth = 100;
-    private const double DesignHeight = 140;
+    private const double DesignWidth = PackLimits.DesignWidth;
+    private const double DesignHeight = PackLimits.DesignHeight;
+
+    private const double MillisecondsPerSecond = 1000.0;
 
     public static readonly StyledProperty<DripPose> PoseProperty =
         AvaloniaProperty.Register<DripControl, DripPose>(nameof(Pose));
@@ -192,7 +194,7 @@ public sealed class DripControl : Control
         var character = PreparedCharacterNow();
         var outfit = PreparedOutfit();
         var ticks = Environment.TickCount64;
-        var frame = new CharacterFrame(ticks / 1000.0, ticks, IsAnimated, IsWalking);
+        var frame = new CharacterFrame(ticks / MillisecondsPerSecond, ticks, IsAnimated, IsWalking);
 
         character.Draw(context, Bounds.Size, StandardPoseOf(Pose), frame, outfit);
     }

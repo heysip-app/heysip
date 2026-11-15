@@ -18,6 +18,14 @@ internal sealed class PreparedShape
         Line,
     }
 
+    private const double DiameterPerRadius = 2;
+    private const double FullOpacity = 1;
+
+    /// <summary>A gradient runs from a quarter of the way across the top to three quarters across the bottom, a little slanted.</summary>
+    private const double GradientStartX = 0.25;
+
+    private const double GradientEndX = 0.75;
+
     private readonly Kind _kind;
     private readonly Geometry? _geometry;
     private readonly Point _from;
@@ -72,7 +80,7 @@ internal sealed class PreparedShape
             case EllipseShape ellipse:
                 return new PreparedShape(
                     Kind.Ellipse, null, new Point(ellipse.CenterX, ellipse.CenterY), default, ellipse.RadiusX, ellipse.RadiusY, fill, pen, shape.Opacity,
-                    Grow(new Rect(ellipse.CenterX - ellipse.RadiusX, ellipse.CenterY - ellipse.RadiusY, ellipse.RadiusX * 2, ellipse.RadiusY * 2), pen));
+                    Grow(new Rect(ellipse.CenterX - ellipse.RadiusX, ellipse.CenterY - ellipse.RadiusY, ellipse.RadiusX * DiameterPerRadius, ellipse.RadiusY * DiameterPerRadius), pen));
             case LineShape line:
                 return new PreparedShape(
                     Kind.Line, null, new Point(line.X1, line.Y1), new Point(line.X2, line.Y2), 0, 0, fill, pen, shape.Opacity,
@@ -87,7 +95,7 @@ internal sealed class PreparedShape
 
     public void Draw(DrawingContext context)
     {
-        using var fade = _opacity < 1 ? context.PushOpacity(_opacity) : default;
+        using var fade = _opacity < FullOpacity ? context.PushOpacity(_opacity) : default;
         switch (_kind)
         {
             case Kind.Path:
@@ -115,8 +123,8 @@ internal sealed class PreparedShape
         SolidFill solid => new ImmutableSolidColorBrush(ToColor(solid.Color)),
         GradientFill gradient => new LinearGradientBrush
         {
-            StartPoint = new RelativePoint(0.25, 0, RelativeUnit.Relative),
-            EndPoint = new RelativePoint(0.75, 1, RelativeUnit.Relative),
+            StartPoint = new RelativePoint(GradientStartX, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(GradientEndX, 1, RelativeUnit.Relative),
             GradientStops = [new GradientStop(ToColor(gradient.From), 0), new GradientStop(ToColor(gradient.To), 1)],
         },
         _ => null,
@@ -130,6 +138,11 @@ internal sealed class PreparedAccessory(AccessoryPack pack)
     // things by shoulder width, glasses by the distance between the eyes (so they fit a wide-eyed axolotl too).
     private const double ReferenceWidth = 68;
     private const double ReferenceEyeDistance = 22;
+
+    /// <summary>A character whose measured width is no more than this is drawn at the reference size, not scaled by it.</summary>
+    private const double SmallestMeasuredWidth = 1;
+
+    private const double ReferenceScale = 1;
 
     private readonly PreparedShape[] _parts = PreparedShape.CreateAll(pack.Parts);
 
@@ -154,16 +167,16 @@ internal sealed class PreparedAccessory(AccessoryPack pack)
         var anchors = character.Anchors;
         var anchor = pack.Slot switch
         {
-            AccessorySlot.Hat => anchors["headTop"],
-            AccessorySlot.Eyes => anchors["eyeLine"],
-            AccessorySlot.Neck => anchors["neck"],
+            AccessorySlot.Hat => anchors[PackAnchors.HeadTop],
+            AccessorySlot.Eyes => anchors[PackAnchors.EyeLine],
+            AccessorySlot.Neck => anchors[PackAnchors.Neck],
             _ => hand,
         };
 
-        var width = Math.Abs(anchors["shoulderRight"].X - anchors["shoulderLeft"].X);
-        var eyes = Math.Abs(anchors["eyeRight"].X - anchors["eyeLeft"].X);
+        var width = Math.Abs(anchors[PackAnchors.ShoulderRight].X - anchors[PackAnchors.ShoulderLeft].X);
+        var eyes = Math.Abs(anchors[PackAnchors.EyeRight].X - anchors[PackAnchors.EyeLeft].X);
         var reference = pack.Slot == AccessorySlot.Eyes ? (eyes, ReferenceEyeDistance) : (width, ReferenceWidth);
-        return (anchor, reference.Item1 > 1 ? reference.Item1 / reference.Item2 : 1);
+        return (anchor, reference.Item1 > SmallestMeasuredWidth ? reference.Item1 / reference.Item2 : ReferenceScale);
     }
 
     /// <summary>Draws the accessory on the character. A held item goes where the right hand is, so it moves with it.</summary>
@@ -187,77 +200,66 @@ internal sealed class PreparedAccessory(AccessoryPack pack)
 /// </summary>
 internal sealed class PreparedCharacter
 {
-    private const double DesignWidth = 100;
-    private const double DesignHeight = 140;
+    private const double DesignWidth = PackLimits.DesignWidth;
+    private const double DesignHeight = PackLimits.DesignHeight;
 
-    private static readonly PackColor Ink = new(0x0F, 0x17, 0x2A);
-    private static readonly PackColor Pink = new(0xFB, 0x71, 0x85);
-    private static readonly PackColor Soft = new(0x94, 0xA3, 0xB8);
-    private static readonly PackColor White = new(255, 255, 255);
+    // The ground shadow under the feet (an ellipse), and the blush on the cheeks.
+    private const double ShadowCenterX = 50;
+    private const double ShadowCenterY = 133;
+    private const double ShadowRadiusX = 30;
+    private const double ShadowRadiusY = 4;
+    private const byte ShadowAlpha = 31;
+    private const byte CheekAlpha = 115;
+    private const double CheekRadiusX = 5.5;
+    private const double CheekRadiusY = 3.2;
 
-    private static readonly IBrush ShadowBrush = new ImmutableSolidColorBrush(Color.FromArgb(31, 0, 0, 0));
-    private static readonly IBrush CheekBrush = new ImmutableSolidColorBrush(Color.FromArgb(115, 0xFB, 0x71, 0x85));
+    // Whole-body movement, in design units and radians per second. Walking hops faster and higher than idling.
+    private const double WalkHopSpeed = 9;
+    private const double WalkHopHeight = 6;
+    private const double BounceSpeed = 8;
+    private const double ShakeSpeed = 45;
 
-    // The neutral face every pack can fall back on; coordinates are relative to the matching anchor.
-    private static readonly Dictionary<EyeStyle, PreparedShape[]> NeutralEyes = new()
-    {
-        [EyeStyle.Open] = PreparedShape.CreateAll(
-        [
-            new EllipseShape(0, 0, 4.6, 6.2) { Fill = new SolidFill(Ink) },
-            new EllipseShape(1.6, -2.6, 1.7, 1.7) { Fill = new SolidFill(White) },
-        ]),
-        [EyeStyle.Happy] = PreparedShape.CreateAll([new PathShape("M-6,2 Q0,-7 6,2") { Stroke = new PackStroke(Ink, 3) }]),
-        [EyeStyle.Rest] = PreparedShape.CreateAll([new PathShape("M-6,1 Q0,6 6,1") { Stroke = new PackStroke(Ink, 3) }]),
-        [EyeStyle.Closed] = PreparedShape.CreateAll([new LineShape(-5, 1, 5, 1) { Stroke = new PackStroke(Ink, 3) }]),
-    };
+    /// <summary>The squash follows the bob, a little behind it (in radians).</summary>
+    private const double SquashPhase = 1.2;
 
-    private static readonly Dictionary<MouthStyle, PreparedShape[]> NeutralMouths = new()
-    {
-        [MouthStyle.Smile] = PreparedShape.CreateAll([new PathShape("M-7,0 Q0,8 7,0") { Stroke = new PackStroke(Ink, 2.8) }]),
-        [MouthStyle.Grin] = PreparedShape.CreateAll(
-        [
-            new PathShape("M-9,-1 Q0,16 9,-1 Z") { Fill = new SolidFill(Ink) },
-            new EllipseShape(0, 8.5, 4.5, 2.6) { Fill = new SolidFill(Pink) },
-        ]),
-        [MouthStyle.Small] = PreparedShape.CreateAll([new PathShape("M-4,3 Q0,5 4,3") { Stroke = new PackStroke(Ink, 2.5) }]),
-        [MouthStyle.Worried] = PreparedShape.CreateAll([new PathShape("M-7,7 Q0,0 7,7") { Stroke = new PackStroke(Ink, 2.8) }]),
-        [MouthStyle.Sleepy] = PreparedShape.CreateAll([new PathShape("M-5,4 Q0,1 5,4") { Stroke = new PackStroke(Ink, 2.5) }]),
-        [MouthStyle.O] = PreparedShape.CreateAll([new EllipseShape(0, 5, 3.5, 4.5) { Fill = new SolidFill(Ink) }]),
-        [MouthStyle.Sip] = PreparedShape.CreateAll([new EllipseShape(5, 2, 3, 2.6) { Fill = new SolidFill(Ink) }]),
-    };
+    /// <summary>The space added where the outfit sticks out past the character's box (see <see cref="WithMargin"/>).</summary>
+    private const double OutfitMargin = 3;
 
-    private static readonly Dictionary<BrowStyle, (PreparedShape[] Left, PreparedShape[] Right)> NeutralBrows = new()
-    {
-        [BrowStyle.None] = ([], []),
-        [BrowStyle.Worried] = (
-            PreparedShape.CreateAll([new LineShape(-6, -7, 6, -12) { Stroke = new PackStroke(Ink, 2.5) }]),
-            PreparedShape.CreateAll([new LineShape(-6, -12, 6, -7) { Stroke = new PackStroke(Ink, 2.5) }])),
-        [BrowStyle.Curious] = (
-            PreparedShape.CreateAll([new LineShape(-6, -9, 6, -9) { Stroke = new PackStroke(Ink, 2.5) }]),
-            PreparedShape.CreateAll([new LineShape(-6, -14, 6, -10) { Stroke = new PackStroke(Ink, 2.5) }])),
-    };
+    // The effects drawn around the head, positioned from the head-top anchor.
+    private const int ZzzLetters = 3;
+    private const double ZzzCyclesPerSecond = 0.45;
+    private const double ZzzFirstSize = 0.6;
+    private const double ZzzSizeStep = 0.2;
+    private const double ZzzStartX = 12;
+    private const double ZzzStartY = 30;
+    private const double ZzzDriftX = 12;
+    private const double ZzzDriftY = 24;
 
-    private static readonly PreparedShape[] GlassShapes = PreparedShape.CreateAll(
-    [
-        new PathShape("M-10,-18 L10,-18 L7,6 L-7,6 Z") { Fill = new SolidFill(White with { A = 128 }), Stroke = new PackStroke(White, 1.6) },
-        new PathShape("M-8.8,-9 L8.8,-9 L7,6 L-7,6 Z") { Fill = new SolidFill(new PackColor(0x4D, 0xB6, 0xAC, 217)) },
-    ]);
+    private const double SparklePulseBase = 0.9;
+    private const double SparklePulseSize = 0.3;
+    private const double SparklePulseSpeed = 5;
+    private const double SparklePulseOffset = 1.7;
+    private static readonly (double X, double Y)[] SparkleSpots = [(-30, 24), (32, 20), (-24, 8), (26, 6)];
 
-    private static readonly PreparedShape Letter = PreparedShape.Create(
-        new PathShape("M0,0 L7,0 L0,9 L7,9") { Stroke = new PackStroke(Soft, 1.8) })!;
+    private const double SweatOffsetX = 17;
+    private const double SweatOffsetY = -12;
+    private const double SweatFallSpeed = 2;
+    private const double SweatFallDistance = 3;
 
-    private static readonly PreparedShape Star = PreparedShape.Create(
-        new PathShape("M0,-6 L1.5,-1.5 L6,0 L1.5,1.5 L0,6 L-1.5,1.5 L-6,0 L-1.5,-1.5 Z") { Fill = new SolidFill(new PackColor(0xFD, 0xE6, 0x8A)) })!;
+    private const double NoteDriftSpeed = 3;
+    private const double NoteDriftOffset = 2;
+    private const double NoteDriftDistance = 2;
+    private static readonly (double X, double Y)[] NoteSpots = [(-28, 22), (28, 14)];
 
-    private static readonly PreparedShape Drop = PreparedShape.Create(
-        new PathShape("M0,-5 C0,-5 -4,0 -4,2.5 A4,4 0 0 0 4,2.5 C4,0 0,-5 0,-5 Z") { Fill = new SolidFill(new PackColor(0x7D, 0xD3, 0xFC)) })!;
+    /// <summary>The draw order of worn things, back to front: neck first and hat last, so glasses and hats sit on a scarf or balloon.</summary>
+    private const int NeckOrder = 0;
 
-    private static readonly PreparedShape[] Note = PreparedShape.CreateAll(
-    [
-        new EllipseShape(0, 0, 3.2, 2.3) { Fill = new SolidFill(Soft) },
-        new LineShape(2.8, 0, 2.8, -9) { Stroke = new PackStroke(Soft, 1.5) },
-        new PathShape("M2.8,-9 Q7,-7 6,-3") { Stroke = new PackStroke(Soft, 1.5) },
-    ]);
+    private const int HeldOrder = 1;
+    private const int EyesOrder = 2;
+    private const int HatOrder = 3;
+
+    private static readonly IBrush ShadowBrush = new ImmutableSolidColorBrush(Color.FromArgb(ShadowAlpha, 0, 0, 0));
+    private static readonly IBrush CheekBrush = new ImmutableSolidColorBrush(Color.FromArgb(CheekAlpha, NeutralArtwork.Pink.R, NeutralArtwork.Pink.G, NeutralArtwork.Pink.B));
 
     private readonly PreparedShape[] _body;
     private readonly PreparedShape[] _feet;
@@ -330,14 +332,14 @@ internal sealed class PreparedCharacter
         var seconds = frame.Seconds;
         var animated = frame.Animated;
 
-        var bob = !animated ? 0 : frame.Walking ? Math.Abs(Math.Sin(seconds * 9)) * -6 : Math.Sin(seconds * motion.BobSpeed) * -motion.Bob;
+        var bob = !animated ? 0 : frame.Walking ? Math.Abs(Math.Sin(seconds * WalkHopSpeed)) * -WalkHopHeight : Math.Sin(seconds * motion.BobSpeed) * -motion.Bob;
         if (animated && look.Bounce > 0)
         {
-            bob -= Math.Abs(Math.Sin(seconds * 8)) * look.Bounce;
+            bob -= Math.Abs(Math.Sin(seconds * BounceSpeed)) * look.Bounce;
         }
 
-        var shake = animated ? Math.Sin(seconds * 45) * look.Shake : 0;
-        var squash = !animated || frame.Walking ? 1 : 1 + Math.Sin(seconds * motion.BobSpeed + 1.2) * motion.Squash;
+        var shake = animated ? Math.Sin(seconds * ShakeSpeed) * look.Shake : 0;
+        var squash = !animated || frame.Walking ? 1 : 1 + (Math.Sin((seconds * motion.BobSpeed) + SquashPhase) * motion.Squash);
         var blinking = animated && frame.TickMs % motion.BlinkEveryMs < motion.BlinkMs;
 
         var offsetX = (size.Width - area.Width * scale) / 2 - area.X * scale;
@@ -349,7 +351,7 @@ internal sealed class PreparedCharacter
 
         using (context.PushTransform(matrix))
         {
-            context.DrawEllipse(ShadowBrush, null, new Point(50, 133), 30, 4);
+            context.DrawEllipse(ShadowBrush, null, new Point(ShadowCenterX, ShadowCenterY), ShadowRadiusX, ShadowRadiusY);
 
             var (leftHand, rightHand) = Hands(look, animated, seconds);
 
@@ -369,10 +371,9 @@ internal sealed class PreparedCharacter
     /// </summary>
     private static Rect WithMargin(Rect area)
     {
-        const double margin = 3;
-        var left = area.X < 0 ? margin : 0;
-        var top = area.Y < 0 ? margin : 0;
-        var right = area.Right > DesignWidth ? margin : 0;
+        var left = area.X < 0 ? OutfitMargin : 0;
+        var top = area.Y < 0 ? OutfitMargin : 0;
+        var right = area.Right > DesignWidth ? OutfitMargin : 0;
         return new Rect(area.X - left, area.Y - top, area.Width + left + right, area.Height + top);
     }
 
@@ -395,13 +396,12 @@ internal sealed class PreparedCharacter
         }
     }
 
-    // Neck first and hat last, so glasses and hats sit on top of a scarf or a held balloon.
     private static int DrawOrder(AccessorySlot slot) => slot switch
     {
-        AccessorySlot.Neck => 0,
-        AccessorySlot.Held => 1,
-        AccessorySlot.Eyes => 2,
-        _ => 3,
+        AccessorySlot.Neck => NeckOrder,
+        AccessorySlot.Held => HeldOrder,
+        AccessorySlot.Eyes => EyesOrder,
+        _ => HatOrder,
     };
 
     private void DrawAccessories(DrawingContext context, IReadOnlyList<PreparedAccessory>? outfit, bool inFront, PackPoint rightHand)
@@ -440,15 +440,15 @@ internal sealed class PreparedCharacter
 
     private void DrawArms(DrawingContext context, ResolvedPose look, PackPoint leftHand, PackPoint rightHand, bool holdingSomething)
     {
-        Arm(context, Pack.Anchors["shoulderLeft"], leftHand);
+        Arm(context, Pack.Anchors[PackAnchors.ShoulderLeft], leftHand);
 
         // The glass of a drinking pose would clash with whatever is already in the hand.
         if (look.Effects.Contains(PoseEffect.Glass) && !holdingSomething)
         {
-            DrawAt(context, Pack.Anchors["handHold"], GlassShapes);
+            DrawAt(context, Pack.Anchors[PackAnchors.HandHold], NeutralArtwork.Glass);
         }
 
-        Arm(context, Pack.Anchors["shoulderRight"], rightHand);
+        Arm(context, Pack.Anchors[PackAnchors.ShoulderRight], rightHand);
     }
 
     private void Arm(DrawingContext context, PackPoint from, PackPoint to)
@@ -462,91 +462,90 @@ internal sealed class PreparedCharacter
     private void DrawFace(DrawingContext context, ResolvedPose look, bool blinking)
     {
         var anchors = Pack.Anchors;
-        context.DrawEllipse(CheekBrush, null, new Point(anchors["cheekLeft"].X, anchors["cheekLeft"].Y), 5.5, 3.2);
-        context.DrawEllipse(CheekBrush, null, new Point(anchors["cheekRight"].X, anchors["cheekRight"].Y), 5.5, 3.2);
+        context.DrawEllipse(CheekBrush, null, new Point(anchors[PackAnchors.CheekLeft].X, anchors[PackAnchors.CheekLeft].Y), CheekRadiusX, CheekRadiusY);
+        context.DrawEllipse(CheekBrush, null, new Point(anchors[PackAnchors.CheekRight].X, anchors[PackAnchors.CheekRight].Y), CheekRadiusX, CheekRadiusY);
 
         var eyes = blinking && look.Eyes == EyeStyle.Open ? EyeStyle.Closed : look.Eyes;
-        var left = _eyes.GetValueOrDefault(eyes) ?? NeutralEyes[eyes];
-        DrawAt(context, anchors["eyeLeft"], left);
+        var left = _eyes.GetValueOrDefault(eyes) ?? NeutralArtwork.Eyes[eyes];
+        DrawAt(context, anchors[PackAnchors.EyeLeft], left);
 
         if (_rightEyes.TryGetValue(eyes, out var right))
         {
-            DrawAt(context, anchors["eyeRight"], right);
+            DrawAt(context, anchors[PackAnchors.EyeRight], right);
         }
         else
         {
             // A pack's own left eye is mirrored for the right unless the pack says otherwise; the neutral eye is simply repeated.
             var mirror = Pack.Face.EyesMirrored && _eyes.ContainsKey(eyes);
-            DrawAt(context, anchors["eyeRight"], left, mirror);
+            DrawAt(context, anchors[PackAnchors.EyeRight], left, mirror);
         }
 
-        DrawAt(context, anchors["mouth"], _mouths.GetValueOrDefault(look.Mouth) ?? NeutralMouths[look.Mouth]);
+        DrawAt(context, anchors[PackAnchors.Mouth], _mouths.GetValueOrDefault(look.Mouth) ?? NeutralArtwork.Mouths[look.Mouth]);
 
         if (look.Brows != BrowStyle.None)
         {
             if (_brows.TryGetValue(look.Brows, out var custom))
             {
-                DrawAt(context, anchors["eyeLeft"], custom);
-                DrawAt(context, anchors["eyeRight"], custom, Pack.Face.EyesMirrored);
+                DrawAt(context, anchors[PackAnchors.EyeLeft], custom);
+                DrawAt(context, anchors[PackAnchors.EyeRight], custom, Pack.Face.EyesMirrored);
             }
             else
             {
-                var (leftBrow, rightBrow) = NeutralBrows[look.Brows];
-                DrawAt(context, anchors["eyeLeft"], leftBrow);
-                DrawAt(context, anchors["eyeRight"], rightBrow);
+                var (leftBrow, rightBrow) = NeutralArtwork.Brows[look.Brows];
+                DrawAt(context, anchors[PackAnchors.EyeLeft], leftBrow);
+                DrawAt(context, anchors[PackAnchors.EyeRight], rightBrow);
             }
         }
     }
 
     private void DrawEffects(DrawingContext context, ResolvedPose look, bool animated, double seconds)
     {
-        var top = Pack.Anchors["headTop"];
+        var top = Pack.Anchors[PackAnchors.HeadTop];
 
         foreach (var effect in look.Effects)
         {
             switch (effect)
             {
                 case PoseEffect.Zzz:
-                    // Three letters drift up and fade, each a third of a cycle behind the last (still, if not animated).
-                    for (var i = 0; i < 3; i++)
+                    // The letters drift up and fade, each an equal share of a cycle behind the last (still, if not animated).
+                    for (var i = 0; i < ZzzLetters; i++)
                     {
-                        var phase = animated ? (seconds * 0.45 + i / 3.0) % 1 : i / 3.0;
-                        var size = 0.6 + i * 0.2;
+                        var share = (double)i / ZzzLetters;
+                        var phase = animated ? ((seconds * ZzzCyclesPerSecond) + share) % 1 : share;
+                        var size = ZzzFirstSize + (i * ZzzSizeStep);
                         using (context.PushOpacity(1 - phase))
-                        using (context.PushTransform(Matrix.CreateScale(size, size) * Matrix.CreateTranslation(top.X + 12 + phase * 12, top.Y + 30 - phase * 24)))
+                        using (context.PushTransform(Matrix.CreateScale(size, size) * Matrix.CreateTranslation(top.X + ZzzStartX + (phase * ZzzDriftX), top.Y + ZzzStartY - (phase * ZzzDriftY))))
                         {
-                            Letter.Draw(context);
+                            NeutralArtwork.Letter.Draw(context);
                         }
                     }
 
                     break;
                 case PoseEffect.Sparkle:
-                    var spots = new (double X, double Y)[] { (-30, 24), (32, 20), (-24, 8), (26, 6) };
-                    for (var i = 0; i < spots.Length; i++)
+                    for (var i = 0; i < SparkleSpots.Length; i++)
                     {
-                        var pulse = animated ? 0.9 + Math.Sin(seconds * 5 + i * 1.7) * 0.3 : 1;
-                        using (context.PushTransform(Matrix.CreateScale(pulse, pulse) * Matrix.CreateTranslation(top.X + spots[i].X, top.Y + spots[i].Y)))
+                        var pulse = animated ? SparklePulseBase + (Math.Sin((seconds * SparklePulseSpeed) + (i * SparklePulseOffset)) * SparklePulseSize) : 1;
+                        using (context.PushTransform(Matrix.CreateScale(pulse, pulse) * Matrix.CreateTranslation(top.X + SparkleSpots[i].X, top.Y + SparkleSpots[i].Y)))
                         {
-                            Star.Draw(context);
+                            NeutralArtwork.Star.Draw(context);
                         }
                     }
 
                     break;
                 case PoseEffect.Sweat:
-                    var eye = Pack.Anchors["eyeRight"];
-                    var fall = animated ? Math.Abs(Math.Sin(seconds * 2)) * 3 : 0;
-                    using (context.PushTransform(Matrix.CreateTranslation(eye.X + 17, eye.Y - 12 + fall)))
+                    var eye = Pack.Anchors[PackAnchors.EyeRight];
+                    var fall = animated ? Math.Abs(Math.Sin(seconds * SweatFallSpeed)) * SweatFallDistance : 0;
+                    using (context.PushTransform(Matrix.CreateTranslation(eye.X + SweatOffsetX, eye.Y + SweatOffsetY + fall)))
                     {
-                        Drop.Draw(context);
+                        NeutralArtwork.Drop.Draw(context);
                     }
 
                     break;
                 case PoseEffect.Music:
-                    var notes = new (double X, double Y)[] { (-28, 22), (28, 14) };
-                    for (var i = 0; i < notes.Length; i++)
+                    for (var i = 0; i < NoteSpots.Length; i++)
                     {
-                        var drift = animated ? Math.Sin(seconds * 3 + i * 2) * 2 : 0;
-                        DrawAt(context, new PackPoint(top.X + notes[i].X, top.Y + notes[i].Y + drift), Note);
+                        var drift = animated ? Math.Sin((seconds * NoteDriftSpeed) + (i * NoteDriftOffset)) * NoteDriftDistance : 0;
+                        DrawAt(context, new PackPoint(top.X + NoteSpots[i].X, top.Y + NoteSpots[i].Y + drift), NeutralArtwork.Note);
                     }
 
                     break;

@@ -20,12 +20,6 @@ public sealed partial class CompanionViewModel(
     HydrationService hydration,
     Func<TimeSpan, Task>? delay = null) : ViewModelBase
 {
-    public static readonly TimeSpan PromptTimeout = TimeSpan.FromMinutes(2);
-
-    private static readonly TimeSpan GreetingTime = TimeSpan.FromMilliseconds(3200);
-
-    private static readonly TimeSpan WalkTime = TimeSpan.FromMilliseconds(1150);
-
     private readonly Func<TimeSpan, Task> _delay = delay ?? Task.Delay;
     private TaskCompletionSource<ReminderOutcome>? _answer;
     private bool _greeting;
@@ -92,7 +86,7 @@ public sealed partial class CompanionViewModel(
             {
                 // Another character chosen meanwhile restarts the hello, so the last choice always gets its full turn.
                 seen = _helloVersion;
-                await _delay(GreetingTime);
+                await _delay(CompanionTimings.Greeting);
             }
             while (seen != _helloVersion);
 
@@ -106,7 +100,7 @@ public sealed partial class CompanionViewModel(
         Pose = reminder.Level == EscalationLevel.Calm ? DripPose.Waving : DripPose.Worried;
         Say(messages.Prompt(current.Messages, current.Name, reminder.Level), withButtons: true);
 
-        var outcome = await Task.WhenAny(_answer.Task, _delay(PromptTimeout)) == _answer.Task
+        var outcome = await Task.WhenAny(_answer.Task, _delay(CompanionTimings.PromptTimeout)) == _answer.Task
             ? _answer.Task.Result
             : ReminderOutcome.Missed;
         _answer = null;
@@ -122,12 +116,12 @@ public sealed partial class CompanionViewModel(
             case ReminderOutcome.Snoozed:
                 Pose = DripPose.Idle;
                 Say(messages.Snoozed(current.Name, current.SnoozeMinutes), withButtons: false);
-                await _delay(TimeSpan.FromMilliseconds(1400));
+                await _delay(CompanionTimings.SnoozedFarewell);
                 break;
             default:
                 Pose = DripPose.Sleepy;
                 Say("Maybe later…", withButtons: false);
-                await _delay(TimeSpan.FromMilliseconds(1200));
+                await _delay(CompanionTimings.MissedFarewell);
                 break;
         }
 
@@ -172,12 +166,12 @@ public sealed partial class CompanionViewModel(
         Say(goalReached
             ? messages.GoalReached(current.Messages, current.Name)
             : messages.Cheer(current.Messages, current.Name), withButtons: false);
-        await _delay(TimeSpan.FromMilliseconds(950));
+        await _delay(CompanionTimings.Sip);
         Pose = goalReached ? DripPose.Cheering : DripPose.Happy; // jumping for joy is for the goal; an ordinary sip gets a smile
         ConfettiRequested?.Invoke();
-        await _delay(TimeSpan.FromMilliseconds(1100));
+        await _delay(CompanionTimings.Confetti);
         Say(messages.Goodbye(current.Name), withButtons: false);
-        await _delay(TimeSpan.FromMilliseconds(700));
+        await _delay(CompanionTimings.Goodbye);
     }
 
     private async Task WalkInAsync()
@@ -187,10 +181,10 @@ public sealed partial class CompanionViewModel(
         IsFacingRight = false;
         Pose = DripPose.Idle;
         IsOffstage = true;
-        await _delay(TimeSpan.FromMilliseconds(60));
+        await _delay(CompanionTimings.OffstageSettle);
         IsWalking = true;
         IsOffstage = false;
-        await _delay(WalkTime);
+        await _delay(CompanionTimings.Walk);
         IsWalking = false;
     }
 
@@ -200,7 +194,7 @@ public sealed partial class CompanionViewModel(
         IsFacingRight = true;
         IsWalking = true;
         IsOffstage = true;
-        await _delay(WalkTime);
+        await _delay(CompanionTimings.Walk);
         IsWalking = false;
         IsFacingRight = false;
     }
