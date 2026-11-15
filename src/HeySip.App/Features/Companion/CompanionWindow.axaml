@@ -5,7 +5,7 @@
         x:Class="HeySip.App.Features.Companion.CompanionWindow"
         x:DataType="companion:CompanionViewModel"
         Title="HeySip"
-        Width="380" Height="440"
+        Width="{DynamicResource HbCompanionWindowWidth}" Height="{DynamicResource HbCompanionWindowHeight}"
         CanResize="False"
         ShowInTaskbar="False"
         ShowActivated="False"
@@ -36,15 +36,15 @@
 
     <Panel>
         <Border x:Name="Bubble" IsVisible="{Binding IsBubbleVisible}"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,14,240" MaxWidth="320" Cursor="Hand"
-                Padding="16,14" CornerRadius="18"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{DynamicResource HbCompanionBubbleMargin}" MaxWidth="{DynamicResource HbCompanionBubbleMaxWidth}" Cursor="Hand"
+                Padding="{DynamicResource HbThickness16_14}" CornerRadius="{DynamicResource HbRadius18}"
                 Background="{DynamicResource HbSurfaceBrush}"
-                BorderBrush="{DynamicResource HbAccentBrush}" BorderThickness="2"
-                BoxShadow="0 6 18 0 #33000000">
-            <StackPanel Spacing="12">
-                <TextBlock Text="{Binding BubbleText}" TextWrapping="Wrap" FontSize="15" FontWeight="Medium"
+                BorderBrush="{DynamicResource HbAccentBrush}" BorderThickness="{DynamicResource HbThickness2}"
+                BoxShadow="{DynamicResource HbBubbleShadow}">
+            <StackPanel Spacing="{DynamicResource HbSpace12}">
+                <TextBlock Text="{Binding BubbleText}" TextWrapping="Wrap" FontSize="{DynamicResource HbFontEmphasis}" FontWeight="Medium"
                            Foreground="{DynamicResource HbTextBrush}" />
-                <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding AreButtonsVisible}">
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}" IsVisible="{Binding AreButtonsVisible}">
                     <Button Classes="accent" Content="Yes, I drank! 💧" Command="{Binding DrinkCommand}" />
                     <Button Content="Snooze" Command="{Binding SnoozeCommand}" />
                 </StackPanel>
@@ -52,8 +52,8 @@
         </Border>
 
         <Panel x:Name="Pet" Background="Transparent" Classes="pet" Classes.offstage="{Binding IsOffstage}"
-               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,6"
-               Width="160" Height="224" Cursor="Hand" ToolTip.Tip="Open HeySip">
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="{DynamicResource HbThickness0_0_24_6}"
+               Width="{DynamicResource HbCompanionMascotWidth}" Height="{DynamicResource HbCompanionMascotHeight}" Cursor="Hand" ToolTip.Tip="Open HeySip">
             <controls:DripControl Pose="{Binding Pose}" Character="{Binding Character}" Outfit="{Binding Outfit}" IsWalking="{Binding IsWalking}"
                                   Classes.faceRight="{Binding IsFacingRight}" RenderTransformOrigin="50%,50%" />
         </Panel>

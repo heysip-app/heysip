@@ -7,9 +7,9 @@
     <!-- An accessory you can choose, drawn on your character, highlighted when worn. "None" shows the character bare. -->
     <Button Command="{Binding SelectCommand}" Classes="pick" Classes.selected="{Binding IsSelected}"
             ToolTip.Tip="{Binding Name}" AutomationProperties.Name="{Binding Name}">
-        <StackPanel Spacing="4">
-            <controls:DripControl Width="58" Height="81" Character="{Binding Character}" Outfit="{Binding Worn}" IsAnimated="False" />
-            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="12" />
+        <StackPanel Spacing="{DynamicResource HbSpace4}">
+            <controls:DripControl Width="{DynamicResource HbMascotPickWidth}" Height="{DynamicResource HbMascotPickHeight}" Character="{Binding Character}" Outfit="{Binding Worn}" IsAnimated="False" />
+            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontSize="{DynamicResource HbFontSmall}" />
         </StackPanel>
     </Button>
 </UserControl>

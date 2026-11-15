@@ -14,7 +14,7 @@
         x:DataType="shell:ShellViewModel"
         Title="HeySip"
         Icon="avares://HeySip/Assets/heysip.ico"
-        Width="1180" Height="780" MinWidth="700" MinHeight="440"
+        Width="{DynamicResource HbMainWindowWidth}" Height="{DynamicResource HbMainWindowHeight}" MinWidth="{DynamicResource HbMainWindowMinWidth}" MinHeight="{DynamicResource HbMainWindowMinHeight}"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource HbWindowBrush}">
 
@@ -55,7 +55,7 @@
 
     <Panel>
         <Grid RowDefinitions="*,Auto">
-            <Grid ColumnDefinitions="48,*">
+            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="{DynamicResource HbRailColumn}" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                 <!-- Activity rail -->
                 <Border Background="{DynamicResource HbRailBrush}">
                     <DockPanel>
@@ -75,7 +75,7 @@
                             <shell:RailButton Icon="{StaticResource IconList}" IsCurrent="{Binding IsHistory}"
                                               Command="{Binding ShowHistoryCommand}"
                                               ToolTip.Tip="History (Ctrl+3)" AutomationProperties.Name="History" />
-                            <Border Height="1" Margin="12,6" Background="{DynamicResource HbBorderBrush}"
+                            <Border Height="1" Margin="{DynamicResource HbThickness12_6}" Background="{DynamicResource HbBorderBrush}"
                                     IsVisible="{Binding HasDayTabs}" />
                         </StackPanel>
                         <!-- Opened days. This scrolls, so even a long list never pushes the fixed buttons out of reach. -->
@@ -92,11 +92,11 @@
                 </Border>
 
                 <!-- The selected page, straight on the window colour -->
-                <Border Grid.Column="1" Margin="0,4,4,0">
+                <Border Grid.Column="1" Margin="{DynamicResource HbThickness0_4_4_0}">
                     <DockPanel>
                         <!-- A message from the project sits above the page and pushes it down, so it never covers a title. -->
                         <shell:NoticeBar DockPanel.Dock="Top" DataContext="{Binding NoticeBanner}" HorizontalAlignment="Left"
-                                         Margin="20,0,0,4" />
+                                         Margin="{DynamicResource HbThickness20_0_0_4}" />
                         <TransitioningContentControl x:Name="PageHost" Focusable="True" Content="{Binding Current}">
                             <TransitioningContentControl.PageTransition>
                                 <CrossFade Duration="0:0:0.21" />
@@ -110,7 +110,7 @@
         </Grid>
 
         <shell:RemovalBar DataContext="{Binding RemovalBanner}" HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                          Margin="0,0,0,44" />
+                          Margin="{DynamicResource HbThickness0_0_0_44}" />
 
         <palette:PaletteView DataContext="{Binding Palette}" IsVisible="{Binding IsOpen}" />
 

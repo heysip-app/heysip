@@ -4,7 +4,7 @@
              x:Class="HeySip.App.Shared.Components.StatTile"
              x:Name="Root"
              x:DataType="comp:StatTile">
-    <comp:Card Spacing="4">
+    <comp:Card Spacing="{DynamicResource HbSpace4}">
         <TextBlock Text="{Binding #Root.Label}" Classes="eyebrow" />
         <TextBlock Text="{Binding #Root.Value}" Classes="stat" />
     </comp:Card>

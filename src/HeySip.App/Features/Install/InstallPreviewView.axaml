@@ -7,18 +7,18 @@
              x:DataType="install:InstallPreviewViewModel">
     <UserControl.Resources>
         <DataTemplate x:Key="TileTemplate" x:DataType="install:PreviewTileViewModel">
-            <StackPanel Spacing="4">
-                <controls:DripControl Width="84" Height="118" Pose="{Binding Pose}" Pack="{Binding Pack}"
+            <StackPanel Spacing="{DynamicResource HbSpace4}">
+                <controls:DripControl Width="{DynamicResource HbMascotPreviewWidth}" Height="{DynamicResource HbMascotPreviewHeight}" Pose="{Binding Pose}" Pack="{Binding Pack}"
                                       Character="{Binding Character}" Outfit="{Binding Outfit}" IsAnimated="False" />
-                <TextBlock Text="{Binding Caption}" Classes="muted" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="84" />
+                <TextBlock Text="{Binding Caption}" Classes="muted" FontSize="{DynamicResource HbFontSmall}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource HbSize84}" />
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
 
     <!-- Shown over the window when a pack file is opened: what it is, how it looks, and Install or Cancel. -->
     <Grid Background="{DynamicResource HbOverlayBrush}">
-        <comp:Card Width="540" Padding="26" Spacing="16" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel Spacing="4">
+        <comp:Card Width="{DynamicResource HbInstallCardWidth}" Padding="{DynamicResource HbThickness26}" Spacing="{DynamicResource HbSpace16}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Spacing="{DynamicResource HbSpace4}">
                 <TextBlock Text="{Binding Eyebrow}" Classes="eyebrow" />
                 <TextBlock Text="{Binding Title}" Classes="h2" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding Details}" Classes="muted" TextWrapping="Wrap"
@@ -28,7 +28,7 @@
             <ItemsControl ItemsSource="{Binding Tiles}" IsVisible="{Binding IsPreview}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="14" HorizontalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace14}" HorizontalAlignment="Center" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -37,12 +37,12 @@
             </ItemsControl>
 
             <!-- A character's own accessories, each worn by it, and what else it works with. -->
-            <StackPanel Spacing="6" IsVisible="{Binding HasBundled}">
+            <StackPanel Spacing="{DynamicResource HbSpace6}" IsVisible="{Binding HasBundled}">
                 <TextBlock Text="Comes with" Classes="eyebrow" HorizontalAlignment="Center" />
                 <ItemsControl ItemsSource="{Binding BundledTiles}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" ItemSpacing="14" />
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" ItemSpacing="{DynamicResource HbSpace14}" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -55,10 +55,10 @@
 
             <TextBlock Text="{Binding Note}" TextWrapping="Wrap"
                        IsVisible="{Binding Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            <TextBlock Text="{Binding Reassurance}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsPreview}" />
+            <TextBlock Text="{Binding Reassurance}" Classes="muted" FontSize="{DynamicResource HbFontSmall}" TextWrapping="Wrap" IsVisible="{Binding IsPreview}" />
             <TextBlock Text="{Binding ErrorText}" TextWrapping="Wrap" IsVisible="{Binding IsFailed}" />
 
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}" HorizontalAlignment="Right">
                 <Button Content="Cancel" Command="{Binding CloseCommand}" IsVisible="{Binding IsPreview}" />
                 <Button Classes="accent" Content="{Binding InstallLabel}" Command="{Binding InstallCommand}"
                         IsEnabled="{Binding CanInstall}" IsVisible="{Binding IsPreview}" />

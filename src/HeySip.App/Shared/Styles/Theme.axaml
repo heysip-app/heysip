@@ -7,96 +7,98 @@
     -->
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="HbWindowBrush" Color="#1E1F22" />
-            <SolidColorBrush x:Key="HbRailBrush" Color="#1E1F22" />
-            <SolidColorBrush x:Key="HbPanelBrush" Color="#2B2D30" />
-            <SolidColorBrush x:Key="HbSurfaceBrush" Color="#323438" />
-            <SolidColorBrush x:Key="HbStatusBarBrush" Color="#1E1F22" />
-            <SolidColorBrush x:Key="HbBorderBrush" Color="#393B40" />
-            <SolidColorBrush x:Key="HbHoverBrush" Color="#12FFFFFF" />
-            <SolidColorBrush x:Key="HbClearBrush" Color="#00FFFFFF" />
-            <SolidColorBrush x:Key="HbAccentClearBrush" Color="#004DB6AC" />
-            <SolidColorBrush x:Key="HbPressedBrush" Color="#1CFFFFFF" />
-            <SolidColorBrush x:Key="HbTextBrush" Color="#DFE1E5" />
-            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="#AEB1B8" />
-            <SolidColorBrush x:Key="HbTextMutedBrush" Color="#7F838A" />
-            <SolidColorBrush x:Key="HbAccentBrush" Color="#4DB6AC" />
-            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="#2A4DB6AC" />
-            <SolidColorBrush x:Key="HbOnAccentBrush" Color="#10211F" />
-            <SolidColorBrush x:Key="HbSuccessBrush" Color="#7DC383" />
-            <SolidColorBrush x:Key="HbWarningBrush" Color="#E5B85C" />
-            <SolidColorBrush x:Key="HbDangerBrush" Color="#E5766F" />
-            <SolidColorBrush x:Key="HbBarBrush" Color="#3E9A91" />
-            <SolidColorBrush x:Key="HbOverlayBrush" Color="#000000" Opacity="0.55" />
+            <SolidColorBrush x:Key="HbWindowBrush" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="HbRailBrush" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="HbPanelBrush" Color="{DynamicResource HbGray18}" />
+            <SolidColorBrush x:Key="HbSurfaceBrush" Color="{DynamicResource HbGray21}" />
+            <SolidColorBrush x:Key="HbStatusBarBrush" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="HbBorderBrush" Color="{DynamicResource HbGray24}" />
+            <SolidColorBrush x:Key="HbHoverBrush" Color="{DynamicResource HbGray100A07}" />
+            <SolidColorBrush x:Key="HbClearBrush" Color="{DynamicResource HbGray100A00}" />
+            <SolidColorBrush x:Key="HbAccentClearBrush" Color="{DynamicResource HbTeal51A00}" />
+            <SolidColorBrush x:Key="HbPressedBrush" Color="{DynamicResource HbGray100A11}" />
+            <SolidColorBrush x:Key="HbTextBrush" Color="{DynamicResource HbGray89}" />
+            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="{DynamicResource HbGray70}" />
+            <SolidColorBrush x:Key="HbTextMutedBrush" Color="{DynamicResource HbGray52}" />
+            <SolidColorBrush x:Key="HbAccentBrush" Color="{DynamicResource HbTeal51}" />
+            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="{DynamicResource HbTeal51A16}" />
+            <SolidColorBrush x:Key="HbOnAccentBrush" Color="{DynamicResource HbTeal10}" />
+            <SolidColorBrush x:Key="HbSuccessBrush" Color="{DynamicResource HbGreen63}" />
+            <SolidColorBrush x:Key="HbWarningBrush" Color="{DynamicResource HbAmber63}" />
+            <SolidColorBrush x:Key="HbDangerBrush" Color="{DynamicResource HbRed67}" />
+            <SolidColorBrush x:Key="HbBarBrush" Color="{DynamicResource HbTeal42}" />
+            <x:Double x:Key="HbOverlayOpacity">0.55</x:Double>
+            <SolidColorBrush x:Key="HbOverlayBrush" Color="{DynamicResource HbGray0}" Opacity="{DynamicResource HbOverlayOpacity}" />
 
             <!-- Fluent's own control brushes, in the same neutral grays. -->
-            <SolidColorBrush x:Key="TextControlBorderBrush" Color="#4E5157" />
-            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#6F737A" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#4E5157" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#6F737A" />
-            <SolidColorBrush x:Key="ButtonBackground" Color="#393B40" />
-            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#43454A" />
-            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#4E5157" />
-            <SolidColorBrush x:Key="ButtonBorderBrush" Color="#4E5157" />
-            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#5E6167" />
-            <SolidColorBrush x:Key="ProgressBarBackground" Color="#43454A" />
-            <SolidColorBrush x:Key="TextControlBackground" Color="#1E1F22" />
-            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#1E1F22" />
-            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackground" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="#1E1F22" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#6F737A" />
-            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#2B2D30" />
+            <SolidColorBrush x:Key="TextControlBorderBrush" Color="{DynamicResource HbGray32}" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource HbGray46}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{DynamicResource HbGray32}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{DynamicResource HbGray46}" />
+            <SolidColorBrush x:Key="ButtonBackground" Color="{DynamicResource HbGray24}" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{DynamicResource HbGray28}" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{DynamicResource HbGray32}" />
+            <SolidColorBrush x:Key="ButtonBorderBrush" Color="{DynamicResource HbGray32}" />
+            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{DynamicResource HbGray39}" />
+            <SolidColorBrush x:Key="ProgressBarBackground" Color="{DynamicResource HbGray28}" />
+            <SolidColorBrush x:Key="TextControlBackground" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackground" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{DynamicResource HbGray46}" />
+            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource HbGray18}" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="HbWindowBrush" Color="#EBECF0" />
-            <SolidColorBrush x:Key="HbRailBrush" Color="#EBECF0" />
-            <SolidColorBrush x:Key="HbPanelBrush" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="HbSurfaceBrush" Color="#F5F6F8" />
-            <SolidColorBrush x:Key="HbStatusBarBrush" Color="#EBECF0" />
-            <SolidColorBrush x:Key="HbBorderBrush" Color="#DFE1E5" />
-            <SolidColorBrush x:Key="HbHoverBrush" Color="#0F000000" />
-            <SolidColorBrush x:Key="HbClearBrush" Color="#00000000" />
-            <SolidColorBrush x:Key="HbAccentClearBrush" Color="#001F8A80" />
-            <SolidColorBrush x:Key="HbPressedBrush" Color="#1A000000" />
-            <SolidColorBrush x:Key="HbTextBrush" Color="#1E1F22" />
-            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="#555A63" />
-            <SolidColorBrush x:Key="HbTextMutedBrush" Color="#7A7E87" />
-            <SolidColorBrush x:Key="HbAccentBrush" Color="#1F8A80" />
-            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="#241F8A80" />
-            <SolidColorBrush x:Key="HbOnAccentBrush" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="HbSuccessBrush" Color="#2F8A3F" />
-            <SolidColorBrush x:Key="HbWarningBrush" Color="#9A6A00" />
-            <SolidColorBrush x:Key="HbDangerBrush" Color="#C0392B" />
-            <SolidColorBrush x:Key="HbBarBrush" Color="#6CC3B8" />
-            <SolidColorBrush x:Key="HbOverlayBrush" Color="#000000" Opacity="0.35" />
+            <SolidColorBrush x:Key="HbWindowBrush" Color="{DynamicResource HbGray93}" />
+            <SolidColorBrush x:Key="HbRailBrush" Color="{DynamicResource HbGray93}" />
+            <SolidColorBrush x:Key="HbPanelBrush" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="HbSurfaceBrush" Color="{DynamicResource HbGray97}" />
+            <SolidColorBrush x:Key="HbStatusBarBrush" Color="{DynamicResource HbGray93}" />
+            <SolidColorBrush x:Key="HbBorderBrush" Color="{DynamicResource HbGray89}" />
+            <SolidColorBrush x:Key="HbHoverBrush" Color="{DynamicResource HbGray0A06}" />
+            <SolidColorBrush x:Key="HbClearBrush" Color="{DynamicResource HbGray0A00}" />
+            <SolidColorBrush x:Key="HbAccentClearBrush" Color="{DynamicResource HbTeal33A00}" />
+            <SolidColorBrush x:Key="HbPressedBrush" Color="{DynamicResource HbGray0A10}" />
+            <SolidColorBrush x:Key="HbTextBrush" Color="{DynamicResource HbGray13}" />
+            <SolidColorBrush x:Key="HbTextSecondaryBrush" Color="{DynamicResource HbGray36}" />
+            <SolidColorBrush x:Key="HbTextMutedBrush" Color="{DynamicResource HbGray50}" />
+            <SolidColorBrush x:Key="HbAccentBrush" Color="{DynamicResource HbTeal33}" />
+            <SolidColorBrush x:Key="HbAccentSoftBrush" Color="{DynamicResource HbTeal33A14}" />
+            <SolidColorBrush x:Key="HbOnAccentBrush" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="HbSuccessBrush" Color="{DynamicResource HbGreen36}" />
+            <SolidColorBrush x:Key="HbWarningBrush" Color="{DynamicResource HbAmber30}" />
+            <SolidColorBrush x:Key="HbDangerBrush" Color="{DynamicResource HbRed46}" />
+            <SolidColorBrush x:Key="HbBarBrush" Color="{DynamicResource HbTeal59}" />
+            <x:Double x:Key="HbOverlayOpacity">0.35</x:Double>
+            <SolidColorBrush x:Key="HbOverlayBrush" Color="{DynamicResource HbGray0}" Opacity="{DynamicResource HbOverlayOpacity}" />
 
-            <SolidColorBrush x:Key="TextControlBorderBrush" Color="#C9CCD3" />
-            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#A8ACB4" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#C9CCD3" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#A8ACB4" />
-            <SolidColorBrush x:Key="ButtonBackground" Color="#EEEFF2" />
-            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#E4E6EA" />
-            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#D9DCE1" />
-            <SolidColorBrush x:Key="ButtonBorderBrush" Color="#DFE1E5" />
-            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#C9CCD3" />
-            <SolidColorBrush x:Key="ProgressBarBackground" Color="#E1E3E8" />
-            <SolidColorBrush x:Key="TextControlBackground" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackground" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#A8ACB4" />
-            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextControlBorderBrush" Color="{DynamicResource HbGray81}" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource HbGray68}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{DynamicResource HbGray81}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{DynamicResource HbGray68}" />
+            <SolidColorBrush x:Key="ButtonBackground" Color="{DynamicResource HbGray94}" />
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{DynamicResource HbGray91}" />
+            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{DynamicResource HbGray87}" />
+            <SolidColorBrush x:Key="ButtonBorderBrush" Color="{DynamicResource HbGray89}" />
+            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{DynamicResource HbGray81}" />
+            <SolidColorBrush x:Key="ProgressBarBackground" Color="{DynamicResource HbGray90}" />
+            <SolidColorBrush x:Key="TextControlBackground" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackground" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocusedPressed" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="{DynamicResource HbGray100}" />
+            <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{DynamicResource HbGray68}" />
+            <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource HbGray100}" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

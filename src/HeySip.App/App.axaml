@@ -6,8 +6,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://HeySip/Shared/Styles/Palette.axaml" />
                 <ResourceInclude Source="avares://HeySip/Shared/Styles/Theme.axaml" />
                 <ResourceInclude Source="avares://HeySip/Shared/Styles/Icons.axaml" />
+                <ResourceInclude Source="avares://HeySip/Shared/Styles/Layout.axaml" />
             </ResourceDictionary.MergedDictionaries>
             <!-- A slightly denser type scale than Fluent's default, closer to an IDE. -->
             <x:Double x:Key="ControlContentThemeFontSize">13</x:Double>
@@ -18,8 +20,8 @@
         <FluentTheme>
             <FluentTheme.Palettes>
                 <!-- RegionColor tints Fluent's own controls (text boxes, combo boxes) to sit on the Tidepool panels. -->
-                <ColorPaletteResources x:Key="Light" Accent="#1F8A80" RegionColor="#FFFFFF" />
-                <ColorPaletteResources x:Key="Dark" Accent="#4DB6AC" RegionColor="#2B2D30" />
+                <ColorPaletteResources x:Key="Light" Accent="{StaticResource HbTeal33}" RegionColor="{StaticResource HbGray100}" />
+                <ColorPaletteResources x:Key="Dark" Accent="{StaticResource HbTeal51}" RegionColor="{StaticResource HbGray18}" />
             </FluentTheme.Palettes>
         </FluentTheme>
         <StyleInclude Source="avares://HeySip/Shared/Styles/Controls.axaml" />

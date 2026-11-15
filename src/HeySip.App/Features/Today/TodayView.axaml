@@ -8,15 +8,15 @@
              x:DataType="today:TodayViewModel">
     <comp:PageLayout Title="{Binding Greeting}">
         <comp:Card>
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="28">
-                <controls:DripControl Width="150" Height="210" Pose="{Binding Pose}" Character="{Binding Character}" Outfit="{Binding Outfit}" />
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="12">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{DynamicResource HbSpace28}">
+                <controls:DripControl Width="{DynamicResource HbMascotHeroWidth}" Height="{DynamicResource HbMascotHeroHeight}" Pose="{Binding Pose}" Character="{Binding Character}" Outfit="{Binding Outfit}" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{DynamicResource HbSpace12}">
                     <TextBlock Text="Today" Classes="eyebrow" />
-                    <TextBlock Text="{Binding Summary}" FontSize="40" FontWeight="SemiBold" />
-                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="14" CornerRadius="7" />
+                    <TextBlock Text="{Binding Summary}" FontSize="{DynamicResource HbFontHero}" FontWeight="SemiBold" />
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="{DynamicResource HbSize14}" CornerRadius="{DynamicResource HbRadius7}" />
                     <TextBlock Text="{Binding Caption}" Foreground="{DynamicResource HbTextSecondaryBrush}" />
                     <TextBlock Text="{Binding NextText}" Classes="muted" />
-                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}" Margin="{DynamicResource HbThickness0_6_0_0}">
                         <Button Classes="accent" Content="{Binding GlassLabel}" Command="{Binding LogGlassCommand}" />
                         <Button Classes="subtle" Content="Change schedule" Command="{Binding ChangeScheduleCommand}"
                                 IsVisible="{Binding ShowScheduleLink}"
@@ -32,7 +32,7 @@
             <ItemsControl ItemsSource="{Binding QuickAmounts}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -41,34 +41,34 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <NumericUpDown Value="{Binding CustomAmount}" Minimum="10" Maximum="2000" Increment="50"
-                               FormatString="0" Width="150" />
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}">
+                <NumericUpDown Value="{Binding CustomAmount}" Minimum="{Binding DrinkBounds.Minimum}" Maximum="{Binding DrinkBounds.Maximum}" Increment="{Binding DrinkBounds.Increment}"
+                               FormatString="0" Width="{DynamicResource HbSize150}" />
                 <TextBlock Text="ml" VerticalAlignment="Center" Classes="muted" />
                 <Button Content="Add" Command="{Binding LogCustomCommand}" />
-                <Button Content="Undo last" Command="{Binding UndoCommand}" IsEnabled="{Binding HasEntries}" Margin="12,0,0,0" />
+                <Button Content="Undo last" Command="{Binding UndoCommand}" IsEnabled="{Binding HasEntries}" Margin="{DynamicResource HbThickness12_0_0_0}" />
             </StackPanel>
         </comp:Card>
 
         <comp:Card Heading="Quiet time">
-            <StackPanel Spacing="10" IsVisible="{Binding IsPaused}">
+            <StackPanel Spacing="{DynamicResource HbSpace10}" IsVisible="{Binding IsPaused}">
                 <TextBlock Text="{Binding NextText}" Classes="muted" TextWrapping="Wrap" />
                 <Button Classes="accent" Content="Resume reminders" Command="{Binding ResumeRemindersCommand}" HorizontalAlignment="Left" />
             </StackPanel>
-            <StackPanel Spacing="10" IsVisible="{Binding !IsPaused}">
+            <StackPanel Spacing="{DynamicResource HbSpace10}" IsVisible="{Binding !IsPaused}">
                 <TextBlock Text="Need some peace? Pause reminders for a while, or until a time." Classes="muted" TextWrapping="Wrap" />
-                <StackPanel Orientation="Horizontal" Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}">
                     <Button Content="1 hour" Command="{Binding PauseHourCommand}" />
                     <Button Content="Until tomorrow" Command="{Binding QuietUntilTomorrowCommand}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TimePicker SelectedTime="{Binding QuietTime}" MinuteIncrement="5" AutomationProperties.Name="Quiet until" />
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}">
+                    <TimePicker SelectedTime="{Binding QuietTime}" MinuteIncrement="{DynamicResource HbMinuteIncrement}" AutomationProperties.Name="Quiet until" />
                     <Button Content="Quiet until this time" Command="{Binding QuietUntilTimeCommand}" VerticalAlignment="Bottom" />
                 </StackPanel>
             </StackPanel>
         </comp:Card>
 
-        <comp:Card Heading="Today's log" Spacing="10">
+        <comp:Card Heading="Today's log" Spacing="{DynamicResource HbSpace10}">
             <TextBlock Text="Nothing logged yet. Have a sip!" Classes="muted" IsVisible="{Binding !HasEntries}" />
             <ItemsControl ItemsSource="{Binding Entries}">
                 <ItemsControl.ItemTemplate>

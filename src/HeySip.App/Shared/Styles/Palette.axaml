@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        The Tidepool palette: every colour the app uses, written once. A name says the colour family and how light it is
+        (HbGray12 is a gray at 12% lightness); an "A" part says how see-through it is (HbGray100A07 is white at 7%).
+        Theme.axaml gives each colour a job (window, panel, text...) for the light and dark themes, so nothing else names a hex value.
+    -->
+
+    <!-- Amber -->
+    <Color x:Key="HbAmber30">#9A6A00</Color>
+    <Color x:Key="HbAmber63">#E5B85C</Color>
+
+    <!-- Gray -->
+    <Color x:Key="HbGray0">#000000</Color>
+    <Color x:Key="HbGray0A00">#00000000</Color>
+    <Color x:Key="HbGray0A06">#0F000000</Color>
+    <Color x:Key="HbGray0A10">#1A000000</Color>
+    <Color x:Key="HbGray13">#1E1F22</Color>
+    <Color x:Key="HbGray18">#2B2D30</Color>
+    <Color x:Key="HbGray21">#323438</Color>
+    <Color x:Key="HbGray24">#393B40</Color>
+    <Color x:Key="HbGray28">#43454A</Color>
+    <Color x:Key="HbGray32">#4E5157</Color>
+    <Color x:Key="HbGray36">#555A63</Color>
+    <Color x:Key="HbGray39">#5E6167</Color>
+    <Color x:Key="HbGray46">#6F737A</Color>
+    <Color x:Key="HbGray50">#7A7E87</Color>
+    <Color x:Key="HbGray52">#7F838A</Color>
+    <Color x:Key="HbGray68">#A8ACB4</Color>
+    <Color x:Key="HbGray70">#AEB1B8</Color>
+    <Color x:Key="HbGray81">#C9CCD3</Color>
+    <Color x:Key="HbGray87">#D9DCE1</Color>
+    <Color x:Key="HbGray89">#DFE1E5</Color>
+    <Color x:Key="HbGray90">#E1E3E8</Color>
+    <Color x:Key="HbGray91">#E4E6EA</Color>
+    <Color x:Key="HbGray93">#EBECF0</Color>
+    <Color x:Key="HbGray94">#EEEFF2</Color>
+    <Color x:Key="HbGray97">#F5F6F8</Color>
+    <Color x:Key="HbGray100">#FFFFFF</Color>
+    <Color x:Key="HbGray100A00">#00FFFFFF</Color>
+    <Color x:Key="HbGray100A07">#12FFFFFF</Color>
+    <Color x:Key="HbGray100A11">#1CFFFFFF</Color>
+
+    <!-- Green -->
+    <Color x:Key="HbGreen36">#2F8A3F</Color>
+    <Color x:Key="HbGreen63">#7DC383</Color>
+
+    <!-- Red -->
+    <Color x:Key="HbRed46">#C0392B</Color>
+    <Color x:Key="HbRed67">#E5766F</Color>
+
+    <!-- Teal -->
+    <Color x:Key="HbTeal10">#10211F</Color>
+    <Color x:Key="HbTeal33">#1F8A80</Color>
+    <Color x:Key="HbTeal33A00">#001F8A80</Color>
+    <Color x:Key="HbTeal33A14">#241F8A80</Color>
+    <Color x:Key="HbTeal42">#3E9A91</Color>
+    <Color x:Key="HbTeal51">#4DB6AC</Color>
+    <Color x:Key="HbTeal51A00">#004DB6AC</Color>
+    <Color x:Key="HbTeal51A16">#2A4DB6AC</Color>
+    <Color x:Key="HbTeal59">#6CC3B8</Color>
+
+    <!-- Shadows under raised things. -->
+    <BoxShadows x:Key="HbDialogShadow">0 12 40 0 #66000000</BoxShadows>
+    <BoxShadows x:Key="HbToastShadow">0 6 24 0 #55000000</BoxShadows>
+    <BoxShadows x:Key="HbBubbleShadow">0 6 18 0 #33000000</BoxShadows>
+</ResourceDictionary>

@@ -5,11 +5,11 @@
              x:DataType="shell:RemovalBannerViewModel">
     <!-- The "Removed ... Undo" bar. DataContext is the removal banner view model. -->
     <Border Classes="toast" IsVisible="{Binding IsVisible}">
-        <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace10}">
             <TextBlock Text="{Binding Text}" VerticalAlignment="Center" />
             <Button Classes="accent" Content="Undo" Command="{Binding UndoCommand}" AutomationProperties.Name="Undo removal" />
             <Button Classes="subtle" Command="{Binding DismissCommand}" ToolTip.Tip="Dismiss" AutomationProperties.Name="Dismiss">
-                <PathIcon Data="{StaticResource IconClose}" Width="9" Height="9" />
+                <PathIcon Data="{StaticResource IconClose}" Width="{DynamicResource HbCloseIconSize}" Height="{DynamicResource HbCloseIconSize}" />
             </Button>
         </StackPanel>
     </Border>

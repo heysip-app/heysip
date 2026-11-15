@@ -8,10 +8,10 @@
              x:DataType="browse:BrowseViewModel">
     <UserControl.Resources>
         <DataTemplate x:Key="TileTemplate" x:DataType="install:PreviewTileViewModel">
-            <StackPanel Spacing="4" Margin="0,0,14,0">
-                <controls:DripControl Width="96" Height="134" Pose="{Binding Pose}" Pack="{Binding Pack}"
+            <StackPanel Spacing="{DynamicResource HbSpace4}" Margin="{DynamicResource HbThickness0_0_14_0}">
+                <controls:DripControl Width="{DynamicResource HbMascotLargeWidth}" Height="{DynamicResource HbMascotLargeHeight}" Pose="{Binding Pose}" Pack="{Binding Pack}"
                                       Character="{Binding Character}" Outfit="{Binding Outfit}" IsAnimated="False" />
-                <TextBlock Text="{Binding Caption}" Classes="muted" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="96" />
+                <TextBlock Text="{Binding Caption}" Classes="muted" FontSize="{DynamicResource HbFontSmall}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource HbSize96}" />
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -19,8 +19,8 @@
     <!-- Find characters and accessories: a grid of cards, and a page for the one you open. -->
     <comp:PageLayout Title="Characters">
         <!-- The grid -->
-        <StackPanel Spacing="14" IsVisible="{Binding IsList}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
+        <StackPanel Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding IsList}">
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}">
                 <Button Classes="pick" Classes.selected="{Binding IsCharactersTab}" Content="Characters" Command="{Binding ShowCharactersCommand}" />
                 <Button Classes="pick" Classes.selected="{Binding IsAccessoriesTab}" Content="Accessories" Command="{Binding ShowAccessoriesCommand}" />
             </StackPanel>
@@ -43,12 +43,12 @@
             <ItemsControl ItemsSource="{Binding Sections}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="browse:BrowseSection">
-                        <StackPanel Spacing="8" Margin="0,0,0,10">
+                        <StackPanel Spacing="{DynamicResource HbSpace8}" Margin="{DynamicResource HbThickness0_0_0_10}">
                             <TextBlock Text="{Binding Title}" Classes="h2" />
                             <ItemsControl ItemsSource="{Binding Groups}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="browse:BrowseGroup">
-                                        <StackPanel Spacing="6">
+                                        <StackPanel Spacing="{DynamicResource HbSpace6}">
                                             <TextBlock Text="{Binding Title}" Classes="eyebrow" IsVisible="{Binding HasTitle}" />
                                             <ItemsControl ItemsSource="{Binding Cards}">
                                                 <ItemsControl.ItemsPanel>
@@ -58,26 +58,26 @@
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="browse:StoreCardViewModel">
-                                                        <comp:Card Width="176" Margin="0,0,12,12" Padding="12" Spacing="8">
+                                                        <comp:Card Width="{DynamicResource HbBrowseCardWidth}" Margin="{DynamicResource HbThickness0_0_12_12}" Padding="{DynamicResource HbThickness12}" Spacing="{DynamicResource HbSpace8}">
                                                             <Button Classes="pick" Command="{Binding OpenCommand}" HorizontalContentAlignment="Center"
                                                                     AutomationProperties.Name="{Binding Name, StringFormat='Open {0}'}">
-                                                                <StackPanel Spacing="4">
-                                                                    <Grid Width="96" Height="134" HorizontalAlignment="Center">
+                                                                <StackPanel Spacing="{DynamicResource HbSpace4}">
+                                                                    <Grid Width="{DynamicResource HbMascotLargeWidth}" Height="{DynamicResource HbMascotLargeHeight}" HorizontalAlignment="Center">
                                                                         <controls:DripControl Pose="Idle" Pack="{Binding CharacterPack}" Character="{Binding DrawnCharacter}"
                                                                                               Outfit="{Binding Outfit}" IsAnimated="False" IsVisible="{Binding HasPreview}" />
                                                                         <TextBlock Text="..." Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                                    IsVisible="{Binding !HasPreview}" />
                                                                     </Grid>
                                                                     <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Text="{Binding Byline}" Classes="muted" FontSize="12" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Classes="muted" FontSize="12" HorizontalAlignment="Center">
+                                                                    <TextBlock Text="{Binding Byline}" Classes="muted" FontSize="{DynamicResource HbFontSmall}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Classes="muted" FontSize="{DynamicResource HbFontSmall}" HorizontalAlignment="Center">
                                                                         <Run Text="{Binding KindText}" /><Run Text=" · " /><Run Text="{Binding StateText}" />
                                                                     </TextBlock>
                                                                 </StackPanel>
                                                             </Button>
                                                             <Button Classes="accent" Content="{Binding ActionLabel}" Command="{Binding ActCommand}" IsEnabled="{Binding CanAct}"
                                                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
-                                                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="12"
+                                                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="{DynamicResource HbFontSmall}"
                                                                        IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                         </comp:Card>
                                                     </DataTemplate>
@@ -94,13 +94,13 @@
         </StackPanel>
 
         <!-- One item -->
-        <StackPanel Spacing="14" IsVisible="{Binding IsDetail}">
+        <StackPanel Spacing="{DynamicResource HbSpace14}" IsVisible="{Binding IsDetail}">
             <Button Content="Back to all" Command="{Binding BackCommand}" Classes="subtle" HorizontalAlignment="Left" />
             <ContentControl Content="{Binding Selected}">
                 <ContentControl.ContentTemplate>
                     <DataTemplate x:DataType="browse:StoreCardViewModel">
-                        <comp:Card Padding="26" Spacing="16">
-                            <StackPanel Spacing="4">
+                        <comp:Card Padding="{DynamicResource HbThickness26}" Spacing="{DynamicResource HbSpace16}">
+                            <StackPanel Spacing="{DynamicResource HbSpace4}">
                                 <TextBlock Classes="eyebrow">
                                     <Run Text="{Binding KindText}" /><Run Text=" · " /><Run Text="{Binding StateText}" />
                                 </TextBlock>
@@ -122,7 +122,7 @@
                             </ItemsControl>
 
                             <!-- A character's own accessories, each worn by it, and what else it works with. -->
-                            <StackPanel Spacing="6" IsVisible="{Binding HasBundled}">
+                            <StackPanel Spacing="{DynamicResource HbSpace6}" IsVisible="{Binding HasBundled}">
                                 <TextBlock Text="Comes with" Classes="eyebrow" />
                                 <ItemsControl ItemsSource="{Binding BundledTiles}">
                                     <ItemsControl.ItemsPanel>
@@ -137,7 +137,7 @@
                             </StackPanel>
 
                             <!-- Other accessories, tried on this character. Tap one to open it: wear it, get it, or buy it. -->
-                            <StackPanel Spacing="6" IsVisible="{Binding HasExtras}">
+                            <StackPanel Spacing="{DynamicResource HbSpace6}" IsVisible="{Binding HasExtras}">
                                 <TextBlock Text="More accessories" Classes="eyebrow" />
                                 <ItemsControl ItemsSource="{Binding Extras}">
                                     <ItemsControl.ItemsPanel>
@@ -147,15 +147,15 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="browse:ExtraAccessory">
-                                            <Button Classes="pick" Command="{Binding Card.OpenCommand}" Margin="0,0,8,8"
+                                            <Button Classes="pick" Command="{Binding Card.OpenCommand}" Margin="{DynamicResource HbThickness0_0_8_8}"
                                                     AutomationProperties.Name="{Binding Card.Name, StringFormat='Open {0}'}">
-                                                <StackPanel Spacing="2">
-                                                    <controls:DripControl Width="72" Height="100" Pose="{Binding Tile.Pose}" Pack="{Binding Tile.Pack}"
+                                                <StackPanel Spacing="{DynamicResource HbSpace2}">
+                                                    <controls:DripControl Width="{DynamicResource HbMascotTileWidth}" Height="{DynamicResource HbMascotTileHeight}" Pose="{Binding Tile.Pose}" Pack="{Binding Tile.Pack}"
                                                                           Character="{Binding Tile.Character}" Outfit="{Binding Tile.Outfit}" IsAnimated="False" />
-                                                    <TextBlock Text="{Binding Card.Name}" FontSize="12" HorizontalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis" MaxWidth="84" />
-                                                    <TextBlock Text="{Binding Card.StateText}" Classes="muted" FontSize="11" HorizontalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis" MaxWidth="84" />
+                                                    <TextBlock Text="{Binding Card.Name}" FontSize="{DynamicResource HbFontSmall}" HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource HbTileCaptionMaxWidth}" />
+                                                    <TextBlock Text="{Binding Card.StateText}" Classes="muted" FontSize="{DynamicResource HbFontCaption}" HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" MaxWidth="{DynamicResource HbTileCaptionMaxWidth}" />
                                                 </StackPanel>
                                             </Button>
                                         </DataTemplate>
@@ -168,7 +168,7 @@
                             <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
                                        IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-                            <StackPanel Orientation="Horizontal" Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace12}">
                                 <Button Classes="accent" Content="{Binding ActionLabel}" Command="{Binding ActCommand}" IsEnabled="{Binding CanAct}" />
                                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center"
                                            IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

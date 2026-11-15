@@ -6,13 +6,13 @@
     <!-- One of the last two weeks: its name, progress towards the goal and total. Click to open that day. -->
     <Button Classes="node" Command="{Binding OpenCommand}" ToolTip.Tip="Open this day in a tab"
             AutomationProperties.Name="{Binding Label}">
-        <Grid ColumnDefinitions="110,*,90,22" ColumnSpacing="12">
+        <Grid ColumnSpacing="{DynamicResource HbSpace12}"><Grid.ColumnDefinitions><ColumnDefinition Width="{DynamicResource HbDayLabelColumn}" /><ColumnDefinition Width="*" /><ColumnDefinition Width="{DynamicResource HbDayTotalColumn}" /><ColumnDefinition Width="{DynamicResource HbCheckColumn}" /></Grid.ColumnDefinitions>
             <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
-            <ProgressBar Grid.Column="1" Value="{Binding Percent}" Minimum="0" Maximum="100" Height="6" MinHeight="0"
-                         CornerRadius="3" VerticalAlignment="Center" Classes.met="{Binding GoalMet}" />
-            <TextBlock Grid.Column="2" Text="{Binding TotalText}" Classes="mono muted" FontSize="12"
+            <ProgressBar Grid.Column="1" Value="{Binding Percent}" Minimum="0" Maximum="100" Height="{DynamicResource HbSize6}" MinHeight="0"
+                         CornerRadius="{DynamicResource HbRadius3}" VerticalAlignment="Center" Classes.met="{Binding GoalMet}" />
+            <TextBlock Grid.Column="2" Text="{Binding TotalText}" Classes="mono muted" FontSize="{DynamicResource HbFontSmall}"
                        HorizontalAlignment="Right" VerticalAlignment="Center" />
-            <PathIcon Grid.Column="3" Data="{StaticResource IconCheck}" Width="12" Height="12" IsVisible="{Binding GoalMet}"
+            <PathIcon Grid.Column="3" Data="{StaticResource IconCheck}" Width="{DynamicResource HbCheckIconSize}" Height="{DynamicResource HbCheckIconSize}" IsVisible="{Binding GoalMet}"
                       Foreground="{DynamicResource HbSuccessBrush}" ToolTip.Tip="Goal met" />
         </Grid>
     </Button>

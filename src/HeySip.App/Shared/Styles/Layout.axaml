@@ -1,0 +1,156 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Every size, gap, radius and type size the views use, named once. Views and styles refer to these tokens, never to raw numbers.
+        The mascot is always drawn at the picture's 100 by 140 proportions, so each width has a matching height.
+    -->
+
+    <!-- Spacing scale (gaps between neighbours), in pixels. -->
+    <x:Double x:Key="HbSpace2">2</x:Double>
+    <x:Double x:Key="HbSpace4">4</x:Double>
+    <x:Double x:Key="HbSpace6">6</x:Double>
+    <x:Double x:Key="HbSpace8">8</x:Double>
+    <x:Double x:Key="HbSpace10">10</x:Double>
+    <x:Double x:Key="HbSpace12">12</x:Double>
+    <x:Double x:Key="HbSpace14">14</x:Double>
+    <x:Double x:Key="HbSpace16">16</x:Double>
+    <x:Double x:Key="HbSpace18">18</x:Double>
+    <x:Double x:Key="HbSpace20">20</x:Double>
+    <x:Double x:Key="HbSpace24">24</x:Double>
+    <x:Double x:Key="HbSpace28">28</x:Double>
+
+    <!-- Type scale. -->
+    <x:Double x:Key="HbFontBody">13</x:Double>
+    <x:Double x:Key="HbFontCaption">11</x:Double>
+    <x:Double x:Key="HbFontDisplay">34</x:Double>
+    <x:Double x:Key="HbFontEmphasis">15</x:Double>
+    <x:Double x:Key="HbFontHeading">22</x:Double>
+    <x:Double x:Key="HbFontHero">40</x:Double>
+    <x:Double x:Key="HbFontSmall">12</x:Double>
+    <x:Double x:Key="HbFontSubtitle">14</x:Double>
+    <x:Double x:Key="HbFontTiny">9</x:Double>
+    <x:Double x:Key="HbFontTitle">20</x:Double>
+
+    <!-- Opacity of de-emphasised content. -->
+    <x:Double x:Key="HbOpacity0p7">0.7</x:Double>
+
+    <!-- Corner radii. -->
+    <CornerRadius x:Key="HbRadius2">2</CornerRadius>
+    <CornerRadius x:Key="HbRadius3">3</CornerRadius>
+    <CornerRadius x:Key="HbRadius6">6</CornerRadius>
+    <CornerRadius x:Key="HbRadius7">7</CornerRadius>
+    <CornerRadius x:Key="HbRadius8">8</CornerRadius>
+    <CornerRadius x:Key="HbRadius14">14</CornerRadius>
+    <CornerRadius x:Key="HbRadius18">18</CornerRadius>
+    <CornerRadius x:Key="HbRadius6_6_0_0">6,6,0,0</CornerRadius>
+
+    <!-- Margins, paddings and borders. -->
+    <Thickness x:Key="HbCompanionBubbleMargin">0,0,14,240</Thickness>
+    <Thickness x:Key="HbThickness1">1</Thickness>
+    <Thickness x:Key="HbThickness2">2</Thickness>
+    <Thickness x:Key="HbThickness5">5</Thickness>
+    <Thickness x:Key="HbThickness6">6</Thickness>
+    <Thickness x:Key="HbThickness10">10</Thickness>
+    <Thickness x:Key="HbThickness12">12</Thickness>
+    <Thickness x:Key="HbThickness18">18</Thickness>
+    <Thickness x:Key="HbThickness26">26</Thickness>
+    <Thickness x:Key="HbThickness28">28</Thickness>
+    <Thickness x:Key="HbThickness32">32</Thickness>
+    <Thickness x:Key="HbThickness0_2">0,2</Thickness>
+    <Thickness x:Key="HbThickness0_3">0,3</Thickness>
+    <Thickness x:Key="HbThickness0_0_0_10">0,0,0,10</Thickness>
+    <Thickness x:Key="HbThickness0_0_0_44">0,0,0,44</Thickness>
+    <Thickness x:Key="HbThickness0_0_10_10">0,0,10,10</Thickness>
+    <Thickness x:Key="HbThickness0_0_12_12">0,0,12,12</Thickness>
+    <Thickness x:Key="HbThickness0_0_14_0">0,0,14,0</Thickness>
+    <Thickness x:Key="HbThickness0_0_24_6">0,0,24,6</Thickness>
+    <Thickness x:Key="HbThickness0_0_6_6">0,0,6,6</Thickness>
+    <Thickness x:Key="HbThickness0_0_8_0">0,0,8,0</Thickness>
+    <Thickness x:Key="HbThickness0_0_8_8">0,0,8,8</Thickness>
+    <Thickness x:Key="HbThickness0_1_0_0">0,1,0,0</Thickness>
+    <Thickness x:Key="HbThickness0_1_2_0">0,1,2,0</Thickness>
+    <Thickness x:Key="HbThickness0_2_0_0">0,2,0,0</Thickness>
+    <Thickness x:Key="HbThickness0_4_4_0">0,4,4,0</Thickness>
+    <Thickness x:Key="HbThickness0_64_0_0">0,64,0,0</Thickness>
+    <Thickness x:Key="HbThickness0_6_0_0">0,6,0,0</Thickness>
+    <Thickness x:Key="HbThickness10_0">10,0</Thickness>
+    <Thickness x:Key="HbThickness10_8">10,8</Thickness>
+    <Thickness x:Key="HbThickness12_4">12,4</Thickness>
+    <Thickness x:Key="HbThickness12_6">12,6</Thickness>
+    <Thickness x:Key="HbThickness12_0_0_0">12,0,0,0</Thickness>
+    <Thickness x:Key="HbThickness16_14">16,14</Thickness>
+    <Thickness x:Key="HbThickness16_8_8_8">16,8,8,8</Thickness>
+    <Thickness x:Key="HbThickness20_0_0_4">20,0,0,4</Thickness>
+    <Thickness x:Key="HbThickness3_0">3,0</Thickness>
+    <Thickness x:Key="HbThickness5_2">5,2</Thickness>
+    <Thickness x:Key="HbThickness8_5">8,5</Thickness>
+    <Thickness x:Key="HbThickness8_0_12_0">8,0,12,0</Thickness>
+
+    <!-- Windows, cards and the mascot in its different sizes. -->
+    <x:Double x:Key="HbBrowseCardWidth">176</x:Double>
+    <x:Double x:Key="HbCharacterPickPreviewWidth">64</x:Double>
+    <GridLength x:Key="HbCheckColumn">22</GridLength>
+    <x:Double x:Key="HbCheckIconSize">12</x:Double>
+    <x:Double x:Key="HbChoiceComboWidth">200</x:Double>
+    <x:Double x:Key="HbCloseIconSize">9</x:Double>
+    <x:Double x:Key="HbCompanionBubbleMaxWidth">320</x:Double>
+    <x:Double x:Key="HbCompanionMascotHeight">224</x:Double>
+    <x:Double x:Key="HbCompanionMascotWidth">160</x:Double>
+    <x:Double x:Key="HbCompanionWindowHeight">440</x:Double>
+    <x:Double x:Key="HbCompanionWindowWidth">380</x:Double>
+    <GridLength x:Key="HbDayLabelColumn">110</GridLength>
+    <x:Double x:Key="HbDayToggleMinWidth">52</x:Double>
+    <GridLength x:Key="HbDayTotalColumn">90</GridLength>
+    <GridLength x:Key="HbEntryTimeColumn">80</GridLength>
+    <x:Double x:Key="HbInstallCardWidth">540</x:Double>
+    <x:Double x:Key="HbMainWindowHeight">780</x:Double>
+    <x:Double x:Key="HbMainWindowMinHeight">440</x:Double>
+    <x:Double x:Key="HbMainWindowMinWidth">700</x:Double>
+    <x:Double x:Key="HbMainWindowWidth">1180</x:Double>
+    <x:Double x:Key="HbMascotBadgeHeight">68</x:Double>
+    <x:Double x:Key="HbMascotBadgeWidth">48</x:Double>
+    <x:Double x:Key="HbMascotHeroHeight">210</x:Double>
+    <x:Double x:Key="HbMascotHeroWidth">150</x:Double>
+    <x:Double x:Key="HbMascotLargeHeight">134</x:Double>
+    <x:Double x:Key="HbMascotLargeWidth">96</x:Double>
+    <x:Double x:Key="HbMascotPickHeight">81</x:Double>
+    <x:Double x:Key="HbMascotPickWidth">58</x:Double>
+    <x:Double x:Key="HbMascotPreviewHeight">118</x:Double>
+    <x:Double x:Key="HbMascotPreviewWidth">84</x:Double>
+    <x:Double x:Key="HbMascotTileHeight">100</x:Double>
+    <x:Double x:Key="HbMascotTileWidth">72</x:Double>
+    <x:Double x:Key="HbNoticeMaxWidth">640</x:Double>
+    <x:Double x:Key="HbNoticeTextMaxWidth">440</x:Double>
+    <x:Double x:Key="HbOnboardingCardWidth">460</x:Double>
+    <x:Double x:Key="HbPageMaxWidth">900</x:Double>
+    <GridLength x:Key="HbPaletteCategoryColumn">96</GridLength>
+    <x:Double x:Key="HbPaletteResultsMaxHeight">380</x:Double>
+    <x:Double x:Key="HbPaletteWidth">600</x:Double>
+    <x:Double x:Key="HbRailButtonSize">38</x:Double>
+    <x:Double x:Key="HbRailCloseSize">16</x:Double>
+    <GridLength x:Key="HbRailColumn">48</GridLength>
+    <x:Double x:Key="HbRailIconSize">20</x:Double>
+    <x:Double x:Key="HbRailTabHeight">42</x:Double>
+    <x:Double x:Key="HbRailTabWidth">48</x:Double>
+    <x:Double x:Key="HbSize4">4</x:Double>
+    <x:Double x:Key="HbSize6">6</x:Double>
+    <x:Double x:Key="HbSize12">12</x:Double>
+    <x:Double x:Key="HbSize14">14</x:Double>
+    <x:Double x:Key="HbSize56">56</x:Double>
+    <x:Double x:Key="HbSize84">84</x:Double>
+    <x:Double x:Key="HbSize96">96</x:Double>
+    <x:Double x:Key="HbSize150">150</x:Double>
+    <x:Double x:Key="HbSize160">160</x:Double>
+    <x:Double x:Key="HbSize240">240</x:Double>
+    <x:Double x:Key="HbSize280">280</x:Double>
+    <x:Double x:Key="HbStatusButtonHeight">24</x:Double>
+    <x:Double x:Key="HbStatusIconSize">12</x:Double>
+    <x:Double x:Key="HbTabCloseIconSize">7</x:Double>
+    <x:Double x:Key="HbTileCaptionMaxWidth">84</x:Double>
+    <x:Double x:Key="HbVolumeLabelWidth">44</x:Double>
+    <x:Double x:Key="HbZoneComboWidth">420</x:Double>
+
+    <!-- Letter spacing of small upper-case headings, and the step of the minute spinner in time pickers. -->
+    <x:Double x:Key="HbHeadingLetterSpacing">0.6</x:Double>
+    <x:Int32 x:Key="HbMinuteIncrement">5</x:Int32>
+</ResourceDictionary>
