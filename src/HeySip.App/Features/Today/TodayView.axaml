@@ -62,7 +62,7 @@
                     <Button Content="Until tomorrow" Command="{Binding QuietUntilTomorrowCommand}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource HbSpace8}">
-                    <TimePicker SelectedTime="{Binding QuietTime}" MinuteIncrement="{DynamicResource HbMinuteIncrement}" AutomationProperties.Name="Quiet until" />
+                    <controls:TimeBox SelectedTime="{Binding QuietTime}" StepMinutes="{DynamicResource HbMinuteIncrement}" Width="{DynamicResource HbSize160}" AutomationProperties.Name="Quiet until" />
                     <Button Content="Quiet until this time" Command="{Binding QuietUntilTimeCommand}" VerticalAlignment="Bottom" />
                 </StackPanel>
             </StackPanel>

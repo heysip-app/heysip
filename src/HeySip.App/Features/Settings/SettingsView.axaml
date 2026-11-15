@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:settings="using:HeySip.App.Features.Settings"
+             xmlns:controls="using:HeySip.App.Shared.Controls"
              xmlns:comp="using:HeySip.App.Shared.Components"
              x:Class="HeySip.App.Features.Settings.SettingsView"
              x:DataType="settings:SettingsViewModel">
@@ -57,10 +58,10 @@
             </comp:Field>
             <StackPanel Classes="fields" IsVisible="{Binding ShowHours}">
                 <comp:Field Label="Active from">
-                    <TimePicker SelectedTime="{Binding ActiveStart}" MinuteIncrement="{DynamicResource HbMinuteIncrement}" />
+                    <controls:TimeBox SelectedTime="{Binding ActiveStart}" StepMinutes="{DynamicResource HbMinuteIncrement}" Width="{DynamicResource HbSize160}" HorizontalAlignment="Left" AutomationProperties.Name="Active from" />
                 </comp:Field>
                 <comp:Field Label="Until">
-                    <TimePicker SelectedTime="{Binding ActiveEnd}" MinuteIncrement="{DynamicResource HbMinuteIncrement}" />
+                    <controls:TimeBox SelectedTime="{Binding ActiveEnd}" StepMinutes="{DynamicResource HbMinuteIncrement}" Width="{DynamicResource HbSize160}" HorizontalAlignment="Left" AutomationProperties.Name="Active until" />
                 </comp:Field>
             </StackPanel>
             <comp:Field Label="On these days" IsVisible="{Binding ShowDays}">
