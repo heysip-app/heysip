@@ -55,6 +55,8 @@ public sealed record ExtraAccessory(StoreCardViewModel Card, PreviewTileViewMode
 /// <summary>One character or accessory in the browser: how it looks, who made it, and the one thing you can do with it now.</summary>
 public sealed partial class StoreCardViewModel(StoreEntry entry, Action<StoreCardViewModel> open, Action<StoreCardViewModel> act, bool paymentsEnabled) : ObservableObject
 {
+    private const int CentsPerDollar = 100;
+
     public StoreEntry Entry { get; } = entry;
 
     /// <summary>Whether a buy page can be opened for this item: payments are on, and the list says where.</summary>
@@ -70,7 +72,7 @@ public sealed partial class StoreCardViewModel(StoreEntry entry, Action<StoreCar
 
     public string KindText => IsCharacter ? "Character" : "Accessory";
 
-    public string PriceText => Entry.IsFree ? "Free" : $"${Entry.PriceCents / 100}.{Entry.PriceCents % 100:00}";
+    public string PriceText => Entry.IsFree ? "Free" : $"${Entry.PriceCents / CentsPerDollar}.{Entry.PriceCents % CentsPerDollar:00}";
 
     public bool IsPaid => !Entry.IsFree;
 
@@ -201,6 +203,12 @@ public sealed partial class StoreCardViewModel(StoreEntry entry, Action<StoreCar
 /// </summary>
 public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
 {
+    // The order cards are listed in: what can be got or updated first, what can't be fetched last.
+    private const int UpdateOrder = 0;
+    private const int AvailableOrder = 1;
+    private const int OwnedOrder = 2;
+    private const int UnavailableOrder = 3;
+
     private readonly StorePayments _payments;
     private readonly IStoreSource _source;
     private readonly SettingsService _settings;
@@ -455,10 +463,10 @@ public sealed partial class BrowseViewModel : ViewModelBase, IDisposable
         // What can be got or updated comes first; the rest keep the order of the list.
         foreach (var card in _all.OrderBy(card => card.Status switch
         {
-            StoreStatus.Update => 0,
-            StoreStatus.Available => 1,
-            StoreStatus.Unavailable => 3,
-            _ => 2,
+            StoreStatus.Update => UpdateOrder,
+            StoreStatus.Available => AvailableOrder,
+            StoreStatus.Unavailable => UnavailableOrder,
+            _ => OwnedOrder,
         }))
         {
             Cards.Add(card);

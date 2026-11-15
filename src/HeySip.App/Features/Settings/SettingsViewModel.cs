@@ -106,7 +106,7 @@ public sealed partial class PresetOptionViewModel(WorkHoursPreset preset, Action
 
     /// <summary>The preset in words, following the user's own weekend.</summary>
     [ObservableProperty]
-    public partial string Description { get; set; } = preset.Description;
+    public partial string Description { get; set; } = preset.Describe(new AppSettings());
 
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
@@ -161,14 +161,8 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
             new ZoneOption(null, "Automatic (this computer)"),
             .. TimeZoneInfo.GetSystemTimeZones().Select(zone => new ZoneOption(zone.Id, zone.DisplayName)),
         ];
-        Days = Enum.GetValues<DayOfWeek>()
-            .OrderBy(day => ((int)day + 6) % 7) // Monday first
-            .Select(day => new DayToggleViewModel(day))
-            .ToList();
-        WeekendDays = Enum.GetValues<DayOfWeek>()
-            .OrderBy(day => ((int)day + 6) % 7)
-            .Select(day => new DayToggleViewModel(day))
-            .ToList();
+        Days = WeekDays.MondayFirst.Select(day => new DayToggleViewModel(day)).ToList();
+        WeekendDays = WeekDays.MondayFirst.Select(day => new DayToggleViewModel(day)).ToList();
         BuildChoices();
         Presets = WorkHoursPresets.All.Select(preset => new PresetOptionViewModel(preset, ApplyPreset)).ToList();
 
@@ -412,6 +406,21 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty]
     public partial string Name { get; set; } = "";
+
+    public int NameMaxLength => SettingsLimits.NameMaxLength;
+
+    // What each number box allows: the same limits the settings file is clamped to.
+    public NumericBounds GoalBounds { get; } = new(SettingsLimits.DailyGoalMilliliters);
+
+    public NumericBounds GlassBounds { get; } = new(SettingsLimits.GlassMilliliters);
+
+    public NumericBounds IntervalBounds { get; } = new(SettingsLimits.IntervalMinutes);
+
+    public NumericBounds SnoozeBounds { get; } = new(SettingsLimits.SnoozeMinutes);
+
+    public NumericBounds VolumeBounds { get; } = new(SettingsLimits.SoundVolume);
+
+    public NumericBounds MonitorBounds { get; } = new(SettingsLimits.Monitor);
 
     [ObservableProperty]
     public partial decimal? IntervalMinutes { get; set; }

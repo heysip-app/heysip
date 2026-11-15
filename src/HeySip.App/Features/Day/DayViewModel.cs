@@ -37,7 +37,7 @@ public sealed partial class DayViewModel : ViewModelBase, IDisposable
 
         AddAmount = settings.Current.GlassMilliliters;
         // Today starts at "now" so a just-forgotten drink is one click; an earlier day starts at midday.
-        AddTime = IsToday ? new TimeSpan(now.Hour, now.Minute, 0) : new TimeSpan(12, 0, 0);
+        AddTime = IsToday ? new TimeSpan(now.Hour, now.Minute, 0) : DefaultBackfillTime.ToTimeSpan();
 
         _hydrationChanged = (_, _) => Refresh();
         _settingsChanged = (_, _) => Refresh();
@@ -45,6 +45,12 @@ public sealed partial class DayViewModel : ViewModelBase, IDisposable
         _settings.Changed += _settingsChanged;
         Refresh();
     }
+
+    /// <summary>Where the time box starts for an earlier day: midday, the least surprising guess.</summary>
+    private static readonly TimeOnly DefaultBackfillTime = new(12, 0);
+
+    /// <summary>What the amount box allows.</summary>
+    public NumericBounds DrinkBounds { get; } = new(SettingsLimits.DrinkMilliliters);
 
     public DateOnly Day { get; }
 
@@ -147,7 +153,7 @@ public sealed partial class DayViewModel : ViewModelBase, IDisposable
 
         HasNextDay = Day < ZoneResolver.LocalDate(_time.GetUtcNow(), zone);
         Summary = $"{log.Milliliters} / {goal} ml";
-        ProgressPercent = Math.Min(100.0, log.Milliliters * 100.0 / goal);
+        ProgressPercent = HydrationStats.Percent(log.Milliliters, goal);
         GoalMet = log.GoalMet;
         Caption = log.GoalMet ? "Goal met." : log.Milliliters == 0 ? "Nothing logged on this day." : $"{goal - log.Milliliters} ml short of the goal.";
 

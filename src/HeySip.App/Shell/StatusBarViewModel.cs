@@ -12,7 +12,6 @@ namespace HeySip.App.Shell;
 /// <summary>The thin bar along the bottom: today's progress, streak, next nudge and a one-click pause.</summary>
 public sealed partial class StatusBarViewModel : ViewModelBase
 {
-    private static readonly TimeSpan QuickPause = TimeSpan.FromHours(1);
 
     private readonly HydrationService _hydration;
     private readonly SettingsService _settings;
@@ -89,7 +88,7 @@ public sealed partial class StatusBarViewModel : ViewModelBase
         }
         else
         {
-            _reminders.Pause(QuickPause);
+            _reminders.Pause(PauseOptions.Quick.Duration);
         }
     }
 
@@ -114,7 +113,7 @@ public sealed partial class StatusBarViewModel : ViewModelBase
         var total = _hydration.TodayMilliliters();
         var goal = current.DailyGoalMilliliters;
         ProgressText = $"{total} / {goal} ml";
-        ProgressPercent = Math.Min(100.0, total * 100.0 / goal);
+        ProgressPercent = HydrationStats.Percent(total, goal);
         GoalReached = total >= goal;
 
         var streak = _hydration.Summary(7).CurrentStreak;

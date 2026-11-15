@@ -26,6 +26,17 @@ public sealed partial class TodayViewModel : ViewModelBase
     private readonly SettingsService _settings;
     private readonly ReminderService _reminders;
     private readonly TimeProvider _time;
+    /// <summary>From this hour until <see cref="SmallHoursEnd"/> the character is fast asleep when reminders are off, rather than just drowsy.</summary>
+    private const int SleepFromHour = 22;
+
+    private const int SmallHoursEnd = 6;
+
+    // Where each part of the day starts, for the greeting. Before the first it is still night.
+    private const int MorningStartHour = 5;
+
+    private const int AfternoonStartHour = 12;
+    private const int EveningStartHour = 18;
+
     private DateOnly _shownDay;
     private int _shownHour;
 
@@ -78,7 +89,7 @@ public sealed partial class TodayViewModel : ViewModelBase
     public partial bool HasEntries { get; set; }
 
     [ObservableProperty]
-    public partial decimal? CustomAmount { get; set; } = 300;
+    public partial decimal? CustomAmount { get; set; } = SettingsLimits.DrinkMilliliters.Default;
 
     /// <summary>True while reminders are paused (for a while or until a time), so the Quiet card offers Resume.</summary>
     [ObservableProperty]
@@ -100,12 +111,15 @@ public sealed partial class TodayViewModel : ViewModelBase
     [RelayCommand]
     private void SeeStats() => OpenStats?.Invoke();
 
+    /// <summary>What the custom-amount box allows.</summary>
+    public NumericBounds DrinkBounds { get; } = new(SettingsLimits.DrinkMilliliters);
+
     /// <summary>The time of day the "Quiet until" box will stay quiet until.</summary>
     [ObservableProperty]
-    public partial TimeSpan? QuietTime { get; set; } = new TimeSpan(18, 0, 0);
+    public partial TimeSpan? QuietTime { get; set; } = PauseOptions.DefaultQuietUntil.ToTimeSpan();
 
     [RelayCommand]
-    private void PauseHour() => _reminders.Pause(TimeSpan.FromHours(1));
+    private void PauseHour() => _reminders.Pause(PauseOptions.Quick.Duration);
 
     [RelayCommand]
     private void QuietUntilTomorrow() => _reminders.PauseUntilTomorrow();
@@ -181,7 +195,7 @@ public sealed partial class TodayViewModel : ViewModelBase
         _shownHour = now.Hour;
         Greeting = GreetingFor(now.Hour, current.Name);
         Summary = $"{total} / {goal} ml";
-        ProgressPercent = Math.Min(100.0, total * 100.0 / goal);
+        ProgressPercent = HydrationStats.Percent(total, goal);
         var status = _reminders.Status();
         IsPaused = status.IsPaused;
         ShowScheduleLink = status.OutsideActiveHours;
@@ -206,7 +220,7 @@ public sealed partial class TodayViewModel : ViewModelBase
     /// </summary>
     private static DripPose PoseFor(int total, int goal, ReminderStatus status, int hour) =>
         total >= goal ? DripPose.Happy
-        : status.OutsideActiveHours ? (hour >= 22 || hour < 6 ? DripPose.Sleeping : DripPose.Sleepy)
+        : status.OutsideActiveHours ? (hour >= SleepFromHour || hour < SmallHoursEnd ? DripPose.Sleeping : DripPose.Sleepy)
         : total == 0 ? DripPose.Waving
         : DripPose.Idle;
 
@@ -229,9 +243,9 @@ public sealed partial class TodayViewModel : ViewModelBase
     {
         var part = hour switch
         {
-            < 5 => "Good night",
-            < 12 => "Good morning",
-            < 18 => "Good afternoon",
+            < MorningStartHour => "Good night",
+            < AfternoonStartHour => "Good morning",
+            < EveningStartHour => "Good afternoon",
             _ => "Good evening",
         };
         return string.IsNullOrWhiteSpace(name) ? part : $"{part}, {name}";

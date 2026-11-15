@@ -14,6 +14,9 @@ namespace HeySip.App.Shell;
 /// <summary>The notification-area icon: quick actions, pause controls and a live tooltip.</summary>
 public sealed class TrayController : IDisposable
 {
+    /// <summary>The tray icon is painted this many pixels wide and tall; the system scales it to what the tray needs.</summary>
+    private const int TrayIconPixels = 64;
+
     private readonly TrayIcon _tray;
     private readonly HydrationService _hydration;
     private readonly ReminderService _reminders;
@@ -120,9 +123,12 @@ public sealed class TrayController : IDisposable
         else
         {
             var pause = new NativeMenuItem("Pause reminders") { Menu = new NativeMenu() };
-            pause.Menu.Add(Item("For 30 minutes", () => _reminders.Pause(TimeSpan.FromMinutes(30))));
-            pause.Menu.Add(Item("For 1 hour", () => _reminders.Pause(TimeSpan.FromHours(1))));
-            pause.Menu.Add(Item("For 2 hours", () => _reminders.Pause(TimeSpan.FromHours(2))));
+            foreach (var option in PauseOptions.Timed)
+            {
+                var duration = option.Duration;
+                pause.Menu.Add(Item($"For {option.Label}", () => _reminders.Pause(duration)));
+            }
+
             pause.Menu.Add(Item("Until I resume", () => _reminders.Pause(null)));
             menu.Add(pause);
         }
@@ -142,10 +148,10 @@ public sealed class TrayController : IDisposable
     /// <summary>Paints the mascot into a small bitmap so the tray needs no icon file.</summary>
     private static WindowIcon RenderIcon(string character)
     {
-        var drip = new DripControl { Character = character, IsAnimated = false, Width = 64, Height = 64 };
-        drip.Measure(new Size(64, 64));
-        drip.Arrange(new Rect(0, 0, 64, 64));
-        var bitmap = new RenderTargetBitmap(new PixelSize(64, 64));
+        var drip = new DripControl { Character = character, IsAnimated = false, Width = TrayIconPixels, Height = TrayIconPixels };
+        drip.Measure(new Size(TrayIconPixels, TrayIconPixels));
+        drip.Arrange(new Rect(0, 0, TrayIconPixels, TrayIconPixels));
+        var bitmap = new RenderTargetBitmap(new PixelSize(TrayIconPixels, TrayIconPixels));
         bitmap.Render(drip);
         return new WindowIcon(bitmap);
     }

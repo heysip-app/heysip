@@ -26,6 +26,19 @@ public sealed partial class StatsViewModel : ViewModelBase
     private const double ChartHeight = 200;
     private const int RecentDayCount = 14;
 
+    /// <summary>The two ranges the chart can show, in days.</summary>
+    private const int WeekDays = 7;
+
+    private const int MonthDays = 30;
+
+    /// <summary>A day with something logged always shows a bar at least this tall (in pixels), so it can be seen and clicked.</summary>
+    private const double MinBarHeight = 2;
+
+    /// <summary>The chart is a little taller than its highest bar or the goal line, so neither touches the top.</summary>
+    private const double ChartHeadroom = 1.08;
+
+    private const double MillilitersPerLiter = 1000;
+
     private readonly HydrationService _hydration;
     private readonly SettingsService _settings;
     private readonly TimeProvider _time;
@@ -53,7 +66,7 @@ public sealed partial class StatsViewModel : ViewModelBase
     public Action? OpenToday { get; set; }
 
     [ObservableProperty]
-    public partial int Days { get; set; } = 7;
+    public partial int Days { get; set; } = WeekDays;
 
     /// <summary>True when nothing was logged in the range shown, so the page offers a way to start.</summary>
     [ObservableProperty]
@@ -83,17 +96,17 @@ public sealed partial class StatsViewModel : ViewModelBase
     [ObservableProperty]
     public partial string GoalLineLabel { get; set; } = "";
 
-    public bool IsWeek => Days == 7;
+    public bool IsWeek => Days == WeekDays;
 
-    public bool IsMonth => Days == 30;
+    public bool IsMonth => Days == MonthDays;
 
     public double PlotHeight => ChartHeight;
 
     [RelayCommand]
-    private void ShowWeek() => Days = 7;
+    private void ShowWeek() => Days = WeekDays;
 
     [RelayCommand]
-    private void ShowMonth() => Days = 30;
+    private void ShowMonth() => Days = MonthDays;
 
     partial void OnDaysChanged(int value)
     {
@@ -118,16 +131,16 @@ public sealed partial class StatsViewModel : ViewModelBase
     {
         _shownDay = CurrentDay();
         var summary = _hydration.Summary(Days);
-        var peak = Math.Max(summary.GoalMilliliters, summary.Days.Count == 0 ? 0 : summary.Days.Max(day => day.Milliliters)) * 1.08;
+        var peak = Math.Max(summary.GoalMilliliters, summary.Days.Count == 0 ? 0 : summary.Days.Max(day => day.Milliliters)) * ChartHeadroom;
 
         Bars.Clear();
         foreach (var day in summary.Days)
         {
-            var label = Days <= 7 ? day.Date.ToString("ddd") : day.Date.Day.ToString();
+            var label = Days <= WeekDays ? day.Date.ToString(TimeFormats.ShortDayName) : day.Date.Day.ToString();
             Bars.Add(new BarViewModel(
                 label,
-                $"{day.Date:ddd d MMM}: {day.Milliliters} ml. Click to open this day.",
-                Math.Max(2, day.Milliliters / peak * ChartHeight),
+                $"{day.Date.ToString(TimeFormats.ShortDayAndDate)}: {day.Milliliters} ml. Click to open this day.",
+                Math.Max(MinBarHeight, day.Milliliters / peak * ChartHeight),
                 day.Milliliters >= summary.GoalMilliliters,
                 day.Date,
                 date => OpenDay?.Invoke(date)));
@@ -140,7 +153,7 @@ public sealed partial class StatsViewModel : ViewModelBase
         BestStreak = $"{summary.BestStreak} {(summary.BestStreak == 1 ? "day" : "days")}";
         Average = $"{summary.AverageMilliliters} ml";
         GoalDays = $"{summary.GoalDays} of {summary.Days.Count}";
-        Total = $"{summary.TotalMilliliters / 1000.0:0.0} L";
+        Total = $"{summary.TotalMilliliters / MillilitersPerLiter:0.0} L";
         IsEmpty = summary.TotalMilliliters == 0;
     }
 
@@ -154,7 +167,7 @@ public sealed partial class StatsViewModel : ViewModelBase
             RecentDays.Add(new RecentDayViewModel(
                 DayLabel.Short(day.Date, today),
                 day.Milliliters == 0 ? "none yet" : $"{day.Milliliters} ml",
-                Math.Min(100, day.Milliliters * 100.0 / Math.Max(1, summary.GoalMilliliters)),
+                HydrationStats.Percent(day.Milliliters, summary.GoalMilliliters),
                 day.Milliliters >= summary.GoalMilliliters,
                 day.Date,
                 date => OpenDay?.Invoke(date)));

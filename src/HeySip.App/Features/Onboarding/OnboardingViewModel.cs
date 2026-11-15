@@ -24,7 +24,9 @@ public sealed partial class OnboardingViewModel : ViewModelBase
 
     public IReadOnlyList<CharacterOptionViewModel> Characters { get; }
 
-    public IReadOnlyList<int> IntervalChoices { get; } = [30, 45, 60, 90];
+    public int NameMaxLength => SettingsLimits.NameMaxLength;
+
+    public IReadOnlyList<int> IntervalChoices { get; } = [30, SettingsLimits.IntervalMinutes.Default, 60, 90];
 
     /// <summary>Raised once, after the user finishes (or skips) the welcome.</summary>
     public event Action? Completed;
@@ -40,22 +42,29 @@ public sealed partial class OnboardingViewModel : ViewModelBase
     public partial string Name { get; set; } = "";
 
     [ObservableProperty]
-    public partial int Interval { get; set; } = 45;
+    public partial int Interval { get; set; } = SettingsLimits.IntervalMinutes.Default;
 
-    public bool IsNameStep => Step == 0;
+    // The steps of the welcome, in order.
+    private const int NameStep = 0;
+    private const int IntervalStep = 1;
+    private const int CharacterStep = 2;
+    private const int FirstStep = NameStep;
+    private const int LastStep = CharacterStep;
 
-    public bool IsIntervalStep => Step == 1;
+    public bool IsNameStep => Step == NameStep;
 
-    public bool IsCharacterStep => Step == 2;
+    public bool IsIntervalStep => Step == IntervalStep;
 
-    public bool IsLastStep => Step == 2;
+    public bool IsCharacterStep => Step == CharacterStep;
 
-    public bool CanGoBack => Step > 0;
+    public bool IsLastStep => Step == LastStep;
+
+    public bool CanGoBack => Step > FirstStep;
 
     public string StepTitle => Step switch
     {
-        0 => "What should I call you?",
-        1 => "How often should I nudge you?",
+        NameStep => "What should I call you?",
+        IntervalStep => "How often should I nudge you?",
         _ => "Pick your buddy",
     };
 
@@ -67,14 +76,14 @@ public sealed partial class OnboardingViewModel : ViewModelBase
         Name = _settings.Current.Name;
         Interval = _settings.Current.IntervalMinutes;
         Choose(_settings.Current.Character);
-        Step = 0;
+        Step = FirstStep;
         IsVisible = true;
     }
 
     [RelayCommand]
     private void Next()
     {
-        if (Step < 2)
+        if (Step < LastStep)
         {
             Step++;
         }
@@ -87,7 +96,7 @@ public sealed partial class OnboardingViewModel : ViewModelBase
     [RelayCommand]
     private void Back()
     {
-        if (Step > 0)
+        if (Step > FirstStep)
         {
             Step--;
         }

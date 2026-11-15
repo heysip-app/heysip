@@ -33,7 +33,7 @@ public sealed partial class HistoryDayViewModel(DateOnly date, Action<DateOnly> 
     {
         Label = label;
         TotalText = $"{log.Milliliters} ml";
-        Percent = Math.Min(100, log.Milliliters * 100.0 / Math.Max(1, goal));
+        Percent = HydrationStats.Percent(log.Milliliters, goal);
         GoalMet = log.GoalMet;
 
         // Reuse nothing fancy: a day only ever has a handful of drinks, so rebuilding its rows is cheap.

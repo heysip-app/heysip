@@ -319,8 +319,6 @@ public sealed partial class InstallPreviewViewModel(SettingsService settings, Ap
     private static string SizeText(long bytes) => bytes switch
     {
         <= 0 => "size unknown",
-        < 1024 => $"{bytes} bytes",
-        < 1024 * 1024 => $"{bytes / 1024.0:0.#} KB",
-        _ => $"{bytes / 1024.0 / 1024.0:0.#} MB",
+        _ => ByteSize.Friendly(bytes),
     };
 }
