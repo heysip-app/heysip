@@ -13,9 +13,26 @@ namespace HeySip.Core.Features.Control;
 /// </summary>
 public sealed class ControlService : IDisposable
 {
-    public static readonly TimeSpan CheckEvery = TimeSpan.FromHours(24);
+    private const string LogCategory = "Control";
+
+    public static readonly TimeSpan CheckEvery = TimeSpan.FromDays(1);
     public static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(6);
-    public static readonly TimeSpan[] Backoff = [TimeSpan.FromHours(1), TimeSpan.FromHours(6), TimeSpan.FromHours(24), TimeSpan.FromHours(72), TimeSpan.FromHours(168)];
+
+    /// <summary>A short wait after the app starts before the first check, so start-up isn't slowed by it.</summary>
+    public static readonly TimeSpan StartupDelay = TimeSpan.FromSeconds(20);
+
+    /// <summary>How often the background loop looks at the clock to see whether a check is due.</summary>
+    public static readonly TimeSpan DueLookEvery = TimeSpan.FromHours(1);
+
+    /// <summary>The wait after the first, second, third... failed check; the last entry is used for every failure after that.</summary>
+    public static readonly TimeSpan[] Backoff =
+    [
+        TimeSpan.FromHours(1),
+        TimeSpan.FromHours(6),
+        TimeSpan.FromDays(1),
+        TimeSpan.FromDays(3),
+        TimeSpan.FromDays(7),
+    ];
 
     private const int MaxSignatureBytes = 1024;
     private const int MaxDismissed = 200;
@@ -127,7 +144,7 @@ public sealed class ControlService : IDisposable
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _log?.Warning("Control", "The kept control file couldn't be read.", exception);
+            _log?.Warning(LogCategory, "The kept control file couldn't be read.", exception);
         }
 
         var state = new State();
@@ -140,7 +157,7 @@ public sealed class ControlService : IDisposable
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
-            _log?.Warning("Control", "The control check schedule couldn't be read; starting it over.", exception);
+            _log?.Warning(LogCategory, "The control check schedule couldn't be read; starting it over.", exception);
         }
 
         lock (_gate)
@@ -193,7 +210,7 @@ public sealed class ControlService : IDisposable
             }
             catch (IOException exception)
             {
-                _log?.Warning("Control", $"Couldn't read the control file from {url.Host}: {exception.Message}");
+                _log?.Warning(LogCategory, $"Couldn't read the control file from {url.Host}: {exception.Message}");
             }
         }
 
@@ -207,7 +224,7 @@ public sealed class ControlService : IDisposable
         delay ??= (span, token) => Task.Delay(span, _time, token);
         try
         {
-            await delay(TimeSpan.FromSeconds(20), cancel);
+            await delay(StartupDelay, cancel);
             while (!cancel.IsCancellationRequested)
             {
                 try
@@ -219,10 +236,10 @@ public sealed class ControlService : IDisposable
                 }
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {
-                    _log?.Error("Control", "A control check failed unexpectedly; it will be tried again later.", exception);
+                    _log?.Error(LogCategory, "A control check failed unexpectedly; it will be tried again later.", exception);
                 }
 
-                await delay(TimeSpan.FromHours(1), cancel);
+                await delay(DueLookEvery, cancel);
             }
         }
         catch (OperationCanceledException)
@@ -278,12 +295,12 @@ public sealed class ControlService : IDisposable
         var notices = new List<ControlNotice>();
         if (file.MinSupportedVersion is { } minimum && _appVersion < minimum)
         {
-            notices.Add(new ControlNotice("unsupported", $"This version of HeySip is no longer supported. Please update to {file.LatestVersion?.ToString(3) ?? "the latest version"}.", file.UpdateUrl, null, null, null, Dismissible: false));
+            notices.Add(new ControlNotice(NoticeIds.Unsupported, $"This version of HeySip is no longer supported. Please update to {file.LatestVersion?.ToString(NoticeIds.VersionParts) ?? "the latest version"}.", file.UpdateUrl, null, null, null, Dismissible: false));
         }
 
         if (file is { LatestVersion: { } latest, UpdateUrl: not null } && latest > _appVersion)
         {
-            notices.Add(new ControlNotice($"update-{latest.ToString(3)}", $"HeySip {latest.ToString(3)} is available.", file.UpdateUrl, null, null, null, Dismissible: true));
+            notices.Add(new ControlNotice(NoticeIds.Update(latest), $"HeySip {latest.ToString(NoticeIds.VersionParts)} is available.", file.UpdateUrl, null, null, null, Dismissible: true));
         }
 
         notices.AddRange(file.Notices.Where(notice =>
@@ -331,7 +348,7 @@ public sealed class ControlService : IDisposable
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _log?.Warning("Control", "The control file couldn't be kept on disk.", exception);
+            _log?.Warning(LogCategory, "The control file couldn't be kept on disk.", exception);
         }
 
         Changed?.Invoke();
@@ -355,7 +372,7 @@ public sealed class ControlService : IDisposable
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _log?.Warning("Control", "The control check schedule couldn't be saved.", exception);
+            _log?.Warning(LogCategory, "The control check schedule couldn't be saved.", exception);
         }
     }
 

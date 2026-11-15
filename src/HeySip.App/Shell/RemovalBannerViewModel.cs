@@ -64,7 +64,7 @@ public sealed partial class RemovalBannerViewModel : ViewModelBase
         var zone = ZoneResolver.Resolve(_settings.Current.TimeZoneId, _time);
         var at = TimeZoneInfo.ConvertTime(entry.At, zone);
         _removed = entry;
-        Text = $"Removed {entry.Milliliters} ml from {at:HH:mm}";
+        Text = $"Removed {entry.Milliliters} ml from {at.ToString(TimeFormats.Clock)}";
         IsVisible = true;
 
         var generation = ++_generation;

@@ -57,7 +57,7 @@ public sealed partial class NoticeBannerViewModel : ViewModelBase
         IsVisible = _current is not null;
         Text = _current?.Text ?? "";
         HasLink = _current?.Link is not null;
-        LinkText = _current is { Id: var id } && (id == "unsupported" || id.StartsWith("update-", StringComparison.Ordinal)) ? "Get it" : "Learn more";
+        LinkText = _current is { Id: var id } && NoticeIds.IsUpgradePrompt(id) ? "Get it" : "Learn more";
         CanDismiss = _current?.Dismissible == true;
     }
 
