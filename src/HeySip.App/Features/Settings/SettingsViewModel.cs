@@ -484,12 +484,20 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     public partial bool WeekendOpen { get; set; }
 
+    private bool _searchFindsDays;
+
     partial void OnSearchTextChanged(string value)
     {
         RaiseVisibilityChanged();
 
         // A search that lands on the days setting opens the weekend options, so the match is not hidden behind a fold.
-        WeekendOpen = !string.IsNullOrWhiteSpace(value) && ShowDays;
+        // It only acts when the search starts or stops finding them, so folding them by hand sticks while the user keeps typing.
+        var findsDays = !string.IsNullOrWhiteSpace(value) && ShowDays;
+        if (findsDays != _searchFindsDays)
+        {
+            _searchFindsDays = findsDays;
+            WeekendOpen = findsDays;
+        }
     }
 
     [RelayCommand]
