@@ -11,12 +11,19 @@ namespace HeySip.App.Shared.Platform;
 /// </summary>
 public sealed class WindowsPresenceProbe(TimeSpan idleThreshold) : IPresenceProbe
 {
+    /// <summary>How long without keyboard or mouse input counts as being away.</summary>
+    public static readonly TimeSpan DefaultIdleThreshold = TimeSpan.FromMinutes(5);
+
+    /// <summary>The success code from <c>SHQueryUserNotificationState</c> (S_OK).</summary>
+    private const int ShellCallSucceeded = 0;
+
+    // The states of <c>QUERY_USER_NOTIFICATION_STATE</c> that mean "don't interrupt".
     private const int QunsBusy = 2;
     private const int QunsRunningD3dFullScreen = 3;
     private const int QunsPresentationMode = 4;
 
     public WindowsPresenceProbe()
-        : this(TimeSpan.FromMinutes(5))
+        : this(DefaultIdleThreshold)
     {
     }
 
@@ -38,7 +45,7 @@ public sealed class WindowsPresenceProbe(TimeSpan idleThreshold) : IPresenceProb
     {
         try
         {
-            return SHQueryUserNotificationState(out var state) == 0
+            return SHQueryUserNotificationState(out var state) == ShellCallSucceeded
                 && state is QunsBusy or QunsRunningD3dFullScreen or QunsPresentationMode;
         }
         catch (Exception exception) when (exception is DllNotFoundException or EntryPointNotFoundException)

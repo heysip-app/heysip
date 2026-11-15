@@ -13,15 +13,23 @@ namespace HeySip.App.Shell;
 /// </summary>
 public sealed class StartupErrorWindow : Window
 {
+    private const double WindowWidth = 520;
+    private const double ContentMargin = 28;
+    private const double ContentSpacing = 14;
+    private const double ButtonSpacing = 8;
+    private const double TitleFontSize = 20;
+    private const double ReasonOpacity = 0.75;
+    private const double ConfirmationOpacity = 0.7;
+
     public StartupErrorWindow(string reason, string dataFolder, string details, Action? retry = null)
     {
         Title = "HeySip couldn't start";
-        Width = 520;
+        Width = WindowWidth;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-        var copied = new TextBlock { Opacity = 0.7, IsVisible = false, Text = "Copied. You can paste it into a bug report." };
+        var copied = new TextBlock { Opacity = ConfirmationOpacity, IsVisible = false, Text = "Copied. You can paste it into a bug report." };
 
         var copy = new Button { Content = "Copy details" };
         copy.Click += async (_, _) =>
@@ -44,19 +52,19 @@ public sealed class StartupErrorWindow : Window
 
         Content = new StackPanel
         {
-            Margin = new Thickness(28),
-            Spacing = 14,
+            Margin = new Thickness(ContentMargin),
+            Spacing = ContentSpacing,
             Children =
             {
-                new TextBlock { Text = "HeySip couldn't open its data", FontSize = 20, FontWeight = FontWeight.SemiBold },
+                new TextBlock { Text = "HeySip couldn't open its data", FontSize = TitleFontSize, FontWeight = FontWeight.SemiBold },
                 new TextBlock
                 {
                     Text = "Your drink history and settings are stored on this computer, and HeySip couldn't read them just now. "
                         + "Nothing has been deleted. Closing other copies of HeySip or restarting your computer often fixes this.",
                     TextWrapping = TextWrapping.Wrap,
                 },
-                new TextBlock { Text = reason, TextWrapping = TextWrapping.Wrap, Opacity = 0.75, FontStyle = FontStyle.Italic },
-                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { tryAgain, copy, open, close } },
+                new TextBlock { Text = reason, TextWrapping = TextWrapping.Wrap, Opacity = ReasonOpacity, FontStyle = FontStyle.Italic },
+                new StackPanel { Orientation = Orientation.Horizontal, Spacing = ButtonSpacing, Children = { tryAgain, copy, open, close } },
                 copied,
             },
         };

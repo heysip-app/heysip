@@ -6,6 +6,24 @@ namespace HeySip.App.Shared.Platform;
 /// </summary>
 public sealed class SingleInstance : IDisposable
 {
+    /// <summary>Developers set this to run a second, separate copy; it names that copy's instance.</summary>
+    public const string InstanceNameVariable = "HEYSIP_INSTANCE";
+
+    private const string DefaultName = "HeySip";
+
+    // The names the mutex and the "show your window" signal are registered under; "Local\" keeps them to this user session.
+    private const string SessionPrefix = @"Local\";
+    private const string MutexSuffix = ".SingleInstance";
+    private const string ShowSignalSuffix = ".ShowWindow";
+
+    private const string ListenerThreadName = "HeySip single-instance listener";
+
+    /// <summary>How long disposing waits for the listener thread to notice it should stop.</summary>
+    private static readonly TimeSpan ListenerStopTimeout = TimeSpan.FromSeconds(1);
+
+    /// <summary>The index of the show signal in the listener's wait handles (the other one is "stop").</summary>
+    private const int ShowSignalIndex = 0;
+
     private readonly Mutex _mutex;
     private readonly EventWaitHandle _showSignal;
     private readonly ManualResetEvent _stop = new(false);
@@ -27,9 +45,9 @@ public sealed class SingleInstance : IDisposable
     /// </param>
     public static SingleInstance Acquire(string? name = null)
     {
-        name ??= Environment.GetEnvironmentVariable("HEYSIP_INSTANCE") is { Length: > 0 } custom ? custom : "HeySip";
-        var mutex = new Mutex(initiallyOwned: true, $@"Local\{name}.SingleInstance", out var created);
-        var signal = new EventWaitHandle(false, EventResetMode.AutoReset, $@"Local\{name}.ShowWindow");
+        name ??= Environment.GetEnvironmentVariable(InstanceNameVariable) is { Length: > 0 } custom ? custom : DefaultName;
+        var mutex = new Mutex(initiallyOwned: true, $"{SessionPrefix}{name}{MutexSuffix}", out var created);
+        var signal = new EventWaitHandle(false, EventResetMode.AutoReset, $"{SessionPrefix}{name}{ShowSignalSuffix}");
         return new SingleInstance(mutex, signal, created);
     }
 
@@ -47,14 +65,14 @@ public sealed class SingleInstance : IDisposable
         _listener = new Thread(() =>
         {
             WaitHandle[] handles = [_showSignal, _stop];
-            while (WaitHandle.WaitAny(handles) == 0)
+            while (WaitHandle.WaitAny(handles) == ShowSignalIndex)
             {
                 onSignal();
             }
         })
         {
             IsBackground = true,
-            Name = "HeySip single-instance listener",
+            Name = ListenerThreadName,
         };
         _listener.Start();
     }
@@ -68,7 +86,7 @@ public sealed class SingleInstance : IDisposable
 
         _disposed = true;
         _stop.Set();
-        _listener?.Join(TimeSpan.FromSeconds(1));
+        _listener?.Join(ListenerStopTimeout);
         if (IsPrimary)
         {
             _mutex.ReleaseMutex();

@@ -193,7 +193,12 @@ public partial class App : Application
         timer.Start();
 
         shell.Onboarding.ShowIfFirstRun();
-        shell.Onboarding.Completed += () => reminders.Trigger();
+        shell.Onboarding.Completed += () =>
+        {
+            // The welcome may have chosen a new interval; start counting from now so the first real nudge uses it.
+            reminders.Restart();
+            reminders.Trigger();
+        };
 
         var firstRun = !settings.Current.Onboarded;
         if (_options.PackToOpen is { } packToOpen)

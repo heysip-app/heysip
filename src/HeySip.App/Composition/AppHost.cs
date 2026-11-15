@@ -29,21 +29,29 @@ namespace HeySip.App.Composition;
 /// <summary>The composition root. Everything is a singleton: there is one log, one scheduler and one window set.</summary>
 public static class AppHost
 {
+    private const string ApplicationName = "HeySip";
+
+    /// <summary>The user agent carries major.minor only, so it doesn't change with every build.</summary>
+    private const int UserAgentVersionParts = 2;
+
+    /// <summary>How long stopping the app waits for background work (such as the reminder loop) to finish.</summary>
+    private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(10);
+
     /// <summary>The product name sent with each online request: the version and nothing else, no identifier.</summary>
-    private static string UserAgent => $"HeySip/{HeySip.App.Shared.AppVersion.Current.ToString(2)}";
+    private static string UserAgent => $"{ApplicationName}/{HeySip.App.Shared.AppVersion.Current.ToString(UserAgentVersionParts)}";
 
     public static IHost Build(AppDataLocation location, Action<IServiceCollection>? overrides = null)
     {
         var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
         {
             DisableDefaults = true,
-            ApplicationName = "HeySip",
+            ApplicationName = ApplicationName,
             ContentRootPath = AppContext.BaseDirectory,
         });
 
         builder.Services.Configure<HostOptions>(options =>
         {
-            options.ShutdownTimeout = TimeSpan.FromSeconds(10);
+            options.ShutdownTimeout = ShutdownTimeout;
             options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
         });
 
